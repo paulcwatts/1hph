@@ -20,3 +20,8 @@ Next, create a virtual environment for 1hph and install all dependencies:
     source gonzo/bin/activate
     easy_install -U pip
     pip install -U -r 1hph/requirements.txt
+
+## Deployment Considerations
+
+Packages to install: apache2, mysql-server, python-setuptools, git-core, subversion, libapache2-mod-wsgi, build-essential
+
