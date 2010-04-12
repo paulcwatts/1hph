@@ -76,6 +76,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'facebook.djangofb.FacebookMiddleware'
 )
 
 ROOT_URLCONF = 'gonzo.urls'
@@ -94,7 +95,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
+    'facebook.djangofb'
 )
+
+# Facebook data -- secret MUST be in local_settings.py
+FACEBOOK_API_KEY="823ed653dafcb1c79590aa7fd79d553f"
+FACEBOOK_APP_NAME="GonzoTest"
+#FACEBOOK_CALLBACK_PATH="
 
 try:
     from local_settings import *
