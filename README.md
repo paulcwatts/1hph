@@ -23,5 +23,5 @@ Next, create a virtual environment for 1hph and install all dependencies:
 
 ## Deployment Considerations
 
-Packages to install: apache2, mysql-server, python-setuptools, git-core, subversion, libapache2-mod-wsgi, build-essential
+Packages to install: apache2, mysql-server, python-setuptools, python-mysqldb, git-core, subversion, libapache2-mod-wsgi, build-essential
 
