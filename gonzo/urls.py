@@ -7,6 +7,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', 'gonzo.views.home'),
+    (r'^acct/', include('gonzo.acct.urls')),
     (r'^help/', include('gonzo.help.urls')),
 
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
