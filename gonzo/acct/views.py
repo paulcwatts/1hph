@@ -8,7 +8,8 @@ def account_reclaim(request):
 
 # Facebook pings this URL when a user first authorizes the application
 def post_authorize(request):
-    print "post_authorize: " + str(request)
+    #print request.facebook.uid
+    # create a user profile for this facebook user in our system.
     return HttpResponse("post_authorize")
 
 # Facebook pings this URL when a user removes the application

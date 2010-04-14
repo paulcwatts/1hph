@@ -7,6 +7,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', 'gonzo.views.home'),
+    (r'^test_login$', 'gonzo.views.test_login'),
     (r'^acct/', include('gonzo.acct.urls')),
     (r'^help/', include('gonzo.help.urls')),
 
