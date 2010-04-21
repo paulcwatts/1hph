@@ -1,4 +1,3 @@
 -e svn+http://code.djangoproject.com/svn/django/trunk/
--e git+git://github.com/sciyoshi/pyfacebook.git#egg=pyfacebook
 simplejson
 
