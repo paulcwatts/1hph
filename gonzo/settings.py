@@ -95,7 +95,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
-    'facebook.djangofb'
+    'facebook.djangofb',
+    'gonzo.hunt'
 )
 
 # Facebook data -- secret MUST be in local_settings.py
