@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
 import settings
 
 # Uncomment the next two lines to enable the admin:
@@ -6,8 +7,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^$', 'gonzo.views.home'),
-    (r'^test_login$', 'gonzo.views.test_login'),
+    (r'^$', direct_to_template, { 'template':'home.html'}),
     (r'^hunt/', include('gonzo.hunt.urls')),
     (r'^acct/', include('gonzo.acct.urls')),
     (r'^help/', include('gonzo.help.urls')),

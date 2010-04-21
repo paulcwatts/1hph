@@ -44,6 +44,6 @@ class Hunt(object):
     # The maximum number of submissions for this hunt. None = no limit.
     max_submissions = pycassa.IntString()
 
-    objects         = pycassa.ColumnFamilyMap(Hunt, HUNTS)
+Hunt.objects = pycassa.ColumnFamilyMap(Hunt, HUNTS)
 
 
