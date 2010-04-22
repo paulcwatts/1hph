@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Hunt(models.Model):
@@ -8,7 +9,7 @@ class Hunt(models.Model):
     >>> from gonzo.hunt.models import Hunt
     """
     # Owner of the hunt
-    owner            = models.URLField(null=True)
+    owner            = models.ForeignKey(User)
     # Three word phrase (crazy model submarine)
     phrase           = models.CharField(max_length=128)
     # The hunt slug (based on the phrase)
@@ -55,4 +56,13 @@ class Vote(models.Model):
     submission      = models.ForeignKey(Submission)
     time            = models.DateTimeField()
     source          = models.URLField()
+    value           = models.IntegerField()
+
+#
+# This class captures any awards given to each submission.
+# For instance, "Hunt Winner" is the most common.
+#
+class Award(models.Model):
+    hunt            = models.ForeignKey(Hunt)
+    submission      = models.ForeignKey(Submission)
     value           = models.IntegerField()

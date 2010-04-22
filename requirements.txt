@@ -1,3 +1,4 @@
 -e svn+http://code.djangoproject.com/svn/django/trunk/
+-e git+http://github.com/simplegeo/python-oauth2.git#egg=oath2
 simplejson
 pil
