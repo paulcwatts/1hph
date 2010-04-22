@@ -1,49 +1,58 @@
 from django.db import models
-import pycassa
 
-print 'connecting'
-CLIENT = pycassa.connect_thread_local(framed_transport=True)
-KEYSPACE = 'Gonzo'
 
-HUNTS       = pycassa.ColumnFamily(CLIENT, KEYSPACE, 'Hunts')
-#SUBMISSIONS = pycassa.ColumnFamily(CLIENT, KEYSPACE, 'Submissions')
-#VOTES       = pycassa.ColumnFamily(CLIENT, KEYSPACE, 'Votes')
-#COMMENTS    = pycassa.ColumnFamily(CLIENT, KEYSPACE, 'Comments')
-# TODO: Achievements???
-
-#
-# Requirements of a hunt:
-# It should be ordered by time
-# It can appear as a URL
-# http://1hph.com/hunt/crazy-fool-plant
-#
-
-class Hunt(object):
+class Hunt(models.Model):
     """
-    A cassandra model for a Hunt
+    A model for a hunt
 
-    >>> h = Hunt()
-    >>> h.key = 'myhunt'
-    >>> h.phrase = 'sexy chocolate camper'
-    >>> h.slug = 'sexy-chocolate'
-    >>> from datetime import datetime
-    >>> h.start_time = datetime.now()
-    >>> h.end_time = h.start_time + 1000
-    >>> ts = Hunt.objects.insert(h)
+    >>> from gonzo.hunt.models import Hunt
     """
-    key             = pycassa.String()
-    owner           = pycassa.String()
-    # The hunt phrase (scary awkward clown)
-    phrase          = pycassa.String()
-    # The hunt phrase that can be used as part of a URL or hashtag
-    slug            = pycassa.String()
-    # The start time of the hunt
-    start_time      = pycassa.DateTimeString()
-    # The end time of the hunt
-    end_time        = pycassa.DateTimeString()
-    # The maximum number of submissions for this hunt. None = no limit.
-    max_submissions = pycassa.IntString()
+    # Owner of the hunt
+    owner            = models.URLField(null=True)
+    # Three word phrase (crazy model submarine)
+    phrase           = models.CharField(max_length=128)
+    # The hunt slug (based on the phrase)
+    slug             = models.SlugField(unique=True,max_length=200)
+    # The hunt tag (to be used as hashtag)
+    tag              = models.CharField(max_length=64)
+    start_time       = models.DateTimeField()
+    end_time         = models.DateTimeField()
+    max_submissions  = models.PositiveIntegerField(null=True)
 
-Hunt.objects = pycassa.ColumnFamilyMap(Hunt, HUNTS)
+    # TODO: get_absolule_uri
+    #@models.permalink
+    #def get_absolute_url(self):
+        #return ('hunt-permalink', (), { 'object_id' : self.slug })
 
+# TODO: Write storage object for Rackspace Cloud Files
+class Submission(models.Model):
+    hunt            = models.ForeignKey(Hunt)
+    time            = models.DateTimeField()
+    # The URL to the photo
+    photo           = models.ImageField(upload_to="submit/%Y/%m/%d", max_length=256)
+    # The URL to the thumbnail
+    thumbnail       = models.ImageField(upload_to="submit/%Y/%m/%d", null=True, max_length=256)
+    # The Source URL (person)
+    source          = models.URLField()
+    # How the source was submitted (Twitter, Facebook, 1hph for Android)
+    source_via      = models.CharField(max_length=64)
+    # Location of submission
+    latitude        = models.FloatField(null=True)
+    longitude       = models.FloatField(null=True)
+    # TODO: get_absolute_uri
 
+class Comment(models.Model):
+    hunt            = models.ForeignKey(Hunt)
+    # This can be NULL in case we allow comments on a hunt in general
+    submission      = models.ForeignKey(Submission, null=True)
+    time            = models.DateTimeField()
+    source          = models.URLField()
+    text            = models.CharField(max_length=256)
+    # TODO: get_absolute_uri
+
+class Vote(models.Model):
+    hunt            = models.ForeignKey(Hunt)
+    submission      = models.ForeignKey(Submission)
+    time            = models.DateTimeField()
+    source          = models.URLField()
+    value           = models.IntegerField()

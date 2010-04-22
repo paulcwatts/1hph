@@ -9,9 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^$', direct_to_template, { 'template':'home.html'}),
     (r'^hunt/', include('gonzo.hunt.urls')),
-    (r'^acct/', include('gonzo.acct.urls')),
     (r'^help/', include('gonzo.help.urls')),
-
 
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),

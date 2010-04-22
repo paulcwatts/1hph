@@ -1,6 +1,13 @@
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
+"""
+The hunt API:
+
+
+"""
+
+
 urlpatterns = patterns('gonzo.hunt.views',
     (r'^$',            direct_to_template, {'template':'hunt/index.html'}),
     #(r'^privacy/$',    direct_to_template, {'template':'help/privacy.html'}),

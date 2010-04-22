@@ -4,9 +4,8 @@
 
 ### Non-Python dependencies
 
-1. Cassandra
-1. Thrift
 1. MySQL
+1. Apache2
 
 ### Package requirements (Ubuntu)
 
@@ -20,14 +19,12 @@ Ensure you have the required python tools: virtualenv
     virtualenv gonzo
     source gonzo/bin/activate
 
-Next, download and install pycassa and thrift (these don't work well with pip)
-
-    easy_install -U thrift
-    git clone git://github.com/vomjom/pycassa.git
-    cd pycassa; python setup.py --cassandra install
-
 Next, create a virtual environment for 1hph and install all dependencies:
 
     easy_install -U pip
     pip install -U -r 1hph/requirements.txt
 
+### Configuration
+
+You'll need to create a local_settings.py in the 1hph/gonzo directory (or otherwise in your PYTHONPATH)
+to add your database configuration and SECRET_KEY.
