@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib import admin
 
+def json_encode(obj):
+    if 'json_encode' in obj.__class__.__dict__:
+        return obj.json_encode()
+    raise TypeError()
 
 class Hunt(models.Model):
     """
@@ -18,12 +23,20 @@ class Hunt(models.Model):
     tag              = models.CharField(max_length=64)
     start_time       = models.DateTimeField()
     end_time         = models.DateTimeField()
-    max_submissions  = models.PositiveIntegerField(null=True)
+    max_submissions  = models.PositiveIntegerField(null=True,blank=True)
 
     # TODO: get_absolule_uri
     #@models.permalink
     #def get_absolute_url(self):
-        #return ('hunt-permalink', (), { 'object_id' : self.slug })
+    #    return ('hunt-permalink', (), { 'object_id' : self.slug })
+    def json_encode(self):
+        return { 'owner': self.owner.username,
+                'phrase': self.phrase,
+                'slug': self.slug,
+                'tag': self.tag,
+                'start_time': self.start_time.isoformat(),
+                'end_time': self.end_time.isoformat() }
+
 
 # TODO: Write storage object for Rackspace Cloud Files
 class Submission(models.Model):
@@ -66,3 +79,16 @@ class Award(models.Model):
     hunt            = models.ForeignKey(Hunt)
     submission      = models.ForeignKey(Submission)
     value           = models.IntegerField()
+
+#
+# Admin
+#
+class HuntAdmin(admin.ModelAdmin):
+    list_display = ('slug','start_time')
+    prepopulated_fields = {"slug":("phrase",)}
+
+admin.site.register(Hunt, HuntAdmin)
+admin.site.register(Submission)
+admin.site.register(Comment)
+admin.site.register(Vote)
+admin.site.register(Award)

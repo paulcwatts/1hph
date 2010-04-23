@@ -14,6 +14,7 @@ GET : get the hunt info
 GET : get a ballot (two random photos)
 
 /hunt/<hunt-slug>/comments/
+POST : add a comment to the hunt
 GET : get all comments on this hunt (including photos)
 
 /hunt/<hunt-slug>/comment-stream/
@@ -23,7 +24,7 @@ GET : get the comment stream for this hunt
 POST : submit a photo
 
 /hunt/<hunt-slug>/p/<photo_id>
-GET : get a photo
+GET : get a photo (not actually photo, that will be part of the response)
 
 /hunt/<hunt-slug>/p/<photo_id>/votes/
 POST : Vote on this photo
@@ -39,7 +40,15 @@ GET : Get the comment stream for this hunt
 
 
 urlpatterns = patterns('gonzo.hunt.views',
-    (r'^$',            direct_to_template, {'template':'hunt/index.html'}),
-    #(r'^privacy/$',    direct_to_template, {'template':'help/privacy.html'}),
-    #(r'^tos/$',        direct_to_template, {'template':'help/tos.html'}),
+    url(r'^$', 'index', name='api-base'),
+    url(r'^(?P<slug>[\w-]+)/$',            'hunt_by_id', name='api-hunt'),
+    url(r'^(?P<slug>[\w-]+)/ballot/$',     'hunt_ballot', name='api-hunt-ballot'),
+    url(r'^(?P<slug>[\w-]+)/comments/$',   'hunt_comments', name='api-hunt-comments'),
+    url(r'^(?P<slug>[\w-]+)/comment-stream/$', 'hunt_comment_stream', name='api-hunt-comment-stream'),
+
+    url(r'^(?P<slug>[\w-]+)/p/$',                   'photo_index'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/$',    'photo_by_id', name='api-photo'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/votes/$','photo_votes', name='api-photo-votes'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comments/$', 'photo_comments', name='api-photo-comments'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comment-stream/$', 'photo_comment_stream', name='api-photo-comment-stream')
 )

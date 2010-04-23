@@ -17,8 +17,5 @@ urlpatterns = patterns('',
 
 if settings.DEBUG:
     urlpatterns += patterns('django.views.static',
-        (r'^(?P<path>xd_receiver\.htm)$', 'serve',
-            {'document_root': settings.MEDIA_ROOT, 'show_indexes': False}),
-        (r'^xd_receiver.htm$', 'serve',
-            {'document_root': settings.MEDIA_ROOT, 'show_indexes': False})
+
     )
