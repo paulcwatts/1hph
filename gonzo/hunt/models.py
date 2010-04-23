@@ -2,10 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
 
-def json_encode(obj):
-    if 'json_encode' in obj.__class__.__dict__:
-        return obj.json_encode()
-    raise TypeError()
+def json_encode(request):
+    def wrap(obj):
+        if 'json_encode' in obj.__class__.__dict__:
+            return obj.json_encode(request)
+        raise TypeError()
+    return wrap
 
 class Hunt(models.Model):
     """
@@ -25,18 +27,17 @@ class Hunt(models.Model):
     end_time         = models.DateTimeField()
     max_submissions  = models.PositiveIntegerField(null=True,blank=True)
 
-    # TODO: get_absolule_uri
-    #@models.permalink
-    #def get_absolute_url(self):
-    #    return ('hunt-permalink', (), { 'object_id' : self.slug })
-    def json_encode(self):
+    @models.permalink
+    def get_absolute_url(self):
+        return ('hunt', (), { 'slug' : self.slug })
+    def json_encode(self,request):
         return { 'owner': self.owner.username,
                 'phrase': self.phrase,
                 'slug': self.slug,
                 'tag': self.tag,
                 'start_time': self.start_time.isoformat(),
-                'end_time': self.end_time.isoformat() }
-
+                'end_time': self.end_time.isoformat(),
+                'url': request.build_absolute_uri(self.get_absolute_url()) }
 
 # TODO: Write storage object for Rackspace Cloud Files
 class Submission(models.Model):

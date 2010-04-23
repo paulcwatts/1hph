@@ -8,6 +8,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', direct_to_template, { 'template':'home.html'}),
+    (r'^hunt/', include('gonzo.webapp.urls')),
     (r'^api/hunt/', include('gonzo.hunt.urls')),
     (r'^help/', include('gonzo.help.urls')),
 

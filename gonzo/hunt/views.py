@@ -6,8 +6,9 @@ from django.views.decorators.http import require_GET,require_http_methods
 
 from gonzo.hunt.models import Hunt, json_encode
 
-def _get_json_or_404(klass,*args,**kwargs):
-    return json.dumps(get_object_or_404(klass,*args,**kwargs),default=json_encode)
+def _get_json_or_404(klass,request,*args,**kwargs):
+    return json.dumps(get_object_or_404(klass,*args,**kwargs),
+                      default=json_encode(request))
 
 def JsonResponse(*args,**kwargs):
     return HttpResponse(content_type='application/json',*args,**kwargs)
@@ -29,7 +30,7 @@ def index(request):
         return HttpResponseBadRequest()
 
 def hunt_by_id(request,slug):
-    return JsonResponse(_get_json_or_404(Hunt,slug=slug))
+    return JsonResponse(_get_json_or_404(Hunt,request,slug=slug))
 
 def hunt_ballot(request,slug):
     pass
