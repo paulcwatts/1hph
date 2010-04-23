@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
@@ -43,10 +45,9 @@ class Hunt(models.Model):
                 'end_time': self.end_time.isoformat(),
                 'url': request.build_absolute_uri(self.get_absolute_url()) }
 
-# TODO: Write storage object for Rackspace Cloud Files
 class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)
-    time            = models.DateTimeField()
+    time            = models.DateTimeField(default=datetime.now())
     # The URL to the photo
     photo           = models.ImageField(upload_to="submit/%Y/%m/%d", max_length=256)
     # The URL to the thumbnail
