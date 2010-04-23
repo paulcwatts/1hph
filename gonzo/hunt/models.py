@@ -6,7 +6,7 @@ def json_encode(request):
     def wrap(obj):
         if 'json_encode' in obj.__class__.__dict__:
             return obj.json_encode(request)
-        raise TypeError()
+        raise TypeError("Unable to encode: " + str(type(obj)))
     return wrap
 
 class Hunt(models.Model):
@@ -26,6 +26,10 @@ class Hunt(models.Model):
     start_time       = models.DateTimeField()
     end_time         = models.DateTimeField()
     max_submissions  = models.PositiveIntegerField(null=True,blank=True)
+    # TODO: Invite list
+
+    class Meta:
+        ordering = ["-start_time"]
 
     @models.permalink
     def get_absolute_url(self):

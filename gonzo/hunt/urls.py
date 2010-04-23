@@ -40,14 +40,16 @@ GET : Get the comment stream for this hunt
 
 urlpatterns = patterns('gonzo.hunt.views',
     url(r'^$', 'index', name='api-base'),
+    url(r'^current/$', 'current_hunts'),
     url(r'^(?P<slug>[\w-]+)/$',            'hunt_by_id', name='api-hunt'),
     url(r'^(?P<slug>[\w-]+)/ballot/$',     'hunt_ballot', name='api-hunt-ballot'),
     url(r'^(?P<slug>[\w-]+)/comments/$',   'hunt_comments', name='api-hunt-comments'),
-    url(r'^(?P<slug>[\w-]+)/comment-stream/$', 'hunt_comment_stream', name='api-hunt-comment-stream'),
+    url(r'^(?P<slug>[\w-]+)/comments/stream/$', 'hunt_comment_stream', name='api-hunt-comment-stream'),
 
     url(r'^(?P<slug>[\w-]+)/p/$',                   'photo_index'),
+    url(r'^(?P<slug>[\w-]+)/p/stream/$',            'photo_stream'),
     url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/$',    'photo_by_id', name='api-photo'),
     url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/votes/$','photo_votes', name='api-photo-votes'),
     url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comments/$', 'photo_comments', name='api-photo-comments'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comment-stream/$', 'photo_comment_stream', name='api-photo-comment-stream')
+    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comments/stream/$', 'photo_comment_stream', name='api-photo-comment-stream')
 )
