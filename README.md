@@ -9,7 +9,7 @@
 
 ### Package requirements (Ubuntu)
 
-apache2, mysql-server, python-setuptools, python-mysqldb, git-core, subversion, libapache2-mod-wsgi, build-essential
+apache2, mysql-server, python-setuptools, python-mysqldb, python-dev, git-core, subversion, libapache2-mod-wsgi, build-essential
 
 ### Python dependencies
 
