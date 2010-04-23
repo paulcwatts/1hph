@@ -40,7 +40,7 @@ GET : Get the comment stream for this hunt
 
 urlpatterns = patterns('gonzo.hunt.views',
     url(r'^$', 'index', name='api-base'),
-    url(r'^current/$', 'current_hunts'),
+    url(r'^current/$', 'current_hunts', name='api-current-hunts'),
     url(r'^(?P<slug>[\w-]+)/$',            'hunt_by_id', name='api-hunt'),
     url(r'^(?P<slug>[\w-]+)/ballot/$',     'hunt_ballot', name='api-hunt-ballot'),
     url(r'^(?P<slug>[\w-]+)/comments/$',   'hunt_comments', name='api-hunt-comments'),

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ hunt.phrase }}</h2>
+
+<form id="upload" action="javascript:void(0)">
+<h3>Submit photo</h3>
+<input type="file" name="photo" />
+</form>
+{% endblock %}

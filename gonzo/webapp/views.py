@@ -1,13 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-
-def index(request):
-    return HttpResponse("index")
-
-def hunt_by_id(request, slug):
-    return HttpResponse("by id")
-
 def hunt_comments(request, slug):
     return HttpResponse("comments")
 

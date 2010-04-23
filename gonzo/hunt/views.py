@@ -24,10 +24,10 @@ def _to_json(request,obj,*args,**kwargs):
 def _get_json_or_404(klass,request,*args,**kwargs):
     return _to_json(request,get_object_or_404(klass,*args,**kwargs))
 
-def _get_hunts(request):
+def _get_hunts(request,set):
     # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
     # We should use pagination for this.
-    return _to_json(request,{ 'hunts':list(Hunt.objects.all())})
+    return _to_json(request,{ 'hunts':list(set)})
 
 def _new_hunt(request):
     # TODO: new-hunt requires a logged-in user with the appropriate permissions
@@ -35,7 +35,7 @@ def _new_hunt(request):
 
 def index(request):
     if request.method == 'GET':
-        return _get_hunts(request)
+        return _get_hunts(request,Hunt.objects.all())
     elif request.method == 'POST':
         return _new_hunt(request)
     else:
@@ -43,8 +43,8 @@ def index(request):
 
 def current_hunts(request):
     now = datetime.datetime.now()
-    current = Hunt.objects.filter(start_time__lte=now, end_time__gt=now)
-    return _to_json(request,{ 'hunts':list(current) })
+    return _get_hunts(request,
+                      Hunt.objects.filter(start_time__lte=now, end_time__gt=now))
 
 def hunt_by_id(request,slug):
     return _get_json_or_404(Hunt,request,slug=slug)

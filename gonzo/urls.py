@@ -9,6 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^$', direct_to_template, { 'template':'home.html'}),
     (r'^hunt/', include('gonzo.webapp.urls')),
+    (r'^profile/', include('gonzo.uprofile.urls')),
     (r'^api/hunt/', include('gonzo.hunt.urls')),
     (r'^help/', include('gonzo.help.urls')),
 
@@ -18,5 +19,6 @@ urlpatterns = patterns('',
 
 if settings.DEBUG:
     urlpatterns += patterns('django.views.static',
-
+        (r'^media/(?P<path>.*)$', 'serve',
+            {'document_root': settings.MEDIA_ROOT, 'show_indexes': False}),
     )

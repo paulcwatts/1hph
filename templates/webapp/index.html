@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Current hunt</h2>
+<div class="current_hunt_container">
+<ul></ul>
+</div>
+<script type="text/javascript">
+$(function() {
+  $.getJSON("{% url api-current-hunts %}", function(data) {
+  var list = $(".current_hunt_container ul").get(0);
+    for (i in data.hunts) {
+      var hunt = data.hunts[i];
+      var li = document.createElement("li");
+      var link = document.createElement("a");
+      $(link)
+        .text(hunt.slug)
+        .attr("href", hunt.url);
+      li.appendChild(link);
+      list.appendChild(li);
+    }
+  });
+});
+</script>
+{% endblock %}
+
