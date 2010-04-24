@@ -1,11 +1,13 @@
 import json
 import datetime
 
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET,require_http_methods
 
-from gonzo.hunt.models import Hunt, json_encode
+from gonzo.hunt.forms import SubmissionForm
+from gonzo.hunt.models import Hunt, Submission, json_encode
+from gonzo.hunt.utils import get_source_from_request
 
 def _to_json(request,obj,*args,**kwargs):
     s = json.dumps(obj,default=json_encode(request))
@@ -20,6 +22,9 @@ def _to_json(request,obj,*args,**kwargs):
                             content_type='application/json',
                             *args,
                             **kwargs)
+
+def _api_error(request,text):
+    return HttpResponseBadRequest(_to_json(request,{'error':text}), content_type='application/json')
 
 def _get_json_or_404(klass,request,*args,**kwargs):
     return _to_json(request,get_object_or_404(klass,*args,**kwargs))
@@ -60,8 +65,38 @@ def hunt_comments(request,slug):
 def hunt_comment_stream(request,slug):
     pass
 
-def photo_index(request,slug,photo_id):
+def _get_photos(request,hunt):
     pass
+
+# TODO: We should probably generate the source_via from the API key,
+# when we have one.
+def _submit_photo(request,hunt):
+    print request.FILES
+    f = SubmissionForm(request.POST, request.FILES)
+    if not f.is_valid():
+        return _api_error(request,str(f.errors))
+
+    source = get_source_from_request(request)
+    # TODO: Check to see that this source hasn't already uploaded one
+    # TODO: We need much more logic around the source, but later.
+
+    photo = f.save(commit=False)
+    photo.hunt = hunt
+    photo.source = source
+    photo.save()
+    response = HttpResponse(status=201)
+    response['Content-Location'] = request.build_absolute_uri(photo.get_api_url())
+    # TODO: Fire off a worker to generate a thumbnail
+    return response;
+
+def photo_index(request,slug):
+    hunt = get_object_or_404(Hunt,slug=slug)
+    if request.method == 'GET':
+        return _get_photos(request, hunt)
+    elif request.method == 'POST':
+        return _submit_photo(request, hunt)
+    else:
+        return HttpResponseBadRequest()
 
 def photo_by_id(request,slug,photo_id):
     pass

@@ -46,7 +46,7 @@ urlpatterns = patterns('gonzo.hunt.views',
     url(r'^(?P<slug>[\w-]+)/comments/$',   'hunt_comments', name='api-hunt-comments'),
     url(r'^(?P<slug>[\w-]+)/comments/stream/$', 'hunt_comment_stream', name='api-hunt-comment-stream'),
 
-    url(r'^(?P<slug>[\w-]+)/p/$',                   'photo_index'),
+    url(r'^(?P<slug>[\w-]+)/p/$',                   'photo_index', name='api-photo-index'),
     url(r'^(?P<slug>[\w-]+)/p/stream/$',            'photo_stream'),
     url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/$',    'photo_by_id', name='api-photo'),
     url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/votes/$','photo_votes', name='api-photo-votes'),

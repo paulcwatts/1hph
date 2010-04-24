@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from django.views.generic.list_detail import object_detail
 from gonzo.hunt.models import Hunt
+from gonzo.hunt.forms import SubmissionForm
 
 ALLHUNTS = Hunt.objects.all()
 
@@ -15,7 +16,10 @@ urlpatterns = patterns('gonzo.webapp.views',
         {
             'queryset': ALLHUNTS,
             'template_name':'webapp/hunt.html',
-            'template_object_name':'hunt'
+            'template_object_name':'hunt',
+            'extra_context': {
+                'submit_form': SubmissionForm()
+            }
         },
         name='hunt'),
     #url(r'^(?P<slug>[\w-]+)/ballot/$',     'hunt_ballot', name='hunt-ballot'),

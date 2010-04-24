@@ -2,8 +2,14 @@
 {% block content %}
 <h2>{{ hunt.phrase }}</h2>
 
-<form id="upload" action="javascript:void(0)">
+{% if submit_form.is_multipart %}
+<form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}" enctype="multipart/form-data">
+{% else %}
+<form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}">
+{% endif %}
 <h3>Submit photo</h3>
-<input type="file" name="photo" />
+{{ submit_form.as_p }}
+{% csrf_token %}
+<input type="submit" value="Submit"/>
 </form>
 {% endblock %}

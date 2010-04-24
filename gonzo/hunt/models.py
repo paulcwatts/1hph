@@ -30,12 +30,19 @@ class Hunt(models.Model):
     max_submissions  = models.PositiveIntegerField(null=True,blank=True)
     # TODO: Invite list
 
+    def __unicode__(self):
+        return self.slug
+
     class Meta:
         ordering = ["-start_time"]
 
     @models.permalink
     def get_absolute_url(self):
         return ('hunt', (), { 'slug' : self.slug })
+
+    @models.permalink
+    def get_api_url(self):
+        return ('api-hunt', (), { 'slug' : self.slug })
     def json_encode(self,request):
         return { 'owner': self.owner.username,
                 'phrase': self.phrase,
@@ -49,17 +56,29 @@ class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)
     time            = models.DateTimeField(default=datetime.now())
     # The URL to the photo
-    photo           = models.ImageField(upload_to="submit/%Y/%m/%d", max_length=256)
+    photo           = models.ImageField(upload_to="photos", max_length=256)
     # The URL to the thumbnail
-    thumbnail       = models.ImageField(upload_to="submit/%Y/%m/%d", null=True, max_length=256)
+    thumbnail       = models.ImageField(upload_to="photos", null=True, max_length=256)
     # The Source URL (person)
     source          = models.URLField()
     # How the source was submitted (Twitter, Facebook, 1hph for Android)
     source_via      = models.CharField(max_length=64)
     # Location of submission
-    latitude        = models.FloatField(null=True)
-    longitude       = models.FloatField(null=True)
-    # TODO: get_absolute_uri
+    latitude        = models.FloatField(null=True,blank=True)
+    longitude       = models.FloatField(null=True,blank=True)
+
+    class Meta:
+        ordering = ["-time"]
+
+    def __unicode__(self):
+        return "%s:%s" % (self.hunt.slug, self.source)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('photo', (), { 'slug' : self.hunt.slug, 'photo_id' : self.id })
+    @models.permalink
+    def get_api_url(self):
+        return ('api-photo', (), { 'slug' : self.hunt.slug, 'photo_id' : self.id })
 
 class Comment(models.Model):
     hunt            = models.ForeignKey(Hunt)
@@ -92,6 +111,7 @@ class Award(models.Model):
 class HuntAdmin(admin.ModelAdmin):
     list_display = ('slug','start_time')
     prepopulated_fields = {"slug":("phrase",)}
+
 
 admin.site.register(Hunt, HuntAdmin)
 admin.site.register(Submission)
