@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
+from gonzo.utils import slugify
 
 def json_encode(request):
     def wrap(obj):
@@ -13,9 +14,7 @@ def json_encode(request):
 
 class Hunt(models.Model):
     """
-    A model for a hunt
-
-    >>> from gonzo.hunt.models import Hunt
+    The model for a hunt.
     """
     # Owner of the hunt
     owner            = models.ForeignKey(User)
@@ -27,8 +26,16 @@ class Hunt(models.Model):
     tag              = models.CharField(max_length=64)
     start_time       = models.DateTimeField()
     end_time         = models.DateTimeField()
+    vote_end_time    = models.DateTimeField()
     max_submissions  = models.PositiveIntegerField(null=True,blank=True)
-    # TODO: Invite list
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.start_time >= self.end_time:
+            raise ValidationError("Start time must be earlier than end time")
+        if self.end_time > self.vote_end_time:
+            raise ValidationError("End time must be earlier (or equal to) end time")
+        super(Hunt,self).clean()
 
     def __unicode__(self):
         return self.slug
@@ -36,13 +43,18 @@ class Hunt(models.Model):
     class Meta:
         ordering = ["-start_time"]
 
+    def save(self, **kwargs):
+        self.clean()
+        self.slug = slugify(Hunt, self.phrase, exclude_pk=self.id)
+        return super(Hunt,self).save(**kwargs)
+
     @models.permalink
     def get_absolute_url(self):
         return ('hunt', (), { 'slug' : self.slug })
-
     @models.permalink
     def get_api_url(self):
         return ('api-hunt', (), { 'slug' : self.slug })
+
     def json_encode(self,request):
         return { 'owner': self.owner.username,
                 'phrase': self.phrase,
@@ -50,6 +62,7 @@ class Hunt(models.Model):
                 'tag': self.tag,
                 'start_time': self.start_time.isoformat(),
                 'end_time': self.end_time.isoformat(),
+                'vote_end_time': self.vote_end_time.isoformat(),
                 'url': request.build_absolute_uri(self.get_absolute_url()) }
 
 class Submission(models.Model):
