@@ -137,7 +137,7 @@ class Submission(models.Model):
             json['latitude'] = self.latitude
         if self.longitude:
             json['longitude'] = self.longitude
-        json['source'] = get_source_json(self.source, self.source_via)
+        json['source'] = get_source_json(request, self.source, self.source_via)
         if self.thumbnail:
             json['thumbnail'] = self._photo(request, self.thumbnail)
         return json

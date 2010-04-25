@@ -104,7 +104,7 @@ def photo_index(request,slug):
         return HttpResponseBadRequest()
 
 def photo_by_id(request,slug,photo_id):
-    pass
+    return _get_json_or_404(Submission,request,pk=photo_id)
 
 def photo_stream(request,slug):
     pass

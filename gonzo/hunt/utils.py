@@ -1,3 +1,7 @@
+import urlparse
+
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 # Determines the source URI that can be stored in the DB.
 def get_source_from_request(request):
@@ -15,5 +19,17 @@ def get_source_from_request(request):
 # For 'twitter:' urls, get the twitter username and twitter profile url
 # For 'facebook:' urls, the same
 # For 'anon:' urls, the phrase "anonymous"
-def get_source_json(uri, via):
-    return { 'uri': uri, 'via' : via }
+def get_source_json(request,uristr, via):
+    uri = urlparse.urlparse(uristr)
+    if uri.scheme == 'user':
+        try:
+            user = User.objects.get(pk=int(uri.path))
+        except DoesNotExist:
+            return {}
+        username = user.username
+        return { 'username' : username,
+                'url': request.build_absolute_uri(
+                        reverse('profile', kwargs={ 'slug': username })),
+                'via': via }
+    else:
+        return { 'name': 'anonymous', 'via': via }
