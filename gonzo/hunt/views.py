@@ -65,16 +65,22 @@ def hunt_comments(request,slug):
 def hunt_comment_stream(request,slug):
     pass
 
-def _get_photos(request,hunt):
-    pass
+def _get_photos(request,set):
+    return _to_json(request,{ 'submissions':list(set)})
 
 # TODO: We should probably generate the source_via from the API key,
 # when we have one.
 def _submit_photo(request,hunt):
-    print request.FILES
     f = SubmissionForm(request.POST, request.FILES)
     if not f.is_valid():
         return _api_error(request,str(f.errors))
+
+    # Ensure the time is within the hunt
+    now = datetime.datetime.now()
+    if now < hunt.start_time:
+        return _api_error(request, "Hunt hasn't started yet")
+    if now >= hunt.end_time:
+        return _api_error(request, "Hunt has ended")
 
     source = get_source_from_request(request)
     # TODO: Check to see that this source hasn't already uploaded one
@@ -86,13 +92,12 @@ def _submit_photo(request,hunt):
     photo.save()
     response = HttpResponse(status=201)
     response['Content-Location'] = request.build_absolute_uri(photo.get_api_url())
-    # TODO: Fire off a worker to generate a thumbnail
     return response;
 
 def photo_index(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
     if request.method == 'GET':
-        return _get_photos(request, hunt)
+        return _get_photos(request, hunt.submission_set.all())
     elif request.method == 'POST':
         return _submit_photo(request, hunt)
     else:

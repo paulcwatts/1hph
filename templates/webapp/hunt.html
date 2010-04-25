@@ -2,6 +2,9 @@
 {% block content %}
 <h2>{{ hunt.phrase }}</h2>
 
+<p>Starts: {{ hunt.start_time }}</p>
+<p>Ends: {{ hunt.end_time }}</p>
+
 {% if submit_form.is_multipart %}
 <form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}" enctype="multipart/form-data">
 {% else %}

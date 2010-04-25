@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
 from gonzo.utils import slugify
+from gonzo.hunt.utils import get_source_json
 
 def json_encode(request):
     def wrap(obj):
@@ -48,12 +49,18 @@ class Hunt(models.Model):
         self.slug = slugify(Hunt, self.phrase, exclude_pk=self.id)
         return super(Hunt,self).save(**kwargs)
 
+    def _get_url(self,viewname):
+        return (viewname, (), { 'slug' : self.slug })
+
     @models.permalink
     def get_absolute_url(self):
-        return ('hunt', (), { 'slug' : self.slug })
+        return self._get_url('hunt')
     @models.permalink
     def get_api_url(self):
-        return ('api-hunt', (), { 'slug' : self.slug })
+        return self._get_url('api-hunt')
+    @models.permalink
+    def get_submission_url(self):
+        return self._get_url('api-photo-index')
 
     def json_encode(self,request):
         return { 'owner': self.owner.username,
@@ -63,15 +70,29 @@ class Hunt(models.Model):
                 'start_time': self.start_time.isoformat(),
                 'end_time': self.end_time.isoformat(),
                 'vote_end_time': self.vote_end_time.isoformat(),
-                'url': request.build_absolute_uri(self.get_absolute_url()) }
+                'url': request.build_absolute_uri(self.get_absolute_url()),
+                'submissions': request.build_absolute_uri(self.get_submission_url()) }
 
 class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)
     time            = models.DateTimeField(default=datetime.now())
     # The URL to the photo
-    photo           = models.ImageField(upload_to="photos", max_length=256)
+    photo           = models.ImageField(upload_to="photos",
+                                        max_length=256,
+                                        height_field='photo_height',
+                                        width_field='photo_width')
+    photo_width     = models.IntegerField()
+    photo_height    = models.IntegerField()
+
     # The URL to the thumbnail
-    thumbnail       = models.ImageField(upload_to="photos", null=True, max_length=256)
+    thumbnail       = models.ImageField(upload_to="thumbnails",
+                                        null=True,
+                                        max_length=256,
+                                        height_field='thumb_height',
+                                        width_field='thumb_width')
+    thumb_width     = models.IntegerField()
+    thumb_height    = models.IntegerField()
+
     # The Source URL (person)
     source          = models.URLField()
     # How the source was submitted (Twitter, Facebook, 1hph for Android)
@@ -86,12 +107,41 @@ class Submission(models.Model):
     def __unicode__(self):
         return "%s:%s" % (self.hunt.slug, self.source)
 
+    def _get_url(self,viewname):
+        return (viewname, (), { 'slug' : self.hunt.slug, 'photo_id' : self.id })
+
     @models.permalink
     def get_absolute_url(self):
-        return ('photo', (), { 'slug' : self.hunt.slug, 'photo_id' : self.id })
+        return self._get_url('photo')
     @models.permalink
     def get_api_url(self):
-        return ('api-photo', (), { 'slug' : self.hunt.slug, 'photo_id' : self.id })
+        return self._get_url('api-photo')
+    @models.permalink
+    def get_comments_url(self):
+        return self._get_url('api-photo-comments')
+    @models.permalink
+    def get_comment_stream_url(self):
+        return self._get_url('api-photo-comment-stream')
+
+    def _photo(self,request,photo):
+        return { 'url': request.build_absolute_uri(photo.url),
+                'width': photo.width,
+                'height': photo.height }
+
+    def json_encode(self,request):
+        json = { 'time': self.time.isoformat(),
+                'url': request.build_absolute_uri(self.get_absolute_url()),
+                'photo': self._photo(request, self.photo),
+                'comments': request.build_absolute_uri(self.get_comments_url()) }
+        if self.latitude:
+            json['latitude'] = self.latitude
+        if self.longitude:
+            json['longitude'] = self.longitude
+        json['source'] = get_source_json(self.source, self.source_via)
+        if self.thumbnail:
+            json['thumbnail'] = self._photo(request, self.thumbnail)
+        return json
+
 
 class Comment(models.Model):
     hunt            = models.ForeignKey(Hunt)
