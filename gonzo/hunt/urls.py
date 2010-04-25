@@ -48,8 +48,8 @@ urlpatterns = patterns('gonzo.hunt.views',
 
     url(r'^(?P<slug>[\w-]+)/p/$',                   'photo_index', name='api-photo-index'),
     url(r'^(?P<slug>[\w-]+)/p/stream/$',            'photo_stream'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/$',    'photo_by_id', name='api-photo'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/votes/$','photo_votes', name='api-photo-votes'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comments/$', 'photo_comments', name='api-photo-comments'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comments/stream/$', 'photo_comment_stream', name='api-photo-comment-stream')
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/$',    'photo_by_id', name='api-photo'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/votes/$','photo_votes', name='api-photo-votes'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comments/$', 'photo_comments', name='api-photo-comments'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comments/stream/$', 'photo_comment_stream', name='api-photo-comment-stream')
 )

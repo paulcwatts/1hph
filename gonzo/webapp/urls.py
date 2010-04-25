@@ -1,10 +1,11 @@
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from django.views.generic.list_detail import object_detail
-from gonzo.hunt.models import Hunt
+from gonzo.hunt.models import Hunt,Submission
 from gonzo.hunt.forms import SubmissionForm
 
 ALLHUNTS = Hunt.objects.all()
+ALLSUBMITS = Submission.objects.all()
 
 urlpatterns = patterns('gonzo.webapp.views',
     url(r'^$',
@@ -27,8 +28,17 @@ urlpatterns = patterns('gonzo.webapp.views',
     #url(r'^(?P<slug>[\w-]+)/comment-stream/$', 'hunt_comment_stream', name='hunt-comment-stream'),
 
     url(r'^(?P<slug>[\w-]+)/p/$',                   'photo_index'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/$',    'photo_by_id', name='photo'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/votes/$','photo_votes', name='photo-votes'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comments/$', 'photo_comments', name='photo-comments'),
-    #url(r'^(?P<slug>[\w-]+)/p/(?P<photo_id>\d+)/comment-stream/$', 'photo_comment_stream', name='photo-comment-stream')
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/$',
+        object_detail,
+        {
+            'queryset': ALLSUBMITS,
+            'template_name':'webapp/submission.html',
+            'template_object_name':'submission',
+            'extra_context': {
+            }
+        },
+        name='photo'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/votes/$','photo_votes', name='photo-votes'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comments/$', 'photo_comments', name='photo-comments'),
+    #url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comment-stream/$', 'photo_comment_stream', name='photo-comment-stream')
 )

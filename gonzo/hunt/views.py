@@ -66,6 +66,8 @@ def hunt_comment_stream(request,slug):
     pass
 
 def _get_photos(request,set):
+    # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
+    # We should use pagination for this.
     return _to_json(request,{ 'submissions':list(set)})
 
 # TODO: We should probably generate the source_via from the API key,

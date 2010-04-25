@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
@@ -108,7 +109,7 @@ class Submission(models.Model):
         return "%s:%s" % (self.hunt.slug, self.source)
 
     def _get_url(self,viewname):
-        return (viewname, (), { 'slug' : self.hunt.slug, 'photo_id' : self.id })
+        return (viewname, (), { 'slug' : self.hunt.slug, 'object_id' : self.id })
 
     @models.permalink
     def get_absolute_url(self):
