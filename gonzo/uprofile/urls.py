@@ -5,6 +5,9 @@ from django.views.generic.list_detail import object_detail
 ALLUSERS = User.objects.all()
 
 urlpatterns = patterns('gonzo.uprofile.views',
+    url(r'^settings/$',
+        'settings',
+        name='profile-settings'),
     url(r'^(?P<slug>[\w-]+)/$',
         object_detail,
         {

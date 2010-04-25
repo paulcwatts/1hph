@@ -3,10 +3,11 @@
 <ul class="nav" role="navigation">
 {% if user.is_authenticated %}
 <li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
+<li><a href="{% url profile-settings %}">Settings</a></li>
 <li><a href="/logout/">Log out</a></li>
 {% else %}
 <li><a href="/login/">Log in</a></li>
-<li><a href="/signup/">Create a profile</a></li>
+<li><a href="/signup/">Sign up</a></li>
 </ul>
 {% endif %}
 {% endblock %}
