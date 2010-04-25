@@ -2,6 +2,7 @@ import urlparse
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 # Determines the source URI that can be stored in the DB.
 def get_source_from_request(request):
@@ -32,4 +33,4 @@ def get_source_json(request,uristr, via):
                         reverse('profile', kwargs={ 'slug': username })),
                 'via': via }
     else:
-        return { 'name': 'anonymous', 'via': via }
+        return { 'name': _('anonymous'), 'via': via }
