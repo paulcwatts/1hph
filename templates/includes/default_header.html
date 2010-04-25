@@ -1,5 +1,6 @@
 {% block "header" %}
-<ul role="navigation">
+<a href="/"><img class="header-logo" src="{{ MEDIA_URL }}img/logo.png" alt="One Hour Photo Hunt"/></a>
+<ul class="nav" role="navigation">
 {% if user.is_authenticated %}
 <li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
 <li><a href="/logout/">Log out</a></li>

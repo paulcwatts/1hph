@@ -13,8 +13,12 @@
 {% block head %}{% endblock %}
 </head>
 <body>
+{% block body %}
+<div id="wrap">
 <div id="header">{% block header %}{% include "includes/default_header.html" %}{% endblock %}</div>
 <div id="content">{% block content %}{% endblock %}</div>
 <div id="footer">{% block footer %}{% include "includes/default_footer.html" %}{% endblock %}</div>
+</div>
+{% endblock %}
 </body>
 </html>

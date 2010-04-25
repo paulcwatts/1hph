@@ -49,10 +49,87 @@ table {
     border-spacing: 0;
 }
 
-/*
-* END RESET
+/* END RESET */
+
+/* possible color palette :
+http://www.colourlovers.com/palette/68048/inspired
+light gray: #f7f7f7;
+turquoises: #81f0d6 #46c5a7
+browns: #442e0d #634415
 */
 
-/*
-* BEGIN LAYOUT
-*/
+
+/* BEGIN LAYOUT */
+body {
+  background-color: #f7f7f7;
+
+  /* fonts */
+  font-family: Helvetica,'Lucida Grande',Arial,sans-serif;
+  color: #442e06;
+}
+a, a:link, a:visited {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+#wrap {
+  width: 650px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+#header {
+  min-height: 100px;
+  position: relative;
+
+  /* colors */
+  background: #46c5a7;
+}
+.nav {
+  padding: 3px 10px;
+  position: absolute;
+  right: 0;
+
+  background-color: #442e06;
+  color: white;
+  font-size: 75%;
+}
+.nav a, .nav a:link, .nav:visited {
+  color: white;
+}
+.nav li {
+  display: inline-block;
+  padding: 0 5px;
+}
+.header-logo {
+  position: absolute;
+  left: -30px;
+}
+
+/* FOOTER */
+#footer {
+  clear: both;
+  text-align: center;
+  padding-top: 10px;
+
+  /* fonts */
+  font-size: 60%;
+
+  /* colors */
+  color: #46c5a7;
+}
+#footer a, #footer a:link, #footer a:visited {
+  color: #46c5a7;
+}
+#footer li {
+  display: inline-block;
+  padding: 0 5px;
+}
+
+/* CONTENT */
+#content {
+  /* colors */
+  background-color: white;
+}
