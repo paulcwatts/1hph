@@ -1,12 +1,13 @@
 import json
-import datetime
+from datetime import datetime
 
 from django.http import HttpResponse,HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_GET,require_http_methods
+from django.views.decorators.http import require_GET,require_POST,require_http_methods
+from django.utils.translation import ugettext as _
 
-from gonzo.hunt.forms import SubmissionForm
-from gonzo.hunt.models import Hunt, Submission, json_encode
+from gonzo.hunt.forms import *
+from gonzo.hunt.models import *
 from gonzo.hunt.utils import get_source_from_request
 
 def _to_json(request,obj,*args,**kwargs):
@@ -47,7 +48,7 @@ def index(request):
         return HttpResponseBadRequest()
 
 def current_hunts(request):
-    now = datetime.datetime.now()
+    now = datetime.now()
     return _get_hunts(request,
                       Hunt.objects.filter(start_time__lte=now, end_time__gt=now))
 
@@ -78,7 +79,7 @@ def _submit_photo(request,hunt):
         return _api_error(request,str(f.errors))
 
     # Ensure the time is within the hunt
-    now = datetime.datetime.now()
+    now = datetime.now()
     if now < hunt.start_time:
         return _api_error(request, "Hunt hasn't started yet")
     if now >= hunt.end_time:
@@ -92,7 +93,9 @@ def _submit_photo(request,hunt):
     photo.hunt = hunt
     photo.source = source
     photo.save()
-    response = HttpResponse(status=201)
+    response = HttpResponse(_to_json(request,photo),
+                            status=201,
+                            content_type='application/json')
     response['Content-Location'] = request.build_absolute_uri(photo.get_api_url())
     return response;
 
@@ -105,18 +108,18 @@ def photo_index(request,slug):
     else:
         return HttpResponseBadRequest()
 
-def photo_by_id(request,slug,photo_id):
-    return _get_json_or_404(Submission,request,pk=photo_id)
+def photo_by_id(request,slug,object_id):
+    return _get_json_or_404(Submission,request,pk=object_id)
 
 def photo_stream(request,slug):
     pass
 
-def photo_votes(request,slug,photo_id):
+def photo_votes(request,slug,object_id):
     pass
 
-def photo_comments(request,slug,photo_id):
-    pass
+def photo_comments(request,slug,object_id):
+    return HttpResponse()
 
-def photo_comment_stream(request,slug,photo_id):
+def photo_comment_stream(request,slug,object_id):
     pass
 

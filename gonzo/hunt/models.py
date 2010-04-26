@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib import admin
 from gonzo.utils import slugify
 from gonzo.hunt.utils import get_source_json
+from gonzo.hunt.thumbs import ImageWithThumbsField
 
 def json_encode(request):
     def wrap(obj):
@@ -78,21 +79,13 @@ class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)
     time            = models.DateTimeField(default=datetime.now())
     # The URL to the photo
-    photo           = models.ImageField(upload_to="photos",
+    photo           = ImageWithThumbsField(upload_to="photos",
                                         max_length=256,
                                         height_field='photo_height',
-                                        width_field='photo_width')
+                                        width_field='photo_width',
+                                        sizes=((240,180),))
     photo_width     = models.IntegerField()
     photo_height    = models.IntegerField()
-
-    # The URL to the thumbnail
-    thumbnail       = models.ImageField(upload_to="thumbnails",
-                                        null=True,
-                                        max_length=256,
-                                        height_field='thumb_height',
-                                        width_field='thumb_width')
-    thumb_width     = models.IntegerField()
-    thumb_height    = models.IntegerField()
 
     # The Source URL (person)
     source          = models.URLField()
@@ -124,23 +117,17 @@ class Submission(models.Model):
     def get_comment_stream_url(self):
         return self._get_url('api-photo-comment-stream')
 
-    def _photo(self,request,photo):
-        return { 'url': request.build_absolute_uri(photo.url),
-                'width': photo.width,
-                'height': photo.height }
-
     def json_encode(self,request):
         json = { 'time': self.time.isoformat(),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
-                'photo': self._photo(request, self.photo),
+                'photo_url': request.build_absolute_uri(self.photo.url),
+                'thumbnail_url': request.build_absolute_uri(self.photo.url_240x180),
                 'comments': request.build_absolute_uri(self.get_comments_url()) }
         if self.latitude:
             json['latitude'] = self.latitude
         if self.longitude:
             json['longitude'] = self.longitude
         json['source'] = get_source_json(request, self.source, self.source_via)
-        if self.thumbnail:
-            json['thumbnail'] = self._photo(request, self.thumbnail)
         return json
 
 

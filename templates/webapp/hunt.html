@@ -5,6 +5,11 @@
 <p>Starts: {{ hunt.start_time }}</p>
 <p>Ends: {{ hunt.end_time }}</p>
 
+<div class="vote-container" style="position: relative;">
+<div style="width: 250px; height: 200px; background-color: blue; position: relative; top: 0; left: 72px;">First photo</div>
+<div style="width: 250px; height: 200px; background-color: blue; position: absolute; top: 0; left: 337px;">Second photo</div>
+</div>
+
 {% if submit_form.is_multipart %}
 <form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}" enctype="multipart/form-data">
 {% else %}
