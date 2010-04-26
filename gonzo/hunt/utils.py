@@ -33,4 +33,4 @@ def get_source_json(request,uristr, via):
                         reverse('profile', kwargs={ 'slug': username })),
                 'via': via }
     else:
-        return { 'name': _('anonymous'), 'via': via }
+        return { 'name': 'anonymous', 'via': via }
