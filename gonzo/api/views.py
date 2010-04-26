@@ -11,8 +11,15 @@ from gonzo.hunt.forms import *
 from gonzo.hunt.models import *
 from gonzo.hunt.utils import get_source_from_request
 
+def json_default(request):
+    def wrap(obj):
+        if hasattr(obj,'to_dict'):
+            return obj.to_dict(request)
+        raise TypeError("Unable to encode: " + str(type(obj)))
+    return wrap
+
 def _to_json(request,obj,*args,**kwargs):
-    s = json.dumps(obj,default=json_encode(request))
+    s = json.dumps(obj,default=json_default(request))
     callback = request.REQUEST.get('callback')
     if callback:
         return HttpResponse('%s(%s)' % (callback,s),

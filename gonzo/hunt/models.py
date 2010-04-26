@@ -8,13 +8,6 @@ from gonzo.utils import slugify
 from gonzo.hunt.utils import get_source_json
 from gonzo.hunt.thumbs import ImageWithThumbsField
 
-def json_encode(request):
-    def wrap(obj):
-        if 'json_encode' in obj.__class__.__dict__:
-            return obj.json_encode(request)
-        raise TypeError("Unable to encode: " + str(type(obj)))
-    return wrap
-
 class Hunt(models.Model):
     """
     The model for a hunt.
@@ -64,7 +57,7 @@ class Hunt(models.Model):
     def get_submission_url(self):
         return self._get_url('api-photo-index')
 
-    def json_encode(self,request):
+    def to_dict(self,request):
         return { 'owner': self.owner.username,
                 'phrase': self.phrase,
                 'slug': self.slug,
@@ -117,7 +110,7 @@ class Submission(models.Model):
     def get_comment_stream_url(self):
         return self._get_url('api-photo-comment-stream')
 
-    def json_encode(self,request):
+    def to_dict(self,request):
         json = { 'time': self.time.isoformat(),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
                 'photo_url': request.build_absolute_uri(self.photo.url),
