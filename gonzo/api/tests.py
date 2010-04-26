@@ -50,13 +50,21 @@ class HuntAPITest(TestCase):
         hunt = hunts[0]
         response = c.get(hunt['url'])
         self.failUnlessEqual(response.status_code,200)
+
         submitUrl = hunt['submissions']
+        ballotURL = hunt['ballot']
+
+        # Ensure that the ballot url returns an error
+        response = c.get(ballotURL)
+        self.failUnlessEqual(response.status_code,400)
+
         response = c.get(submitUrl)
         self.failUnlessEqual(response.status_code,200)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         # No submissions yet
         obj = json.loads(response.content)
         self.assertEquals(obj['submissions'],[])
+
         from StringIO import StringIO
         # TODO: Test submssion -- authenticated and anonymous
         # photo, latitude, longitude, source_via
@@ -72,6 +80,11 @@ class HuntAPITest(TestCase):
         self.failUnlessEqual(response.status_code, 201)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         photo1Url = response['Content-Location']
+
+         # Ensure that the ballot url returns an error
+        response = c.get(ballotURL)
+        self.failUnlessEqual(response.status_code,400)
+
         # Now log in and submit a photo
         c.login(username='testdude',password='password')
         f.seek(0)
@@ -89,6 +102,14 @@ class HuntAPITest(TestCase):
         self.failUnlessEqual(response['Content-Type'],'application/json')
         obj = json.loads(response.content)
         self.assertEquals(len(obj['submissions']),2)
+
+        # We should not have a valid ballot
+        response = c.get(ballotURL)
+        self.failUnlessEqual(response.status_code,200)
+        self.failUnlessEqual(response['Content-Type'],'application/json')
+        obj = json.loads(response.content)
+        self.assertEquals(len(obj['submissions']),2)
+
 
 __test__ = {}
 

@@ -54,6 +54,9 @@ class Hunt(models.Model):
     def get_api_url(self):
         return self._get_url('api-hunt')
     @models.permalink
+    def get_ballot_url(self):
+        return self._get_url('api-hunt-ballot')
+    @models.permalink
     def get_submission_url(self):
         return self._get_url('api-photo-index')
 
@@ -66,7 +69,8 @@ class Hunt(models.Model):
                 'end_time': self.end_time.isoformat(),
                 'vote_end_time': self.vote_end_time.isoformat(),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
-                'submissions': request.build_absolute_uri(self.get_submission_url()) }
+                'submissions': request.build_absolute_uri(self.get_submission_url()),
+                'ballot': request.build_absolute_uri(self.get_ballot_url()) }
 
 class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)

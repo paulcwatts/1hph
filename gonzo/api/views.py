@@ -1,4 +1,4 @@
-import json
+import json, random
 from datetime import datetime
 
 from django.http import HttpResponse,HttpResponseBadRequest
@@ -35,6 +35,13 @@ def _to_json(request,obj,*args,**kwargs):
 def _api_error(request,text):
     return HttpResponseBadRequest(_to_json(request,{'error':text}), content_type='application/json')
 
+def _ensure_current(request,hunt):
+    now = datetime.now()
+    if now < hunt.start_time:
+        return _api_error(request, "Hunt hasn't started yet")
+    if now >= hunt.end_time:
+        return _api_error(request, "Hunt has ended")
+
 def _get_json_or_404(klass,request,*args,**kwargs):
     return _to_json(request,get_object_or_404(klass,*args,**kwargs))
 
@@ -42,6 +49,11 @@ def _get_hunts(request,set):
     # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
     # We should use pagination for this.
     return _to_json(request,{ 'hunts':list(set)})
+
+def _get_photos(request,set):
+    # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
+    # We should use pagination for this.
+    return _to_json(request,{ 'submissions':list(set)})
 
 def _new_hunt(request):
     # TODO: new-hunt requires a logged-in user with the appropriate permissions
@@ -64,10 +76,17 @@ def current_hunts(request):
 def hunt_by_id(request,slug):
     return _get_json_or_404(Hunt,request,slug=slug)
 
+@require_GET
 def hunt_ballot(request,slug):
-    # TODO: choose two photos at random
-    # Return them in a list.
-    pass
+    hunt = get_object_or_404(Hunt,slug=slug)
+    response = _ensure_current(request, hunt)
+    if response:
+        return response
+    submits = hunt.submission_set.all()
+    try:
+        return _get_photos(request, random.sample(submits, 2))
+    except ValueError:
+        return _api_error(request, "Not enough submissions")
 
 def hunt_comments(request,slug):
     pass
@@ -75,10 +94,6 @@ def hunt_comments(request,slug):
 def hunt_comment_stream(request,slug):
     pass
 
-def _get_photos(request,set):
-    # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
-    # We should use pagination for this.
-    return _to_json(request,{ 'submissions':list(set)})
 
 # TODO: We should probably generate the source_via from the API key,
 # when we have one.
@@ -88,11 +103,9 @@ def _submit_photo(request,hunt):
         return _api_error(request,str(f.errors))
 
     # Ensure the time is within the hunt
-    now = datetime.now()
-    if now < hunt.start_time:
-        return _api_error(request, "Hunt hasn't started yet")
-    if now >= hunt.end_time:
-        return _api_error(request, "Hunt has ended")
+    response = _ensure_current(request, hunt)
+    if response:
+        return response
 
     source = get_source_from_request(request)
     # TODO: Check to see that this source hasn't already uploaded one
