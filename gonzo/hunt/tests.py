@@ -4,8 +4,10 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+import json
 
 from django.test import TestCase
+from django.test.client import Client
 from gonzo.hunt import models
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
@@ -66,8 +68,6 @@ class HuntModelTest(TestCase):
         self.failUnlessRaises(ValidationError, lambda: h.save())
         h.vote_end_time = h.end_time
         h.save()
-
-
 
 __test__ = {}
 

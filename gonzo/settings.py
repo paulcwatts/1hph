@@ -95,6 +95,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.admin',
     'gonzo.hunt',
+    'gonzo.api',
     'gonzo.uprofile'
 )
 AUTH_PROFILE_MODULE='gonzo.uprofile.Profile'
