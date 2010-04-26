@@ -3,6 +3,8 @@
 <h2>{{ submission.hunt.phrase }}</h2>
 
 <p>
+<a href="{{ submission.photo.url }}" title="Full size photo">
 <img src="{{ submission.photo.url_240x180 }}" />
+</a>
 </p>
 {% endblock %}

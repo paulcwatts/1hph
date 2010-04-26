@@ -132,7 +132,7 @@ class Comment(models.Model):
     hunt            = models.ForeignKey(Hunt)
     # This can be NULL in case we allow comments on a hunt in general
     submission      = models.ForeignKey(Submission, null=True)
-    time            = models.DateTimeField()
+    time            = models.DateTimeField(default=datetime.now())
     source          = models.URLField()
     text            = models.CharField(max_length=256)
     # TODO: get_absolute_uri
@@ -140,7 +140,7 @@ class Comment(models.Model):
 class Vote(models.Model):
     hunt            = models.ForeignKey(Hunt)
     submission      = models.ForeignKey(Submission)
-    time            = models.DateTimeField()
+    time            = models.DateTimeField(default=datetime.now())
     source          = models.URLField()
     value           = models.IntegerField()
 

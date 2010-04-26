@@ -1,11 +1,13 @@
 import json, random
 from datetime import datetime
+from urlparse import urlparse
 
 from django.http import HttpResponse,HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET,require_POST,require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import resolve
 
 from gonzo.hunt.forms import *
 from gonzo.hunt.models import *
@@ -42,6 +44,13 @@ def _ensure_current(request,hunt):
     if now >= hunt.end_time:
         return _api_error(request, "Hunt has ended")
 
+def _ensure_vote_current(request,hunt):
+    now = datetime.now()
+    if now < hunt.start_time:
+        return _api_error(request, "Hunt hasn't started yet")
+    if now >= hunt.vote_end_time:
+        return _api_error(request, "Hunt has ended")
+
 def _get_json_or_404(klass,request,*args,**kwargs):
     return _to_json(request,get_object_or_404(klass,*args,**kwargs))
 
@@ -76,17 +85,51 @@ def current_hunts(request):
 def hunt_by_id(request,slug):
     return _get_json_or_404(Hunt,request,slug=slug)
 
-@require_GET
-def hunt_ballot(request,slug):
-    hunt = get_object_or_404(Hunt,slug=slug)
-    response = _ensure_current(request, hunt)
-    if response:
-        return response
-    submits = hunt.submission_set.all()
+def _get_ballot(request,hunt):
     try:
-        return _get_photos(request, random.sample(submits, 2))
+        return _get_photos(request,
+                           random.sample(hunt.submission_set.all(), 2))
     except ValueError:
         return _api_error(request, "Not enough submissions")
+
+def _submit_vote(request,hunt):
+    url = request.POST.get("url")
+    if not url:
+        return HttpResponseBadRequest()
+    # resolve the URL for the slug and object_id
+    try:
+        view, args, kwargs = resolve(urlparse(url)[2])
+    except:
+        return _api_error(request, "Invalid photo URL: "+str(url))
+
+    slug = kwargs['slug']
+    object_id = kwargs['object_id']
+    if hunt.slug != slug:
+        return _api_error(request, "Photo isn't a part of this hunt")
+
+    submission = get_object_or_404(Submission,pk=object_id)
+    source = get_source_from_request(request)
+    # TODO: Some users may have a vote of more value.
+    value = 1
+    vote = Vote.objects.create(hunt=hunt,
+                            submission=submission,
+                            source=source,
+                            value=value)
+    return _get_ballot(request,hunt)
+
+@csrf_exempt
+def hunt_ballot(request,slug):
+    hunt = get_object_or_404(Hunt,slug=slug)
+    response = _ensure_vote_current(request, hunt)
+    if response:
+        return response
+
+    if request.method == 'GET':
+        return _get_ballot(request,hunt)
+    elif request.method == 'POST':
+        return _submit_vote(request,hunt)
+    else:
+        return HttpResponseBadRequest()
 
 def hunt_comments(request,slug):
     pass
@@ -135,9 +178,6 @@ def photo_by_id(request,slug,object_id):
     return _get_json_or_404(Submission,request,pk=object_id)
 
 def photo_stream(request,slug):
-    pass
-
-def photo_votes(request,slug,object_id):
     pass
 
 def photo_comments(request,slug,object_id):

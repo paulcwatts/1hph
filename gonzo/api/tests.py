@@ -103,12 +103,20 @@ class HuntAPITest(TestCase):
         obj = json.loads(response.content)
         self.assertEquals(len(obj['submissions']),2)
 
-        # We should not have a valid ballot
+        # We should now have a valid ballot
         response = c.get(ballotURL)
         self.failUnlessEqual(response.status_code,200)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         obj = json.loads(response.content)
         self.assertEquals(len(obj['submissions']),2)
+
+        response = c.post(ballotURL, {'url':obj['submissions'][0]['url'] })
+        # This should respond with a new ballot
+        self.failUnlessEqual(response.status_code,200)
+        self.failUnlessEqual(response['Content-Type'],'application/json')
+
+        # TODO: We also need some tests for:
+        # Getting ballots and submitting votes for non-current hunts
 
 
 __test__ = {}

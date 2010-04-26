@@ -11,6 +11,8 @@ GET : get the hunt info
 
 /hunt/<hunt-slug>/ballot/
 GET : get a ballot (two random photos)
+POST : submit a vote for a photo (post_data=photo_id)
+       this will return a fresh ballot on success
 
 /hunt/<hunt-slug>/comments/
 POST : add a comment to the hunt
@@ -22,11 +24,8 @@ GET : get the comment stream for this hunt
 /hunt/<hunt-slug>/p/
 POST : submit a photo
 
-/hunt/<hunt-slug>/p/<photo_id>
+/hunt/<hunt-slug>/p/<photo_id>/
 GET : get a photo (not actually photo, that will be part of the response)
-
-/hunt/<hunt-slug>/p/<photo_id>/votes/
-POST : Vote on this photo
 
 /hunt/<hunt-slug>/p/<photo_id>/comments/
 POST : Comment on this photo
@@ -66,9 +65,6 @@ urlpatterns = patterns('gonzo.api.views',
     url(r'^hunt/(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/$',
         'photo_by_id',
         name='api-photo'),
-    url(r'^hunt/(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/votes/$',
-        'photo_votes',
-        name='api-photo-votes'),
     url(r'^hunt/(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comments/$',
         'photo_comments',
         name='api-photo-comments'),
