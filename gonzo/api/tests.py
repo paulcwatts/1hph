@@ -5,12 +5,19 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 import json
+import StringIO
 
 from django.test import TestCase
 from django.test.client import Client
 from gonzo.hunt import models
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
+
+class StringFile(StringIO.StringIO):
+    def __init__(self,name,buffer):
+        self.name = name
+        #super(StringFile,self).__init__(buffer)
+        StringIO.StringIO.__init__(self,buffer)
 
 class HuntAPITest(TestCase):
     def setUp(self):
@@ -43,13 +50,45 @@ class HuntAPITest(TestCase):
         hunt = hunts[0]
         response = c.get(hunt['url'])
         self.failUnlessEqual(response.status_code,200)
-        response = c.get(hunt['submissions'])
+        submitUrl = hunt['submissions']
+        response = c.get(submitUrl)
         self.failUnlessEqual(response.status_code,200)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         # No submissions yet
         obj = json.loads(response.content)
         self.assertEquals(obj['submissions'],[])
+        from StringIO import StringIO
+        # TODO: Test submssion -- authenticated and anonymous
+        # photo, latitude, longitude, source_via
+        # First test an invalid file
+        import os.path
+        path = os.path.abspath(os.path.dirname(__file__))
+        response = c.post(submitUrl, { 'photo':
+                                      StringFile("testfile.txt","This is an invalid photo"),
+                                      'source_via': 'unit test' })
+        self.failUnlessEqual(response.status_code, 400)
+        f = open(os.path.join(path,'testfiles/test1.jpg'))
+        response = c.post(submitUrl, { 'photo': f, 'source_via': 'unit test' })
+        self.failUnlessEqual(response.status_code, 201)
+        self.failUnlessEqual(response['Content-Type'],'application/json')
+        photo1Url = response['Content-Location']
+        # Now log in and submit a photo
+        c.login(username='testdude',password='password')
+        f.seek(0)
+        response = c.post(submitUrl, { 'photo': f, 'source_via': 'unit test' })
+        self.failUnlessEqual(response.status_code, 201)
+        self.failUnlessEqual(response['Content-Type'],'application/json')
+        # Ensure we have a proper user in the returned source
+        obj = json.loads(response.content)
+        self.assert_('source' in obj)
+        self.assertEquals(obj['source']['username'], 'testdude')
 
+        # Get the submit url again and make sure it has two submissions
+        response = c.get(submitUrl)
+        self.failUnlessEqual(response.status_code,200)
+        self.failUnlessEqual(response['Content-Type'],'application/json')
+        obj = json.loads(response.content)
+        self.assertEquals(len(obj['submissions']),2)
 
 __test__ = {}
 
