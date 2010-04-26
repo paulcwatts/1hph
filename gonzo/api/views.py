@@ -4,6 +4,7 @@ from datetime import datetime
 from django.http import HttpResponse,HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET,require_POST,require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext as _
 
 from gonzo.hunt.forms import *
@@ -39,6 +40,7 @@ def _new_hunt(request):
     # TODO: new-hunt requires a logged-in user with the appropriate permissions
     pass
 
+@csrf_exempt
 def index(request):
     if request.method == 'GET':
         return _get_hunts(request,Hunt.objects.all())
@@ -99,6 +101,7 @@ def _submit_photo(request,hunt):
     response['Content-Location'] = request.build_absolute_uri(photo.get_api_url())
     return response;
 
+@csrf_exempt
 def photo_index(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
     if request.method == 'GET':
