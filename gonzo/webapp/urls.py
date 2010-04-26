@@ -38,7 +38,11 @@ urlpatterns = patterns('gonzo.webapp.views',
             }
         },
         name='photo'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/votes/$','photo_votes', name='photo-votes'),
-    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comments/$', 'photo_comments', name='photo-comments'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/votes/$',
+        'photo_votes',
+        name='photo-votes'),
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comments/$',
+        'photo_comments',
+        name='photo-comments'),
     #url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comment-stream/$', 'photo_comment_stream', name='photo-comment-stream')
 )

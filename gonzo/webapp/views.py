@@ -7,8 +7,8 @@ def hunt_comments(request, slug):
 def photo_index(request, slug):
     return HttpResponse("photo index")
 
-def photo_votes(request, slug, photo_id):
+def photo_votes(request, slug, object_id):
     return HttpResponse("photo votes")
 
-def photo_comments(request, slug, photo_id):
+def photo_comments(request, slug, object_id):
     return HttpResponse("photo comments")
