@@ -102,6 +102,7 @@ INSTALLED_APPS = (
 )
 AUTH_PROFILE_MODULE='gonzo.uprofile.Profile'
 LOGIN_REDIRECT_URL='/'
+SIGNUP_EMAIL_WHITELIST=()
 
 try:
     from local_settings import *
