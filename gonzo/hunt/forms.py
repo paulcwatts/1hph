@@ -11,3 +11,8 @@ class SubmissionForm(forms.ModelForm):
             'longitude': widgets.HiddenInput(),
             'source_via': widgets.HiddenInput(attrs={'value':'Web'})
         }
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = models.Comment
+        fields = ['text']

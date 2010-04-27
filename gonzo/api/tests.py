@@ -51,14 +51,15 @@ class HuntAPITest(TestCase):
         response = c.get(hunt['url'])
         self.failUnlessEqual(response.status_code,200)
 
-        submitUrl = hunt['submissions']
-        ballotURL = hunt['ballot']
+        submit_url = hunt['submissions']
+        ballot_url = hunt['ballot']
+        hunt_comments_url = hunt['comments']
 
         # Ensure that the ballot url returns an error
-        response = c.get(ballotURL)
+        response = c.get(ballot_url)
         self.failUnlessEqual(response.status_code,400)
 
-        response = c.get(submitUrl)
+        response = c.get(submit_url)
         self.failUnlessEqual(response.status_code,200)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         # No submissions yet
@@ -71,52 +72,81 @@ class HuntAPITest(TestCase):
         # First test an invalid file
         import os.path
         path = os.path.abspath(os.path.dirname(__file__))
-        response = c.post(submitUrl, { 'photo':
+        response = c.post(submit_url, { 'photo':
                                       StringFile("testfile.txt","This is an invalid photo"),
                                       'source_via': 'unit test' })
         self.failUnlessEqual(response.status_code, 400)
         f = open(os.path.join(path,'testfiles/test1.jpg'))
-        response = c.post(submitUrl, { 'photo': f, 'source_via': 'unit test' })
+        response = c.post(submit_url, { 'photo': f, 'source_via': 'unit test' })
         self.failUnlessEqual(response.status_code, 201)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         photo1Url = response['Content-Location']
 
          # Ensure that the ballot url returns an error
-        response = c.get(ballotURL)
+        response = c.get(ballot_url)
         self.failUnlessEqual(response.status_code,400)
 
         # Now log in and submit a photo
         c.login(username='testdude',password='password')
         f.seek(0)
-        response = c.post(submitUrl, { 'photo': f, 'source_via': 'unit test' })
+        response = c.post(submit_url, { 'photo': f, 'source_via': 'unit test' })
         self.failUnlessEqual(response.status_code, 201)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         # Ensure we have a proper user in the returned source
         obj = json.loads(response.content)
         self.assert_('source' in obj)
         self.assertEquals(obj['source']['username'], 'testdude')
+        photo_comments_url = obj['comments']
 
         # Get the submit url again and make sure it has two submissions
-        response = c.get(submitUrl)
+        response = c.get(submit_url)
         self.failUnlessEqual(response.status_code,200)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         obj = json.loads(response.content)
         self.assertEquals(len(obj['submissions']),2)
 
         # We should now have a valid ballot
-        response = c.get(ballotURL)
+        response = c.get(ballot_url)
         self.failUnlessEqual(response.status_code,200)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         obj = json.loads(response.content)
         self.assertEquals(len(obj['submissions']),2)
 
-        response = c.post(ballotURL, {'url':obj['submissions'][0]['url'] })
+        response = c.post(ballot_url, {'url':obj['submissions'][0]['url'] })
         # This should respond with a new ballot
         self.failUnlessEqual(response.status_code,200)
         self.failUnlessEqual(response['Content-Type'],'application/json')
 
         # TODO: We also need some tests for:
         # Getting ballots and submitting votes for non-current hunts
+        self.do_test_comment(c, hunt_comments_url, 'this is a hunt comment')
+        self.do_test_comment(c, photo_comments_url, 'this is a photo comment')
+
+
+    def do_test_comment(self, c, comments_url, comment_text):
+        # Test comments
+        # get hunt comments
+        response = c.get(comments_url)
+        self.failUnlessEqual(response.status_code,200)
+        self.failUnlessEqual(response['Content-Type'],'application/json')
+        obj = json.loads(response.content)
+        self.assertEquals(obj['comments'],[])
+        # Add a comment
+        response = c.post(comments_url, { 'text': comment_text })
+        self.failUnlessEqual(response.status_code,201)
+        self.failUnlessEqual(response['Content-Type'],'application/json')
+        the_comment_url = response['Content-Location']
+        obj = json.loads(response.content)
+        self.assertEquals(obj['text'], comment_text)
+        self.assertEquals(obj['source']['username'], 'testdude')
+
+        # retrieve the comment to make sure we get it back correctly
+        response = c.get(the_comment_url)
+        self.failUnlessEqual(response.status_code,200)
+        self.failUnlessEqual(response['Content-Type'],'application/json')
+        obj = json.loads(response.content)
+        self.assertEquals(obj['text'], comment_text)
+        self.assertEquals(obj['source']['username'], 'testdude')
 
 
 __test__ = {}

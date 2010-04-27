@@ -64,6 +64,11 @@ def _get_photos(request,set):
     # We should use pagination for this.
     return _to_json(request,{ 'submissions':list(set)})
 
+def _get_comments(request,set):
+    # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
+    # We should use pagination for this.
+    return _to_json(request,{ 'comments':list(set)})
+
 def _new_hunt(request):
     # TODO: new-hunt requires a logged-in user with the appropriate permissions
     pass
@@ -131,9 +136,47 @@ def hunt_ballot(request,slug):
     else:
         return HttpResponseBadRequest()
 
-def hunt_comments(request,slug):
-    pass
+def _submit_comment(request, hunt, submission):
+    f = CommentForm(request.POST)
+    if not f.is_valid():
+        return _api_error(request,str(f.errors))
+    # You can leave a comment at any time
+    source = get_source_from_request(request)
+    comment = f.save(commit=False)
+    comment.hunt = hunt
+    comment.submission = submission
+    comment.source = source
+    comment.save()
+    response = HttpResponse(_to_json(request,comment),
+                            status=201,
+                            content_type='application/json')
+    response['Content-Location'] = request.build_absolute_uri(comment.get_api_url())
+    return response
 
+def _comment_by_id(request,slug,comment_id,object_id=None):
+    comment = get_object_or_404(Comment,pk=comment_id)
+    if request.method == 'GET':
+        return _to_json(request, comment)
+    elif request.method == 'DELETE':
+        # TODO: Only allow deleting comments from the source
+        # or from someone who has permission to do so
+        return HttpResponse()
+    else:
+        return HttpResponseBadRequest()
+
+@csrf_exempt
+def hunt_comments(request,slug):
+    hunt = get_object_or_404(Hunt,slug=slug)
+    if request.method == 'GET':
+        return _get_comments(request, hunt.comment_set.all())
+    elif request.method == 'POST':
+        return _submit_comment(request, hunt, None)
+    else:
+        return HttpResponseBadRequest()
+
+hunt_comment_by_id = _comment_by_id
+
+@require_GET
 def hunt_comment_stream(request,slug):
     pass
 
@@ -181,7 +224,15 @@ def photo_stream(request,slug):
     pass
 
 def photo_comments(request,slug,object_id):
-    return HttpResponse()
+    photo = get_object_or_404(Submission,pk=object_id)
+    if request.method == 'GET':
+        return _get_comments(request, photo.comment_set.all())
+    elif request.method == 'POST':
+        return _submit_comment(request, photo.hunt, photo)
+    else:
+        return HttpResponseBadRequest()
+
+photo_comment_by_id = _comment_by_id
 
 def photo_comment_stream(request,slug,object_id):
     pass

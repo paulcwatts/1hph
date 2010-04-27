@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from django.views.generic.list_detail import object_detail
 from gonzo.hunt.models import Hunt,Submission
-from gonzo.hunt.forms import SubmissionForm
+from gonzo.hunt.forms import *
 
 ALLHUNTS = Hunt.objects.all()
 ALLSUBMITS = Submission.objects.all()
@@ -19,7 +19,8 @@ urlpatterns = patterns('gonzo.webapp.views',
             'template_name':'webapp/hunt.html',
             'template_object_name':'hunt',
             'extra_context': {
-                'submit_form': SubmissionForm()
+                'submit_form': SubmissionForm(),
+                'comment_form': CommentForm()
             }
         },
         name='hunt'),

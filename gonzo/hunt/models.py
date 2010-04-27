@@ -59,6 +59,9 @@ class Hunt(models.Model):
     @models.permalink
     def get_submission_url(self):
         return self._get_url('api-photo-index')
+    @models.permalink
+    def get_comments_url(self):
+        return self._get_url('api-hunt-comment-index')
 
     def to_dict(self,request):
         return { 'owner': self.owner.username,
@@ -70,7 +73,8 @@ class Hunt(models.Model):
                 'vote_end_time': self.vote_end_time.isoformat(),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
                 'submissions': request.build_absolute_uri(self.get_submission_url()),
-                'ballot': request.build_absolute_uri(self.get_ballot_url()) }
+                'ballot': request.build_absolute_uri(self.get_ballot_url()),
+                'comments': request.build_absolute_uri(self.get_comments_url()) }
 
 class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)
@@ -109,7 +113,7 @@ class Submission(models.Model):
         return self._get_url('api-photo')
     @models.permalink
     def get_comments_url(self):
-        return self._get_url('api-photo-comments')
+        return self._get_url('api-photo-comment-index')
     @models.permalink
     def get_comment_stream_url(self):
         return self._get_url('api-photo-comment-stream')
@@ -130,12 +134,34 @@ class Submission(models.Model):
 
 class Comment(models.Model):
     hunt            = models.ForeignKey(Hunt)
-    # This can be NULL in case we allow comments on a hunt in general
     submission      = models.ForeignKey(Submission, null=True)
     time            = models.DateTimeField(default=datetime.now())
     source          = models.URLField()
     text            = models.CharField(max_length=256)
-    # TODO: get_absolute_uri
+
+    class Meta:
+        ordering = ["-time"]
+
+    def __unicode__(self):
+        return u"%s:%s:%s" % (self.hunt.slug, self.source, self.text)
+
+    @models.permalink
+    def get_api_url(self):
+        if self.submission:
+            return ('api-photo-comment', (),
+                    { 'slug': self.hunt.slug,
+                      'object_id': self.submission.id,
+                      'comment_id': self.id })
+        else:
+            return ('api-hunt-comment', (),
+                    { 'slug': self.hunt.slug,
+                      'comment_id': self.id })
+
+    def to_dict(self, request):
+        return {
+            'time': self.time.isoformat(),
+            'source': get_source_json(request, self.source, None),
+            'text': self.text }
 
 class Vote(models.Model):
     hunt            = models.ForeignKey(Hunt)
@@ -143,6 +169,9 @@ class Vote(models.Model):
     time            = models.DateTimeField(default=datetime.now())
     source          = models.URLField()
     value           = models.IntegerField()
+
+    def __unicode__(self):
+        return "%s %s %+d" % (self.hunt.slug, self.submission.photo.url, self.value)
 
 #
 # This class captures any awards given to each submission.
