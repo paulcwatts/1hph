@@ -97,10 +97,11 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'gonzo.hunt',
     'gonzo.api',
-    'gonzo.uprofile'
+    'gonzo.uprofile',
+    'gonzo.account'
 )
 AUTH_PROFILE_MODULE='gonzo.uprofile.Profile'
-
+LOGIN_REDIRECT_URL='/'
 
 try:
     from local_settings import *

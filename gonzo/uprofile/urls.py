@@ -13,7 +13,7 @@ urlpatterns = patterns('gonzo.uprofile.views',
         {
             'queryset': ALLUSERS,
             'template_name':'uprofile/profile.html',
-            'template_object_name':'hunt',
+            'template_object_name':'profile',
             'slug_field':'username'
         },
         name='profile'),
