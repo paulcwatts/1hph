@@ -5,11 +5,11 @@ from gonzo.hunt import models
 class SubmissionForm(forms.ModelForm):
     class Meta:
         model = models.Submission
-        fields = ['photo','latitude','longitude','source_via']
+        fields = ['photo','latitude','longitude','via']
         widgets = {
             'latitude': widgets.HiddenInput(),
             'longitude': widgets.HiddenInput(),
-            'source_via': widgets.HiddenInput(attrs={'value':'Web'})
+            'via': widgets.HiddenInput(attrs={'value':'Web'})
         }
 
 class CommentForm(forms.ModelForm):

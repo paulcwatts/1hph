@@ -11,7 +11,7 @@ from django.core.urlresolvers import resolve
 
 from gonzo.hunt.forms import *
 from gonzo.hunt.models import *
-from gonzo.hunt.utils import get_source_from_request
+from gonzo.hunt.utils import *
 
 def json_default(request):
     def wrap(obj):
@@ -113,13 +113,17 @@ def _submit_vote(request,hunt):
         return _api_error(request, "Photo isn't a part of this hunt")
 
     submission = get_object_or_404(Submission,pk=object_id)
-    source = get_source_from_request(request)
+    vote = Vote(hunt=hunt,
+                submission=submission,
+                ip_address=request.META.get('REMOTE_ADDR'))
     # TODO: Some users may have a vote of more value.
-    value = 1
-    vote = Vote.objects.create(hunt=hunt,
-                            submission=submission,
-                            source=source,
-                            value=value)
+    vote.value = 1
+    if request.user.is_authenticated():
+        vote.user = request.user
+    else:
+        vote.anon_source = get_anon_source(request)
+    vote.save()
+
     return _get_ballot(request,hunt)
 
 @csrf_exempt
@@ -141,11 +145,14 @@ def _submit_comment(request, hunt, submission):
     if not f.is_valid():
         return _api_error(request,str(f.errors))
     # You can leave a comment at any time
-    source = get_source_from_request(request)
     comment = f.save(commit=False)
+    if request.user.is_authenticated():
+        comment.user = request.user
+    else:
+        comment.anon_source = get_anon_source(request)
+    comment.ip_address = request.META.get('REMOTE_ADDR')
     comment.hunt = hunt
     comment.submission = submission
-    comment.source = source
     comment.save()
     response = HttpResponse(_to_json(request,comment),
                             status=201,
@@ -193,13 +200,16 @@ def _submit_photo(request,hunt):
     if response:
         return response
 
-    source = get_source_from_request(request)
     # TODO: Check to see that this source hasn't already uploaded one
     # TODO: We need much more logic around the source, but later.
 
     photo = f.save(commit=False)
+    if request.user.is_authenticated():
+        photo.user = request.user
+    else:
+        photo.anon_source = get_anon_source(request)
+    photo.ip_address = request.META.get('REMOTE_ADDR')
     photo.hunt = hunt
-    photo.source = source
     photo.save()
     response = HttpResponse(_to_json(request,photo),
                             status=201,
@@ -219,6 +229,15 @@ def photo_index(request,slug):
 
 def photo_by_id(request,slug,object_id):
     return _get_json_or_404(Submission,request,pk=object_id)
+
+#    TWTR.Widget.jsonP = function(url, callback) {
+#      var script = document.createElement('script');
+#     script.type = 'text/javascript';
+#     script.src = url;
+#     document.getElementsByTagName('head')[0].appendChild(script);
+#     callback(script);
+#     return script;
+#   };
 
 def photo_stream(request,slug):
     pass

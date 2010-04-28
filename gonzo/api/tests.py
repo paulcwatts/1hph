@@ -77,7 +77,7 @@ class HuntAPITest(TestCase):
                                       'source_via': 'unit test' })
         self.failUnlessEqual(response.status_code, 400)
         f = open(os.path.join(path,'testfiles/test1.jpg'))
-        response = c.post(submit_url, { 'photo': f, 'source_via': 'unit test' })
+        response = c.post(submit_url, { 'photo': f, 'via': 'unit test' })
         self.failUnlessEqual(response.status_code, 201)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         photo1Url = response['Content-Location']
@@ -89,13 +89,13 @@ class HuntAPITest(TestCase):
         # Now log in and submit a photo
         c.login(username='testdude',password='password')
         f.seek(0)
-        response = c.post(submit_url, { 'photo': f, 'source_via': 'unit test' })
+        response = c.post(submit_url, { 'photo': f, 'via': 'unit test' })
         self.failUnlessEqual(response.status_code, 201)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         # Ensure we have a proper user in the returned source
         obj = json.loads(response.content)
         self.assert_('source' in obj)
-        self.assertEquals(obj['source']['username'], 'testdude')
+        self.assertEquals(obj['source']['name'], 'testdude')
         photo_comments_url = obj['comments']
 
         # Get the submit url again and make sure it has two submissions
@@ -138,7 +138,7 @@ class HuntAPITest(TestCase):
         the_comment_url = response['Content-Location']
         obj = json.loads(response.content)
         self.assertEquals(obj['text'], comment_text)
-        self.assertEquals(obj['source']['username'], 'testdude')
+        self.assertEquals(obj['source']['name'], 'testdude')
 
         # retrieve the comment to make sure we get it back correctly
         response = c.get(the_comment_url)
@@ -146,7 +146,7 @@ class HuntAPITest(TestCase):
         self.failUnlessEqual(response['Content-Type'],'application/json')
         obj = json.loads(response.content)
         self.assertEquals(obj['text'], comment_text)
-        self.assertEquals(obj['source']['username'], 'testdude')
+        self.assertEquals(obj['source']['name'], 'testdude')
 
 
 __test__ = {}

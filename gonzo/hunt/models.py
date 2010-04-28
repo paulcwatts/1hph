@@ -88,19 +88,25 @@ class Submission(models.Model):
     photo_width     = models.IntegerField()
     photo_height    = models.IntegerField()
 
-    # The Source URL (person)
-    source          = models.URLField()
-    # How the source was submitted (Twitter, Facebook, 1hph for Android)
-    source_via      = models.CharField(max_length=64)
     # Location of submission
     latitude        = models.FloatField(null=True,blank=True)
     longitude       = models.FloatField(null=True,blank=True)
+
+    # Null means this comes from an unauthenticated user
+    user            = models.ForeignKey(User,null=True)
+    # For anonymous entries, this will keep track of from where we found it.
+    # This takes a URL form like twitter:<username> or facebook:<profile_id>
+    anon_source     = models.CharField(max_length=64,null=True,blank=True)
+    ip_address      = models.IPAddressField(blank=True)
+    # Where this was submitted, e.g., "Web" "Twitter", "1hph for Android"
+    via             = models.CharField(max_length=32)
+    is_removed      = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-time"]
 
     def __unicode__(self):
-        return "%s:%s" % (self.hunt.slug, self.source)
+        return "%s %s" % (self.hunt.slug, self.user or self.anon_source)
 
     def _get_url(self,viewname):
         return (viewname, (), { 'slug' : self.hunt.slug, 'object_id' : self.id })
@@ -128,7 +134,7 @@ class Submission(models.Model):
             json['latitude'] = self.latitude
         if self.longitude:
             json['longitude'] = self.longitude
-        json['source'] = get_source_json(request, self.source, self.source_via)
+        json['source'] = get_source_json(request, self)
         return json
 
 
@@ -136,14 +142,21 @@ class Comment(models.Model):
     hunt            = models.ForeignKey(Hunt)
     submission      = models.ForeignKey(Submission, null=True)
     time            = models.DateTimeField(default=datetime.now())
-    source          = models.URLField()
     text            = models.CharField(max_length=256)
+
+    # Null means this comes from an unauthenticated user
+    user            = models.ForeignKey(User,null=True)
+    # For anonymous entries, this will keep track of from where we found it.
+    # This takes a URL form like twitter:<username> or facebook:<profile_id>
+    anon_source     = models.CharField(max_length=64,null=True,blank=True)
+    ip_address      = models.IPAddressField(blank=True)
+    is_removed      = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-time"]
 
     def __unicode__(self):
-        return u"%s:%s:%s" % (self.hunt.slug, self.source, self.text)
+        return u"%s %s %s" % (self.hunt.slug, self.user or self.anon_source, self.text)
 
     @models.permalink
     def get_api_url(self):
@@ -160,27 +173,48 @@ class Comment(models.Model):
     def to_dict(self, request):
         return {
             'time': self.time.isoformat(),
-            'source': get_source_json(request, self.source, None),
+            'source': get_source_json(request, self),
             'text': self.text }
 
 class Vote(models.Model):
     hunt            = models.ForeignKey(Hunt)
     submission      = models.ForeignKey(Submission)
     time            = models.DateTimeField(default=datetime.now())
-    source          = models.URLField()
     value           = models.IntegerField()
 
+    # Null means this comes from an unauthenticated user
+    user            = models.ForeignKey(User,null=True)
+    # For anonymous entries, this will keep track of from where we found it.
+    # This takes a URL form like twitter:<username> or facebook:<profile_id>
+    anon_source     = models.CharField(max_length=64,null=True,blank=True)
+    ip_address      = models.IPAddressField(blank=True)
+
     def __unicode__(self):
-        return "%s %s %+d" % (self.hunt.slug, self.submission.photo.url, self.value)
+        return "%s %s %+d" % (self.hunt.slug, self.user or self.anon_source, self.value)
 
 #
 # This class captures any awards given to each submission.
 # For instance, "Hunt Winner" is the most common.
 #
 class Award(models.Model):
+    AWARDS = (
+        (1, 'Gold Medal'),
+        (2, 'Silver Medal'),
+        (3, 'Bronze Medal'),
+    )
+
     hunt            = models.ForeignKey(Hunt)
-    submission      = models.ForeignKey(Submission)
-    value           = models.IntegerField()
+    # If we want to have any hunt-wide awards, rather than one
+    # tied to a permission
+    submission      = models.ForeignKey(Submission,null=True)
+    # If submission=null, then this is the user awarded
+    # If submission!=null, then this should be equal to submission.user
+    user            = models.ForeignKey(User,null=True)
+    anon_source     = models.CharField(max_length=64,null=True,blank=True)
+    value           = models.IntegerField(choices=AWARDS)
+
+    def __unicode__(self):
+        return '%s %s %s' % (self.hunt.slug, self.user or self.anon_source, self.value)
 
 #
 # Admin

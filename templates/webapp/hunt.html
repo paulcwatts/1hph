@@ -41,7 +41,7 @@ function loadComments() {
           .append($("<span> from </span>"))
           .append($("<a/>").
                   attr("href", comment.source.url).
-                  text(comment.source.username))
+                  text(comment.source.name))
           .append(" on " + d)
             .appendTo(list);
     });
