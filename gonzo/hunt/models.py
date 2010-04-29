@@ -189,6 +189,14 @@ class Vote(models.Model):
     anon_source     = models.CharField(max_length=64,null=True,blank=True)
     ip_address      = models.IPAddressField(blank=True)
 
+    # Make sure that, if there is a submission, and there is a hunt,
+    # they are the same (a bit of a normalization problem)
+    def clean(self):
+        if self.hunt and self.submission:
+            if self.hunt.id != self.submission.id:
+                raise ValidationError("The submission isn't part of the same hunt")
+        super(Award,self).clean()
+
     def __unicode__(self):
         return "%s %s %+d" % (self.hunt.slug, self.user or self.anon_source, self.value)
 
@@ -197,21 +205,33 @@ class Vote(models.Model):
 # For instance, "Hunt Winner" is the most common.
 #
 class Award(models.Model):
+    GOLD = 1
+    SILVER = 2
+    BRONZE = 3
+
     AWARDS = (
-        (1, 'Gold Medal'),
-        (2, 'Silver Medal'),
-        (3, 'Bronze Medal'),
+        (GOLD,   'Gold Medal'),
+        (SILVER, 'Silver Medal'),
+        (BRONZE, 'Bronze Medal'),
     )
 
     hunt            = models.ForeignKey(Hunt)
     # If we want to have any hunt-wide awards, rather than one
     # tied to a permission
-    submission      = models.ForeignKey(Submission,null=True)
+    submission      = models.ForeignKey(Submission,null=True,blank=True)
     # If submission=null, then this is the user awarded
     # If submission!=null, then this should be equal to submission.user
     user            = models.ForeignKey(User,null=True)
     anon_source     = models.CharField(max_length=64,null=True,blank=True)
     value           = models.IntegerField(choices=AWARDS)
+
+    # Make sure that, if there is a submission, and there is a hunt,
+    # they are the same (a bit of a normalization problem)
+    def clean(self):
+        if self.hunt and self.submission:
+            if self.hunt.id != self.submission.id:
+                raise ValidationError("The submission isn't part of the same hunt")
+        super(Award,self).clean()
 
     def __unicode__(self):
         return '%s %s %s' % (self.hunt.slug, self.user or self.anon_source, self.value)

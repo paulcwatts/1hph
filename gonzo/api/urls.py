@@ -76,5 +76,7 @@ urlpatterns = patterns('gonzo.api.views',
         name='api-photo-comment'),
     url(r'^hunt/(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comments/stream/$',
         'photo_comment_stream',
-        name='api-photo-comment-stream')
+        name='api-photo-comment-stream'),
+
+    (r'^internal/assign_awards$', 'assign_awards')
 )
