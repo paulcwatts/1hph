@@ -1,13 +1,19 @@
 {% block "header" %}
-<a href="/"><img class="header-logo" src="{{ MEDIA_URL }}img/logo.png" alt="One Hour Photo Hunt"/></a>
-<ul class="nav" role="navigation">
-{% if user.is_authenticated %}
-<li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
-<li><a href="{% url profile-settings %}">Settings</a></li>
-<li><a href="{% url account-logout %}">Log out</a></li>
-{% else %}
-<li><a href="{% url account-login %}">Log in</a></li>
-<li><a href="{% url account-signup %}">Sign up</a></li>
-</ul>
-{% endif %}
+<div class="span-16 base-header dropshadow">
+  <div class="span-10">
+    <a class="header-logo pull-1" href="/"><img class="header-logo" src="{{ MEDIA_URL }}img/logo.png" alt="One Hour Photo Hunt"/></a>
+  </div>
+  <div class="span-6 nav-container last">
+    <ul class="nav navtoolbar round-corners" role="navigation">
+      {% if user.is_authenticated %}
+        <li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
+        <li><a href="{% url profile-settings %}">Settings</a></li>
+        <li><a href="{% url account-logout %}">Log out</a></li>
+      {% else %}
+        <li><a href="{% url account-login %}">Log in</a></li>
+        <li><a href="{% url account-signup %}">Sign up</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
 {% endblock %}

@@ -1,135 +1,152 @@
-/* Eric Meyer's stylesheet from http://meyerweb.com/eric/tools/css/reset/ */
-/* v1.0 | 20080212 */
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, font, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: 0;
-    font-size: 100%;
-    vertical-align: baseline;
-    background: transparent;
-}
-body {
-    line-height: 1;
-}
-ol, ul {
-    list-style: none;
-}
-blockquote, q {
-    quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-    content: '';
-    content: none;
-}
+/*
+http://www.colourlovers.com/palette/148712/Gamebookers
+Orange: #FF9900
+Darker orange: #CC7A00
+Dark Gray: #424242
+Light: #E9E9E9
+Medium: #BCBCBC
+Blue: #3299BB
+Lighter Blue: #44D1FF
 
-:focus {
-    outline: 1px #c0c0c0 dotted;
-}
-ins {
-    text-decoration: underline;
-}
-del {
-    text-decoration: line-through;
-}
-
-/* tables still need 'cellspacing="0"' in the markup */
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-/* END RESET */
-
-/* possible color palette :
-http://www.colourlovers.com/palette/68048/inspired
-light gray: #f7f7f7;
-turquoises: #81f0d6 #46c5a7
-browns: #442e0d #634415
+Text Color: #222222
+Link Color: #CC7A00
 */
-
-
-/* BEGIN LAYOUT */
 body {
-  background-color: #f7f7f7;
-
-  /* fonts */
-  font-family: Helvetica,'Lucida Grande',Arial,sans-serif;
-  color: #442e06;
+  background-color: #E9E9E9;
+}
+h1 {
+  font-size: 200%;
+  /*font-weight: bold;*/
+}
+.container {
+}
+.base-header {
+  background-color: #3299BB;
+  border-left: 1px #BCBCBC solid;
+  border-right: 1px #BCBCBC solid;
+  border-bottom:  2px #FF9900 solid;
+}
+.base-content {
+  background-color: white;
+  min-height: 300px;
+  border: 1px #BCBCBC solid;
 }
 a, a:link, a:visited {
+  color: #CC7A00;
   text-decoration: none;
 }
 a:hover {
+  color: #FF9900;
   text-decoration: underline;
 }
-
-#wrap {
-  width: 650px;
-  margin: 0 auto;
+ul.nav {
+  list-style: none;
+  text-align: center;
+  margin: 0;
+  padding: 0;
 }
-
-/* HEADER */
-#header {
-  min-height: 100px;
-  position: relative;
-
-  /* colors */
-  background: #46c5a7;
-}
-.nav {
-  padding: 3px 10px;
-  position: absolute;
-  right: 0;
-
-  background-color: #442e06;
-  color: white;
+.base-footer .nav {
+  color: #CC7A00;
   font-size: 75%;
 }
-.nav a, .nav a:link, .nav:visited {
-  color: white;
+.base-header .nav-container {
+  position: relative;
+  margin-top: 4px;
 }
 .nav li {
   display: inline-block;
   padding: 0 5px;
 }
-.header-logo {
-  position: absolute;
-  left: -30px;
+.navtoolbar {
+  background-color: #ffffff;
+  border: 1px #FF9900 solid;
+  font-size: 90%;
+}
+.navtoolbar li {
+  margin: 2px;
+  border-
+}
+.page-title {
+  margin-top: -10px;
+  margin-left: 10px;
+  background-color: #f0f0f0;
+  padding: 0.3em;
+  border:  2px #FF9900 solid;
+  vertical-align: middle;
+}
+.page-title h1 {
+  padding: 0;
+  margin: 0;
+}
+.page-content {
+  margin: 0.5em;
 }
 
-/* FOOTER */
-#footer {
-  clear: both;
-  text-align: center;
-  padding-top: 10px;
 
-  /* fonts */
-  font-size: 60%;
+/* generic cool UI classes */
+.round-top-corners {
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  -khtml-border-radius-topleft: 5px;
+  -khtml-border-radius-topright: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.round-bottom-corners {
+  -moz-border-radius-bottomleft: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -khtml-border-radius-bottomleft: 5px;
+  -khtml-border-radius-bottomright: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.round-left-corners {
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  -khtml-border-radius-topleft: 5px;
+  -khtml-border-radius-bottomleft: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.round-right-corners {
+  -moz-border-radius-topright: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -khtml-border-radius-topright: 5px;
+  -khtml-border-radius-bottomright: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.round-corners {
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  -khtml-border-radius-topleft: 5px;
+  -khtml-border-radius-topright: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -khtml-border-radius-bottomleft: 5px;
+  -khtml-border-radius-bottomright: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.dropshadow {
+  -moz-box-shadow: 0px 5px 5px #666;
+  -webkit-box-shadow: 0px 5px 5px #666;
+  box-shadow: 0px 5px 5px #666;
+}
 
-  /* colors */
-  color: #46c5a7;
-}
-#footer a, #footer a:link, #footer a:visited {
-  color: #46c5a7;
-}
-#footer li {
-  display: inline-block;
-  padding: 0 5px;
-}
-
-/* CONTENT */
-#content {
-  /* colors */
-  background-color: white;
-}
+/* header stuff */

@@ -1,8 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>{% block title %}One Hour Photo Hunt{% endblock %}</title>
+<title>{% block page-title %}One Hour Photo Hunt{% endblock %}</title>
 {% block default_css %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/screen.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/print.css" type="text/css" media="print">
+<!--[if lt IE 8]><link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/base.css"/>
 {% endblock %}
 {% block default_script %}
@@ -12,11 +15,19 @@
 </head>
 <body>
 {% block body %}
-<div id="wrap">
-<div id="header">{% block header %}{% include "includes/default_header.html" %}{% endblock %}</div>
-<div id="content">{% block content %}{% endblock %}</div>
-<div id="footer">{% block footer %}{% include "includes/default_footer.html" %}{% endblock %}</div>
-</div>
+  <div class="container">
+  {% block header %}
+    {% include "includes/default_header.html" %}
+  {% endblock %}
+  {% block base-content %}
+    <div class="span-16 last base-content dropshadow round-bottom-corners">
+      {% block content %}{% endblock %}
+    </div>
+  {% endblock %}
+  {% block footer %}
+    {% include "includes/default_footer.html" %}
+  {% endblock %}
+  </div>
 {% endblock %}
 </body>
 </html>
