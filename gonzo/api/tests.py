@@ -27,7 +27,7 @@ class HuntAPITest(TestCase):
         h1.owner = self.user
         h1.phrase = 'first test hunt'
         h1.tag = 'firsttest'
-        h1.start_time = datetime.now()
+        h1.start_time = datetime.utcnow()
         h1.end_time = h1.start_time + timedelta(hours=1)
         h1.vote_end_time = h1.end_time + timedelta(hours=1)
         h1.save()

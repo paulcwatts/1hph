@@ -40,14 +40,14 @@ def _api_error(request,text):
     return HttpResponseBadRequest(_to_json(request,{'error':text}), content_type='application/json')
 
 def _ensure_current(request,hunt):
-    now = datetime.now()
+    now = datetime.utcnow()
     if now < hunt.start_time:
         return _api_error(request, "Hunt hasn't started yet")
     if now >= hunt.end_time:
         return _api_error(request, "Hunt has ended")
 
 def _ensure_vote_current(request,hunt):
-    now = datetime.now()
+    now = datetime.utcnow()
     if now < hunt.start_time:
         return _api_error(request, "Hunt hasn't started yet")
     if now >= hunt.vote_end_time:
@@ -85,7 +85,7 @@ def index(request):
         return HttpResponseBadRequest()
 
 def current_hunts(request):
-    now = datetime.now()
+    now = datetime.utcnow()
     return _get_hunts(request,
                       Hunt.objects.filter(start_time__lte=now, end_time__gt=now))
 
@@ -273,7 +273,7 @@ def assign_awards(request):
     # What we need is:
     # SELECT * FROM hunt_hunt h WHERE h.vote_end_time >= now AND
     #        h.id NOT IN (SELECT DISTINCT a.hunt_id from hunt_award a)
-    now = datetime.now()
+    now = datetime.utcnow()
     done = Award.objects.values_list('hunt_id', flat=True).distinct()
     entries = Hunt.objects.filter(vote_end_time__lte=now).exclude(pk__in=done).select_related()
     # entries is all the hunts that have not been assigned awards.

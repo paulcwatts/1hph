@@ -25,7 +25,7 @@ class HuntModelTest(TestCase):
         h1.owner = self.user
         h1.phrase = 'first test hunt'
         h1.tag = 'firsttest'
-        h1.start_time = datetime.now()
+        h1.start_time = datetime.utcnow()
         h1.end_time = h1.start_time + timedelta(hours=1)
         h1.vote_end_time = h1.end_time + timedelta(hours=1)
         h1.save()
@@ -39,7 +39,7 @@ class HuntModelTest(TestCase):
         h2.owner = self.user
         h2.phrase = 'first test hunt'
         h2.tag = 'firsttest2'
-        h2.start_time = datetime.now()
+        h2.start_time = datetime.utcnow()
         h2.end_time = h2.start_time + timedelta(hours=1)
         h2.vote_end_time = h2.end_time + timedelta(hours=1)
         h2.save()
@@ -54,15 +54,15 @@ class HuntModelTest(TestCase):
         h.owner = self.user
         h.phrase = 'not valid hunt'
         h.tag = 'notvalid'
-        h.start_time = datetime.now()
+        h.start_time = datetime.utcnow()
         h.end_time = h.start_time
         h.vote_end_time = h.end_time
         self.failUnlessRaises(ValidationError, lambda: h.save())
-        h.start_time = datetime.now()
+        h.start_time = datetime.utcnow()
         h.end_time = h.start_time - timedelta(seconds=1)
         h.vote_end_time = h.end_time
         self.failUnlessRaises(ValidationError, lambda: h.save())
-        h.start_time = datetime.now()
+        h.start_time = datetime.utcnow()
         h.end_time = h.end_time + timedelta(hours=1)
         h.vote_end_time = h.end_time - timedelta(minutes=1)
         self.failUnlessRaises(ValidationError, lambda: h.save())

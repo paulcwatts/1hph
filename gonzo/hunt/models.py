@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -7,6 +8,10 @@ from django.contrib import admin
 from gonzo.utils import slugify
 from gonzo.hunt.utils import get_source_json
 from gonzo.hunt.thumbs import ImageWithThumbsField
+
+def to_json_time(d):
+    return d.replace(tzinfo=pytz.utc).isoformat()
+
 
 class Hunt(models.Model):
     """
@@ -63,22 +68,32 @@ class Hunt(models.Model):
     def get_comments_url(self):
         return self._get_url('api-hunt-comment-index')
 
+    def get_thumbnail_url(self):
+        try:
+            return self.submission_set.filter(is_removed=False)[0].photo.url_240x180
+        except IndexError:
+            return None
+
     def to_dict(self,request):
-        return { 'owner': self.owner.username,
+        json = { 'owner': self.owner.username,
                 'phrase': self.phrase,
                 'slug': self.slug,
                 'tag': self.tag,
-                'start_time': self.start_time.isoformat(),
-                'end_time': self.end_time.isoformat(),
-                'vote_end_time': self.vote_end_time.isoformat(),
+                'start_time': to_json_time(self.start_time),
+                'end_time': to_json_time(self.end_time),
+                'vote_end_time': to_json_time(self.vote_end_time),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
                 'submissions': request.build_absolute_uri(self.get_submission_url()),
                 'ballot': request.build_absolute_uri(self.get_ballot_url()),
                 'comments': request.build_absolute_uri(self.get_comments_url()) }
+        thumb = self.get_thumbnail_url()
+        if thumb:
+            json['thumbnail'] = request.build_absolute_uri(thumb)
+        return json
 
 class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)
-    time            = models.DateTimeField(default=datetime.now())
+    time            = models.DateTimeField(default=datetime.utcnow())
     # The URL to the photo
     photo           = ImageWithThumbsField(upload_to="photos",
                                         max_length=256,
@@ -125,7 +140,7 @@ class Submission(models.Model):
         return self._get_url('api-photo-comment-stream')
 
     def to_dict(self,request):
-        json = { 'time': self.time.isoformat(),
+        json = { 'time': to_json_time(self.time),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
                 'photo_url': request.build_absolute_uri(self.photo.url),
                 'thumbnail_url': request.build_absolute_uri(self.photo.url_240x180),
@@ -141,7 +156,7 @@ class Submission(models.Model):
 class Comment(models.Model):
     hunt            = models.ForeignKey(Hunt)
     submission      = models.ForeignKey(Submission, null=True)
-    time            = models.DateTimeField(default=datetime.now())
+    time            = models.DateTimeField(default=datetime.utcnow())
     text            = models.CharField(max_length=256)
 
     # Null means this comes from an unauthenticated user
@@ -172,14 +187,14 @@ class Comment(models.Model):
 
     def to_dict(self, request):
         return {
-            'time': self.time.isoformat(),
+            'time': to_json_time(self.time),
             'source': get_source_json(request, self),
             'text': self.text }
 
 class Vote(models.Model):
     hunt            = models.ForeignKey(Hunt)
     submission      = models.ForeignKey(Submission)
-    time            = models.DateTimeField(default=datetime.now())
+    time            = models.DateTimeField(default=datetime.utcnow())
     value           = models.IntegerField()
 
     # Null means this comes from an unauthenticated user

@@ -4,3 +4,4 @@
 -e git+git://github.com/richleland/django-cumulus.git@0.2.2#egg=python-cumulus
 simplejson
 pil
+pytz
