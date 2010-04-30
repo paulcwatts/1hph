@@ -9,7 +9,7 @@
         $.extend(config, settings)
       }
 
-      var html = '<li><img class="thumb-icon"/><div class="clearfix"><h2 class="phrase"></h2><h3></h3></div>'
+      var html = '<li class="two-line-item clickable"><img class="thumb-icon thumb-icon-left"/><div class="clearfix"><h2 class="line1 phrase"></h2><h3 class="line2"></h3></div></li>'
       this.each(function() {
           var list = this;
           $.getJSON(config.url, function(data) {
