@@ -53,4 +53,40 @@
 
       return this;
   };
+
+  $.fn.commentList = function(settings) {
+      var config = {
+        'url': '',
+        'form': ''
+      };
+      if (settings) {
+         $.extend(config, settings)
+      }
+      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="comment-from"></a> <span class="comment"></span><br/><span class="comment-line2 comment-time"></span></li>'
+      this.each(function() {
+          var list = this;
+          // Add an onsubmit handler to the form to do an ajaxSubmit rather than a regular submit
+
+          $.getJSON(config.url, function(data) {
+              var now = new Date();
+              $.each(data.comments, function(i,comment) {
+                  var li = $(html);
+                  var source = comment.source;
+                  if (source.photo) {
+                      $("img",li).attr("src", hunt.thumbnail);
+                  }
+                  else {
+                      $("img",li).attr("src", ""); //config.defaultImage);
+                  }
+                  $(".comment-from", li).attr("href", source.url).text(source.name);
+                  $(".comment", li).text(comment.text);
+
+                  var time = new Date(comment.time);
+                  $(".comment-time", li).text(Utils.getRelativeTimeSpanString(time, now));
+                  li.appendTo(list);
+              });
+          });
+      });
+
+  };
 })(jQuery);

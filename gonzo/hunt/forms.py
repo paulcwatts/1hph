@@ -11,6 +11,13 @@ class SubmissionForm(forms.ModelForm):
             'longitude': widgets.HiddenInput(),
             'via': widgets.HiddenInput(attrs={'value':'Web'})
         }
+    valid_check = forms.BooleanField()
+
+    def clean_valid_check(self):
+        check = self.cleaned_data["valid_check"]
+        if not check:
+            raise forms.ValidationError("Please check the box.")
+        return True
 
 class CommentForm(forms.ModelForm):
     class Meta:

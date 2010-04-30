@@ -1,103 +1,73 @@
 {% extends "base_title.html" %}
 {% block head %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/blueprint/buttons/screen.css"/>
 <link rel="alternate" type="application/json" href="{% url api-hunt hunt.slug %}"/>
 {% endblock %}
 {% block title-thumb-src %}{{ hunt.get_thumbnail_url }}{% endblock %}
 {% block title-line1 %}Hunt: <span class="phrase">{{ hunt.phrase }}</span>{% endblock %}
 {% block title-line2 %}Some other info{% endblock %}
 {% block page-content %}
-<p>Starts: {{ hunt.start_time }}</p>
-<p>Ends: {{ hunt.end_time }}</p>
+{% comment %}
+ A hunt can be in four states: FUTURE, CURRENT, VOTING, FINISHED
+ By default, all items that match $(".state-obj") will be hidden
 
-<p><input id="vote_button" type="button" value="Start voting"/></p>
-<div class="vote-container" style="position: relative; display: none;">
-<div style="width: 250px; height: 200px; background-color: #f0f0f0; position: relative; top: 0; left: 72px;">
-<img src="{{ MEDIA_URL }}img/indicator.white.gif" style="cursor: pointer;"/>
+ Once we download the JSON and determine that which state we are in,
+ we'll show all items that match $(".state-(statename)").
+{% endcomment %}
+<div class="span-9 showgrid colborder">
+  <div class="vote-box">
+    <button id="vote-button" type="submit" class="vote-button button positive">
+      <img src="{{ MEDIA_URL }}css/blueprint/buttons/icons/photos.png" alt=""/>
+      Click here to start voting!
+    </button>
+    <hr/>
+  </div>
+  <div class="submit-box">
+    <h3>Submit a photo</h3>
+    {% if submit_form.is_multipart %}
+    <form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}" enctype="multipart/form-data">
+    {% else %}
+    <form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}">
+    {% endif %}
+    <table cellspacing="0">
+       <tr>
+         <td>{{ submit_form.photo.label_tag }}</td>
+         <td>{{ submit_form.photo }}</td>
+       </tr>
+       <tr>
+         <td></td>
+         <td>{{ submit_form.valid_check }} By checking this box, you certify that this photo complies with the Terms of Service.</td>
+       </tr>
+       <tr>
+         <td></td>
+         <td>
+           {% csrf_token %}
+           <input type="submit" value="Submit"/>
+         </td>
+    </table>
+    </form>
+    <hr/>
+  </div>
+  <div>
+    {% url api-hunt-comment-index hunt.slug as comments_url %}
+    {% include "includes/comments.html" %}
+  </div>
 </div>
-<div style="width: 250px; height: 200px; background-color: #f0f0f0; position: absolute; top: 0; left: 337px;">
-<img src="{{ MEDIA_URL }}img/indicator.white.gif" style="cursor: pointer;"/>
+<div class="span-5 showgrid last" style="height: 200px">
+    THIS IS HUNT INFO
 </div>
-</div>
+
+
 <script type="text/javascript">
 var huntURL = null;
 var huntObj = null;
-
-function setImages(ballot) {
-   var images = $(".vote-container img");
-   $(images[0])
-           .attr("src",ballot.submissions[0].thumbnail_url)
-           .data("submit_url",ballot.submissions[0].url);
-    $(images[1])
-           .attr("src",ballot.submissions[1].thumbnail_url)
-           .data("submit_url",ballot.submissions[1].url);
-}
-
-function loadComments() {
-  $.getJSON(huntObj.comments, function(data) {
-    var list = $("#comments").get(0);
-    $.each(data.comments, function(i,comment) {
-        var d = new Date(comment.time);
-        $("<li/>")
-          .append($("<span/>").text(comment.text))
-          .append($("<span> from </span>"))
-          .append($("<a/>").
-                  attr("href", comment.source.url).
-                  text(comment.source.name))
-          .append(" on " + d)
-            .appendTo(list);
-    });
-  });
-}
 
 $(function() {
   huntURL = $("link[type='application/json']").attr("href");
   $.getJSON(huntURL, function(data) {
     huntObj = data;
-    loadComments();
-  });
-
-  $(".vote-container img").click(function() {
-    // The submission URL is in data("submit_url")
-    var url = $(this).data("submit_url");
-    $.post(huntObj.ballot, { 'url': url },
-        function(ballot, textStatus, httpReg) {
-        // Initialize
-        setImages(ballot);
-    });
-  });
-
-  $("#vote_button").toggle(function() {
-      $(".vote-container").slideDown();
-      $(this).val("Stop voting");
-      $.getJSON(huntObj.ballot, function(ballot) {
-          setImages(ballot);
-      });
-  }, function() {
-      $(this).val("Start voting");
-      $(".vote-container").slideUp();
   });
 })
 </script>
-
-{% if submit_form.is_multipart %}
-<form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}" enctype="multipart/form-data">
-{% else %}
-<form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}">
-{% endif %}
-<h3>Submit photo</h3>
-{{ submit_form.as_p }}
-{% csrf_token %}
-<input type="submit" value="Submit"/>
-</form>
-
-
-<h3>Comments</h3>
-<form id="comment" method="POST" action="{% url api-hunt-comment-index hunt.slug %}">
-{{ comment_form.as_p }}
-{% csrf_token %}
-<input type="submit" value="Submit"/>
-</form>
-<ul id="comments">
-</ul>
 
 {% endblock %}

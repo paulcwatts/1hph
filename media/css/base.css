@@ -71,7 +71,7 @@ ul.nav {
 .page-title {
   margin-top: -10px;
   margin-left: 10px;
-  background-color: #f0f0f0;
+  background-color: #AEEBFF;
   border:  2px #FF9900 solid;
   vertical-align: middle;
 }
@@ -80,7 +80,7 @@ ul.nav {
   margin: 0;
 }
 .page-content {
-  margin: 0.5em;
+  margin: 1em;
 }
 
 .thumb-icon {
@@ -116,7 +116,7 @@ ul.nav {
   padding: 0;
 }
 .two-line-item {
-  background-color: #F0F0F0;
+  background-color: #AEEBFF;
   padding: 5px;
   height: 70px;
   border: 1px #F0F0F0 solid;
@@ -135,7 +135,60 @@ li.two-line-item {
   color: #424242;
 }
 
+.vote-button {
+  font-size: 150%;
+  width: 100%;
+  height: 3em;
+}
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.comment-item {
+  background-color: #F5F5F5;
+  padding: 5px;
+  margin: 5px auto;
+}
+.comment-thumb-icon {
+  height: 30px;
+  width: 30px;
+  padding: 2px;
+  -moz-box-shadow: 0px 2px 2px #666;
+  -webkit-box-shadow: 0px 2px 2px #666;
+  box-shadow: 0px 2px 2px #666;
+  background-color: #BCBCBC;
+}
+.comment-from {
+  font-weight: bold;
+}
+.comment-time {
+  font-size: 75%;
+  color: #424242;
+}
 
+/* all buttons and inputs should have round corners */
+a.button, button, input[type=text], input[type=password], input[type=file], input[type=submit], textarea {
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  -khtml-border-radius-topleft: 5px;
+  -khtml-border-radius-topright: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -khtml-border-radius-bottomleft: 5px;
+  -khtml-border-radius-bottomright: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+input[type=text], input[type=password], input[type=file], textarea {
+  padding: 0.25em;
+}
 
 /* generic cool UI classes */
 .round-top-corners {

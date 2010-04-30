@@ -1,0 +1,20 @@
+<h3>Leave a comment</h3>
+<form class="comment-form" method="POST" action="{{ comments_url }}">
+  <table>
+    <tr>
+      <td>You say</td>
+      <td>
+        {{ comment_form.text }}
+        {% csrf_token %}
+        <input type="submit" value="Comment"/>
+      </td>
+    </tr>
+  </table>
+</form>
+<ul class="comment-list">
+</ul>
+<script type="text/javascript">
+$(function() {
+  $(".comment-list").commentList({ 'url': "{{ comments_url }}", 'form': '.comment-form' });
+});
+</script>
