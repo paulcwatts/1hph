@@ -26,7 +26,7 @@ h1 {
   background-color: #3299BB;
   border-left: 1px #BCBCBC solid;
   border-right: 1px #BCBCBC solid;
-  border-bottom:  2px #FF9900 solid;
+  border-bottom:  1px #FF9900 solid;
 }
 .base-content {
   background-color: white;
@@ -72,7 +72,7 @@ ul.nav {
   margin-top: -10px;
   margin-left: 10px;
   background-color: #AEEBFF;
-  border:  2px #FF9900 solid;
+  border:  1px #FF9900 solid;
   vertical-align: middle;
 }
 .page-title h1 {
