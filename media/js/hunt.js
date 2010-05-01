@@ -78,7 +78,11 @@
                   else {
                       $("img",li).attr("src", ""); //config.defaultImage);
                   }
-                  $(".comment-from", li).attr("href", source.url).text(source.name);
+                  var url = source.url;
+                  if (!url) {
+                    url = "#";
+                  }
+                  $(".comment-from", li).attr("href", url).text(source.name);
                   $(".comment", li).text(comment.text);
 
                   var time = new Date(comment.time);
