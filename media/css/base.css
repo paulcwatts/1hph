@@ -14,7 +14,7 @@ Text Color: #222222
 Link Color: #CC7A00
 */
 body {
-  background-color: #E9E9E9;
+  background-color: #AEEBFF;
 }
 h1 {
   font-size: 200%;
@@ -71,7 +71,6 @@ ul.nav {
 .page-title {
   margin-top: -10px;
   margin-left: 10px;
-  background-color: #AEEBFF;
   border:  1px #FF9900 solid;
   vertical-align: middle;
 }
@@ -116,7 +115,7 @@ ul.nav {
   padding: 0;
 }
 .two-line-item {
-  background-color: #AEEBFF;
+  background-color: #F5F5F5;
   padding: 5px;
   height: 70px;
   border: 1px #F0F0F0 solid;
