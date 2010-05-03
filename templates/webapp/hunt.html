@@ -52,6 +52,7 @@
   </div>
   <div>
     {% url api-hunt-comment-index hunt.slug as comments_url %}
+    {% url hunt-comments hunt.slug as show_all_url %}
     {% include "includes/comments.html" %}
   </div>
 </div>
@@ -62,6 +63,7 @@
     {% endwith %}
     <hr/>
      {% url api-photo-index hunt.slug as submissions_url %}
+     {% url photo-index hunt.slug as show_all_url %}
      {% with "Recent Submissions" as submissions_title %}
          {% include "includes/submissions.html" %}
      {% endwith %}

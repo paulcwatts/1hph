@@ -28,7 +28,9 @@ urlpatterns = patterns('gonzo.webapp.views',
     url(r'^(?P<slug>[\w-]+)/comments/$',   'hunt_comments', name='hunt-comments'),
     #url(r'^(?P<slug>[\w-]+)/comment-stream/$', 'hunt_comment_stream', name='hunt-comment-stream'),
 
-    url(r'^(?P<slug>[\w-]+)/p/$',                   'photo_index'),
+    url(r'^(?P<slug>[\w-]+)/p/$',
+        'photo_index',
+        name='photo-index'),
     url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/$',
         object_detail,
         {

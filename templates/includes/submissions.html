@@ -1,6 +1,7 @@
 <h3>{{ submissions_title }}</h3>
 <ul class="submission-list">
 </ul>
+<div class="view-all"><a href="{{ show_all_url }}">Show all...</a></div>
 <script type="text/javascript">
 $(function() {
   $(".submission-list").submissionList({ 'url': "{{ submissions_url }}" });
