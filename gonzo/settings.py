@@ -98,7 +98,8 @@ INSTALLED_APPS = (
     'gonzo.hunt',
     'gonzo.api',
     'gonzo.uprofile',
-    'gonzo.account'
+    'gonzo.account',
+    'gonzo.oauth'
 )
 AUTH_PROFILE_MODULE='gonzo.uprofile.Profile'
 LOGIN_REDIRECT_URL='/'

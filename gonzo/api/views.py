@@ -75,6 +75,8 @@ def _new_hunt(request):
     # TODO: new-hunt requires a logged-in user with the appropriate permissions
     pass
 
+# TODO: This is CSRF exempt ONLY if it's authorized via OAuth;
+# otherwise, CSRF must apply
 @csrf_exempt
 def index(request):
     if request.method == 'GET':
@@ -84,11 +86,13 @@ def index(request):
     else:
         return HttpResponseBadRequest()
 
+@require_GET
 def current_hunts(request):
     now = datetime.utcnow()
     return _get_hunts(request,
                       Hunt.objects.filter(start_time__lte=now, end_time__gt=now))
 
+@require_GET
 def hunt_by_id(request,slug):
     return _get_json_or_404(Hunt,request,slug=slug)
 
@@ -128,6 +132,8 @@ def _submit_vote(request,hunt):
 
     return _get_ballot(request,hunt)
 
+# TODO: This is CSRF exempt ONLY if it's authorized via OAuth;
+# otherwise, CSRF must apply
 @csrf_exempt
 def hunt_ballot(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
@@ -173,6 +179,8 @@ def _comment_by_id(request,slug,comment_id,object_id=None):
     else:
         return HttpResponseBadRequest()
 
+# TODO: This is CSRF exempt ONLY if it's authorized via OAuth;
+# otherwise, CSRF must apply
 @csrf_exempt
 def hunt_comments(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
@@ -218,6 +226,8 @@ def _submit_photo(request,hunt):
     response['Content-Location'] = request.build_absolute_uri(photo.get_api_url())
     return response;
 
+# TODO: This is CSRF exempt ONLY if it's authorized via OAuth;
+# otherwise, CSRF must apply
 @csrf_exempt
 def photo_index(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
@@ -228,6 +238,7 @@ def photo_index(request,slug):
     else:
         return HttpResponseBadRequest()
 
+@require_GET
 def photo_by_id(request,slug,object_id):
     return _get_json_or_404(Submission,request,pk=object_id)
 

@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     (r'^profile/', include('gonzo.uprofile.urls')),
     (r'^api/', include('gonzo.api.urls')),
     (r'^account/', include('gonzo.account.urls')),
+    (r'^oauth/', include('gonzo.oauth.urls')),
     (r'^help/', include('gonzo.help.urls')),
 
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
