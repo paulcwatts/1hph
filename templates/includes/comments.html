@@ -7,6 +7,7 @@
         {{ comment_form.text }}
         {% csrf_token %}
         <input type="submit" value="Comment"/>
+        <img class="indicator hidden" href="{{ MEDIA_URL }}img/indicator.white.gif" alt="submitting..." />
       </td>
     </tr>
   </table>

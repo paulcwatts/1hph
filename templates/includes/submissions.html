@@ -1,0 +1,8 @@
+<h3>{{ submissions_title }}</h3>
+<ul class="submission-list">
+</ul>
+<script type="text/javascript">
+$(function() {
+  $(".submission-list").submissionList({ 'url': "{{ submissions_url }}" });
+});
+</script>

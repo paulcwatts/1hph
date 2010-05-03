@@ -54,6 +54,14 @@
       return this;
   };
 
+  $.fn.setSource = function(source) {
+      var url = source.url;
+      if (!url) {
+        url = "#";
+      }
+      this.attr("href", url).text(source.name);
+  }
+
   $.fn.commentList = function(settings) {
       var config = {
         'url': '',
@@ -62,35 +70,93 @@
       if (settings) {
          $.extend(config, settings)
       }
-      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="comment-from"></a> <span class="comment"></span><br/><span class="comment-line2 comment-time"></span></li>'
+      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="from"></a> <span class="comment"></span><br/><span class="comment-line2 time comment-time"></span></li>'
       this.each(function() {
           var list = this;
+          function add(comment, slide, now) {
+              var li = $(html);
+              var source = comment.source;
+              if (source.photo) {
+                  $("img",li).attr("src", hunt.thumbnail);
+              }
+              else {
+                  $("img",li).attr("src", ""); //config.defaultImage);
+              }
+              $(".from", li).setSource(source);
+              $(".comment", li).text(comment.text);
+
+              var time = new Date(comment.time);
+              $(".time", li).text(Utils.getRelativeTimeSpanString(time, now));
+              if (slide) {
+                li.hide().prependTo(list).slideDown();
+              }
+              else {
+                li.appendTo(list);
+              }
+          }
+
           // Add an onsubmit handler to the form to do an ajaxSubmit rather than a regular submit
+          var form = $(config.form);
+          form.submit(function() {
+            var indicator = $(" .indicator", form);
+            indicator.show();
+            form.ajaxSubmit({ dataType: 'json',
+              success: function(data, status, xhr) {
+                add(data, true, new Date());
+                // TODO: Allow the caller to supply a callback of his own
+              },
+              error: function(xhr, status, error) {
+              },
+              complete: function(xhr, status) {
+                indicator.hide();
+                form.clearForm();
+            }});
+
+            return false;
+          });
 
           $.getJSON(config.url, function(data) {
               var now = new Date();
               $.each(data.comments, function(i,comment) {
-                  var li = $(html);
-                  var source = comment.source;
-                  if (source.photo) {
-                      $("img",li).attr("src", hunt.thumbnail);
-                  }
-                  else {
-                      $("img",li).attr("src", ""); //config.defaultImage);
-                  }
-                  var url = source.url;
-                  if (!url) {
-                    url = "#";
-                  }
-                  $(".comment-from", li).attr("href", url).text(source.name);
-                  $(".comment", li).text(comment.text);
-
-                  var time = new Date(comment.time);
-                  $(".comment-time", li).text(Utils.getRelativeTimeSpanString(time, now));
-                  li.appendTo(list);
+                add(comment, false, now);
               });
           });
       });
 
+  };
+
+  $.fn.submissionList = function(settings) {
+      var config = {
+        'url': '',
+      };
+      if (settings) {
+         $.extend(config, settings)
+      }
+      var html = '<li class="submission-item"><a class="img-link" href=""><img class="submission-thumb-icon" src="" alt="submitted photo"/></a><br/>Posted by <a class="from"></a><br/><span class="time"></span></li>';
+      this.each(function() {
+          var list = this;
+          function add(photo, slide, now) {
+              var li = $(html);
+              var source = photo.source;
+              $("img",li).attr("src", photo.thumbnail_url);
+              $(".img-link", li).attr("href", photo.url);
+              $(".from", li).setSource(source);
+
+              var time = new Date(photo.time);
+              $(".time", li).text(Utils.getRelativeTimeSpanString(time, now));
+              if (slide) {
+                li.hide().prependTo(list).slideDown();
+              }
+              else {
+                li.appendTo(list);
+              }
+          }
+          $.getJSON(config.url, function(data) {
+              var now = new Date();
+              $.each(data.submissions, function(i,submissions) {
+                add(submissions, false, now);
+              });
+          });
+      });
   };
 })(jQuery);

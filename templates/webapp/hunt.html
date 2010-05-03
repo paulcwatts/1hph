@@ -2,6 +2,7 @@
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/blueprint/buttons/screen.css"/>
 <link rel="alternate" type="application/json" href="{% url api-hunt hunt.slug %}"/>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
 {% endblock %}
 {% block title-thumb-src %}{{ hunt.get_thumbnail_url }}{% endblock %}
 {% block title-line1 %}Hunt: <span class="phrase">{{ hunt.phrase }}</span>{% endblock %}
@@ -14,7 +15,7 @@
  Once we download the JSON and determine that which state we are in,
  we'll show all items that match $(".state-(statename)").
 {% endcomment %}
-<div class="span-9 showgrid colborder">
+<div class="span-9 colborder">
   <div class="vote-box">
     <button id="vote-button" type="submit" class="vote-button button positive">
       <img src="{{ MEDIA_URL }}css/blueprint/buttons/icons/photos.png" alt=""/>
@@ -36,7 +37,7 @@
        </tr>
        <tr>
          <td></td>
-         <td>{{ submit_form.valid_check }} By checking this box, you certify that this photo complies with the Terms of Service.</td>
+         <td>{{ submit_form.valid_check }} By checking this box, you agree to <a href="/help/tos/">follow the rules</a>.</td>
        </tr>
        <tr>
          <td></td>
@@ -54,8 +55,16 @@
     {% include "includes/comments.html" %}
   </div>
 </div>
-<div class="span-5 showgrid last" style="height: 200px">
-    THIS IS HUNT INFO
+<div class="span-5 last">
+    {% with hunt.submission_set.all|length as count %}
+      <div class="num-submissions counter center-text">{{ count }}</div>
+      <div class="center-text hint-color">submission{{ count|pluralize }}</div>
+    {% endwith %}
+    <hr/>
+     {% url api-photo-index hunt.slug as submissions_url %}
+     {% with "Recent Submissions" as submissions_title %}
+         {% include "includes/submissions.html" %}
+     {% endwith %}
 </div>
 
 
