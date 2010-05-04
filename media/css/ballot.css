@@ -24,16 +24,16 @@
 .ballot-img-container {
   position: relative;
 }
-.ballot-left {
+/* these need to have specific heights
+   in order that the animations look correct */
+.ballot-left, .ballot-right {
   position: absolute;
   top: 0px;
-  left: 0px;
+  width: 240px;
+  height: 180px;
 }
-.ballot-right {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-}
+.ballot-left { left: 0px; }
+.ballot-right { right: 0px; }
 .ballot-overlay {
   position: absolute;
   top: 0px;

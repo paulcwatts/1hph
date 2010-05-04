@@ -23,7 +23,7 @@
               // Ensure the winner and loser classes aren't there
               leftimg.parent().removeClass("winner").removeClass("loser");
               rightimg.parent().removeClass("winner").removeClass("loser");
-              imgcontainer.slideDown();
+              imgcontainer.fadeIn('fast');
             }
         }
         function showBallot(data) {
@@ -43,21 +43,22 @@
             loser.parent().addClass("loser");
             // Wait for a second and then go back to the beginning
             window.setTimeout(function() {
-              imgcontainer.slideUp();
-              loading.show();
-              $.ajax({
-                type: 'POST',
-                url: config.url,
-                data: { url: json.url },
-                dataType: 'json',
-                success: function(data, textStatus, xhr) {
-                  showBallot(data);
-                },
-                error: function(xhr, textStatus) {
-                  alert("ERROR");
-                }
+              imgcontainer.fadeOut('fast', function() {
+                  $.ajax({
+                      type: 'POST',
+                      url: config.url,
+                      data: { url: json.url },
+                      dataType: 'json',
+                      success: function(data, textStatus, xhr) {
+                        showBallot(data);
+                      },
+                      error: function(xhr, textStatus) {
+                        alert("ERROR");
+                      }
+                    });
               });
-            }, 1000);
+              loading.show();
+            }, 500);
         }
         function onImgLeftClick() {
           doVote(leftimg, rightimg);
