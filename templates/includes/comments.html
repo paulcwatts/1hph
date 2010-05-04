@@ -1,3 +1,4 @@
+{% load indicator %}
 <h3>Leave a comment</h3>
 <form class="comment-form" method="POST" action="{{ comments_url }}">
   <table>
@@ -7,7 +8,7 @@
         {{ comment_form.text }}
         {% csrf_token %}
         <input type="submit" value="Comment"/>
-        <img class="indicator hidden" href="{{ MEDIA_URL }}img/indicator.white.gif" alt="submitting..." />
+        {% indicator "sending..." %}
       </td>
     </tr>
   </table>

@@ -1,4 +1,5 @@
 {% extends "base_title.html" %}
+{% load indicator %}
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/blueprint/buttons/screen.css"/>
 <link rel="alternate" type="application/json" href="{% url api-hunt hunt.slug %}"/>
@@ -43,8 +44,10 @@
          <td></td>
          <td>
            {% csrf_token %}
+           <input type="hidden" name="response_content_type" value="text/plain"/>
            <input type="hidden" name="via" value="Web"/>
            <input type="submit" value="Submit"/>
+           {% indicator "submitting..." %}
          </td>
     </table>
     </form>
@@ -58,7 +61,7 @@
 </div>
 <div class="span-5 last">
     {% with hunt.submission_set.all|length as count %}
-      <div class="num-submissions counter center-text">{{ count }}</div>
+      <div id="num-submissions" class="num-submissions counter center-text">{{ count }}</div>
       <div class="center-text hint-color">submission{{ count|pluralize }}</div>
     {% endwith %}
     <hr/>
@@ -78,6 +81,34 @@ $(function() {
   huntURL = $("link[type='application/json']").attr("href");
   $.getJSON(huntURL, function(data) {
     huntObj = data;
+  });
+  var form = $("#upload");
+  form.submit(function() {
+    var indicator = $(".indicator", form);
+    indicator.show();
+
+    {# Using JSONP gets around a stupid problem involving ajaxSubmit() and JSONView. #}
+    {# Eventually, when we have the stream API, we won't care about this #}
+    form.ajaxSubmit({ dataType: 'json',
+      success: function(data, status, xhr) {
+        // Increment the number of submissions
+        var num = $("#num-submissions");
+        num.text(parseInt(num.text())+1);
+        // Add to the recent submissions list
+        $(".submission-list").submissionList({ 'add': data });
+      },
+      error: function(xhr, status, error) {
+          // TODO: Error
+          alert("ERROR");
+      },
+      complete: function(xhr, status) {
+        indicator.hide();
+        form.clearForm();
+    }});
+
+    return false;
+  });
+  $("#vote-button").click(function() {
   });
 })
 </script>

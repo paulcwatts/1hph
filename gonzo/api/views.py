@@ -220,9 +220,11 @@ def _submit_photo(request,hunt):
     photo.ip_address = request.META.get('REMOTE_ADDR')
     photo.hunt = hunt
     photo.save()
+    # response_content_type is an idiotic hack to work around some
+    # weird interaction between JSONView and ajaxSubmit().
     response = HttpResponse(_to_json(request,photo),
                             status=201,
-                            content_type='application/json')
+                            content_type=request.POST.get('response_content_type','application/json'))
     response['Content-Location'] = request.build_absolute_uri(photo.get_api_url())
     return response;
 

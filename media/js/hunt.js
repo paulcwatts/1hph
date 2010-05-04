@@ -1,5 +1,27 @@
 // Javascript Hunt objects
 (function($) {
+  $.fn.setImage	= function(src,def,width,height) {
+    var img;
+    if (src) {
+      img = src;
+    }
+    else if (def) {
+      img = def;
+    }
+    else {
+      // Nothing to do...
+      return this;
+    }
+    this.each(function() {
+      var dest = $(this);
+      // TODO: When given width and height, use the width and height
+      // of the destination element as a guide to resizing the image
+      // so as to preserve its aspect ratio.
+      dest.attr("src", img);
+    });
+    return this;
+  };
+
   $.fn.huntList = function(settings) {
       var config = {
           'url': "",
@@ -15,12 +37,7 @@
           $.getJSON(config.url, function(data) {
               $.each(data.hunts, function(i,hunt) {
                   var li = $(html);
-                  if (hunt.thumbnail) {
-                    $("img",li).attr("src", hunt.thumbnail);
-                  }
-                  else {
-                    $("img",li).attr("src", ""); //config.defaultImage);
-                  }
+                  $("img",li).setImage(hunt.thumbnail, config.defaultImage);
                   $("h2",li).text(hunt.phrase);
                   var start_time = new Date(hunt.start_time);
                   var end_time = new Date(hunt.end_time);
@@ -60,12 +77,14 @@
         url = "#";
       }
       this.attr("href", url).text(source.name);
+      return this;
   }
 
   $.fn.commentList = function(settings) {
       var config = {
         'url': '',
-        'form': ''
+        'form': '',
+        'defaultImage': null
       };
       if (settings) {
          $.extend(config, settings)
@@ -76,12 +95,8 @@
           function add(comment, slide, now) {
               var li = $(html);
               var source = comment.source;
-              if (source.photo) {
-                  $("img",li).attr("src", hunt.thumbnail);
-              }
-              else {
-                  $("img",li).attr("src", ""); //config.defaultImage);
-              }
+              // No profile image yet???
+              $("img",li).setImage("");
               $(".from", li).setSource(source);
               $(".comment", li).text(comment.text);
 
@@ -103,7 +118,6 @@
             form.ajaxSubmit({ dataType: 'json',
               success: function(data, status, xhr) {
                 add(data, true, new Date());
-                // TODO: Allow the caller to supply a callback of his own
               },
               error: function(xhr, status, error) {
               },
@@ -122,12 +136,13 @@
               });
           });
       });
-
+      return this;
   };
 
   $.fn.submissionList = function(settings) {
       var config = {
         'url': '',
+        'add': null
       };
       if (settings) {
          $.extend(config, settings)
@@ -138,7 +153,7 @@
           function add(photo, slide, now) {
               var li = $(html);
               var source = photo.source;
-              $("img",li).attr("src", photo.thumbnail_url);
+              $("img",li).setImage(photo.thumbnail_url);
               $(".img-link", li).attr("href", photo.url);
               $(".from", li).setSource(source);
 
@@ -151,6 +166,11 @@
                 li.appendTo(list);
               }
           }
+          if (config.add) {
+            add(config.add, true, new Date());
+            return this;
+          }
+
           $.getJSON(config.url, function(data) {
               var now = new Date();
               $.each(data.submissions, function(i,submissions) {
@@ -158,5 +178,6 @@
               });
           });
       });
+      return this;
   };
 })(jQuery);
