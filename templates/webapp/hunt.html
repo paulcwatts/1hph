@@ -2,8 +2,10 @@
 {% load indicator %}
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/blueprint/buttons/screen.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ballot.css"/>
 <link rel="alternate" type="application/json" href="{% url api-hunt hunt.slug %}"/>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/ballot.js"></script>
 {% endblock %}
 {% block title-thumb-src %}{{ hunt.get_thumbnail_url }}{% endblock %}
 {% block title-line1 %}Hunt: <span class="phrase">{{ hunt.phrase }}</span>{% endblock %}
@@ -38,7 +40,7 @@
        </tr>
        <tr>
          <td></td>
-         <td>{{ submit_form.valid_check }} By checking this box, you agree to <a href="/help/tos/">follow the rules</a>.</td>
+         <td class="hint">{{ submit_form.valid_check }} By checking this box, you agree to <a href="/help/tos/">follow the rules</a>.</td>
        </tr>
        <tr>
          <td></td>
@@ -70,6 +72,21 @@
      {% with "Recent Submissions" as submissions_title %}
          {% include "includes/submissions.html" %}
      {% endwith %}
+</div>
+<div id="vote-dialog" style="display: none;">
+  <div class="head"><span class="phrase">{{ hunt.phrase }}</span><br/>Click on the photo you think better fits the phrase.</div>
+  <div id="ballot">
+    <div class="ballot-img-container">
+       <div class="ballot-left"><img src=""/><div class="ballot-overlay"></div></div>
+       <div class="ballot-right"><img src=""/><div class="ballot-overlay"></div></div>
+    </div>
+    <div class="loading" style="display: none;">Loading...</div>
+  </div>
+  <div>
+      <button id="vote-dialog-close" type="submit" class="button">
+      Close
+    </button>
+  </div>
 </div>
 
 
@@ -108,7 +125,20 @@ $(function() {
 
     return false;
   });
+  $("#vote-dialog").dialog({ modal: true,
+    resizable: false,
+    autoOpen: false,
+    width: 520,
+    dialogClass: 'vote-dialog-container',
+    open: function(event,ui) {
+      $("#ballot").ballot({ url: huntObj.ballot });
+    }
+  });
   $("#vote-button").click(function() {
+    $("#vote-dialog").dialog("open");
+  });
+  $("#vote-dialog-close").click(function() {
+      $("#vote-dialog").dialog("close");
   });
 })
 </script>

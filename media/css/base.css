@@ -47,6 +47,136 @@ ul.nav, .two-line, .submission-list, .comment-list {
   padding: 0;
 }
 
+/*
+ Used by jQuery UI
+ Keep these near the top of the file so they can be overridden by later classes
+*/
+.ui-helper-hidden, .hidden { display: none; }
+.ui-helper-hidden-accessible { position: absolute; left: -99999999px; }
+.ui-helper-reset { margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none; }
+.ui-helper-clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.ui-helper-clearfix { display: inline-block; }
+/* required comment for clearfix to work in Opera \*/
+* html .ui-helper-clearfix { height:1%; }
+.ui-helper-clearfix { display:block; }
+/* end clearfix */
+.ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }
+/* Overlays */
+.ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.ui-widget-overlay { background: #000000 50% 50% repeat-x; opacity: .80;filter:Alpha(Opacity=80); }
+
+/* IE6 IFRAME FIX (taken from datepicker 1.5.3 */
+.ui-datepicker-cover {
+    display: none; /*sorry for IE5*/
+    display/**/: block; /*sorry for IE5*/
+    position: absolute; /*must have*/
+    z-index: -1; /*must have*/
+    filter: mask(); /*must have*/
+    top: -4px; /*must have*/
+    left: -4px; /*must have*/
+    width: 200px; /*must have*/
+    height: 200px; /*must have*/
+}/* Dialog
+----------------------------------*/
+.ui-dialog { position: relative; padding: .2em; width: 300px; }
+.ui-dialog .ui-dialog-titlebar { padding: .5em .3em .3em 1em; position: relative;  }
+.ui-dialog .ui-dialog-title { float: left; margin: .1em 0 .2em; }
+.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+.ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
+.ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }
+.ui-dialog .ui-dialog-content { border: 0; padding: .5em 1em; background: none; overflow: auto; zoom: 1; }
+.ui-dialog .ui-dialog-buttonpane { text-align: left; border-width: 1px 0 0 0; background-image: none; margin: .5em 0 0 0; padding: .3em 1em .5em .4em; }
+.ui-dialog .ui-dialog-buttonpane button { float: right; margin: .5em .4em .5em 0; cursor: pointer; padding: .2em .6em .3em .6em; line-height: 1.4em; width:auto; overflow:visible; }
+.ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-dialog-titlebar { cursor: move; }
+.ui-widget {
+  -moz-box-shadow: 0px 5px 5px #666;
+  -webkit-box-shadow: 0px 5px 5px #666;
+  box-shadow: 0px 5px 5px #666;
+}
+.ui-widget-content {
+  background-color: white;
+  border: 1px #BCBCBC solid;
+}
+/*
+ generic cool UI classes
+ at some point we can converge just using the jQuery UI name
+*/
+.round-top-corners, .ui-corner-top {
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  -khtml-border-radius-topleft: 5px;
+  -khtml-border-radius-topright: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.round-bottom-corners, .ui-corner-bottom {
+  -moz-border-radius-bottomleft: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -khtml-border-radius-bottomleft: 5px;
+  -khtml-border-radius-bottomright: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.round-left-corners, .ui-corner-left {
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  -khtml-border-radius-topleft: 5px;
+  -khtml-border-radius-bottomleft: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.round-right-corners, .ui-corner-right {
+  -moz-border-radius-topright: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -khtml-border-radius-topright: 5px;
+  -khtml-border-radius-bottomright: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.round-corners, .ui-corner-all {
+  -moz-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.dropshadow {
+  -moz-box-shadow: 0px 5px 5px #666;
+  -webkit-box-shadow: 0px 5px 5px #666;
+  box-shadow: 0px 5px 5px #666;
+}
+
+/* generic properties for string types */
+.from { font-weight: bold; }
+.time { color: #424242; }
+.phrase { text-transform: lowercase; quotes: \&#8220\; \&#8221\; \&#8216\; \&#8217\;; }
+.phrase:before { content: open-quote; }
+.phrase:after { content: close-quote; }
+.clickable { cursor: pointer; }
+.center-text { text-align: center; }
+.hint { font-size: 80%; }
+.hint-color { color: #BCBCBC; }
+
+/* all buttons and inputs should have round corners */
+a.button, button, input[type=text], input[type=password], input[type=file], input[type=submit], textarea {
+  -moz-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+input[type=text], input[type=password], input[type=file], textarea {
+  padding: 0.25em;
+}
+
+
 ul.nav {
   text-align: center;
 }
@@ -103,36 +233,7 @@ ul.nav {
   margin-right: 10px;
 }
 
-/* generic properties for string types */
-.from {
-  font-weight: bold;
-}
-.time {
-  color: #424242;
-}
-.phrase {
-  text-transform: lowercase;
-  quotes: \&#8220\; \&#8221\; \&#8216\; \&#8217\;;
-}
-.phrase:before {
-  content: open-quote;
-}
-.phrase:after {
-  content: close-quote;
-}
-.clickable {
-  cursor: pointer;
-}
-.hidden {
-  display: none;
-}
-.center-text {
-  text-align: center;
-}
-.hint-color {
-  color: #BCBCBC;
-}
-
+/* Generic two-line-plus icon */
 .two-line {
 }
 .two-line-item {
@@ -155,11 +256,7 @@ li.two-line-item {
   color: #424242;
 }
 
-.vote-button {
-  font-size: 150%;
-  width: 100%;
-  height: 5em;
-}
+/* Comment list */
 .comment-list {
 }
 .comment-item {
@@ -167,20 +264,22 @@ li.two-line-item {
   margin: 5px auto;
 }
 .comment-thumb-icon {
-  height: 30px;
-  width: 30px;
+  max-height: 30px;
+  max-width: 30px;
 }
 .comment-time {
   font-size: 75%;
 }
 
+/* Submission list */
 .submission-list {
 }
 .submission-item {
+  text-align: center;
 }
 .submission-thumb-icon {
-  width: 200px;
-  height: 150px;
+  max-width: 200px;
+  max-height: 150px;
 }
 
 .counter {
@@ -188,93 +287,9 @@ li.two-line-item {
    line-height: 1.0;
 }
 
-
-/* all buttons and inputs should have round corners */
-a.button, button, input[type=text], input[type=password], input[type=file], input[type=submit], textarea {
-  -moz-border-radius-topleft: 5px;
-  -moz-border-radius-topright: 5px;
-  -khtml-border-radius-topleft: 5px;
-  -khtml-border-radius-topright: 5px;
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-top-right-radius: 5px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  -moz-border-radius-bottomleft: 5px;
-  -moz-border-radius-bottomright: 5px;
-  -khtml-border-radius-bottomleft: 5px;
-  -khtml-border-radius-bottomright: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+/* Voting button */
+.vote-button {
+  font-size: 150%;
+  width: 100%;
+  height: 5em;
 }
-input[type=text], input[type=password], input[type=file], textarea {
-  padding: 0.25em;
-}
-
-/* generic cool UI classes */
-.round-top-corners {
-  -moz-border-radius-topleft: 5px;
-  -moz-border-radius-topright: 5px;
-  -khtml-border-radius-topleft: 5px;
-  -khtml-border-radius-topright: 5px;
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-top-right-radius: 5px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
-.round-bottom-corners {
-  -moz-border-radius-bottomleft: 5px;
-  -moz-border-radius-bottomright: 5px;
-  -khtml-border-radius-bottomleft: 5px;
-  -khtml-border-radius-bottomright: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-.round-left-corners {
-  -moz-border-radius-topleft: 5px;
-  -moz-border-radius-bottomleft: 5px;
-  -khtml-border-radius-topleft: 5px;
-  -khtml-border-radius-bottomleft: 5px;
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-.round-right-corners {
-  -moz-border-radius-topright: 5px;
-  -moz-border-radius-bottomright: 5px;
-  -khtml-border-radius-topright: 5px;
-  -khtml-border-radius-bottomright: 5px;
-  -webkit-border-top-right-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-.round-corners {
-  -moz-border-radius-topleft: 5px;
-  -moz-border-radius-topright: 5px;
-  -khtml-border-radius-topleft: 5px;
-  -khtml-border-radius-topright: 5px;
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-top-right-radius: 5px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  -moz-border-radius-bottomleft: 5px;
-  -moz-border-radius-bottomright: 5px;
-  -khtml-border-radius-bottomleft: 5px;
-  -khtml-border-radius-bottomright: 5px;
-  -webkit-border-bottom-left-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-.dropshadow {
-  -moz-box-shadow: 0px 5px 5px #666;
-  -webkit-box-shadow: 0px 5px 5px #666;
-  box-shadow: 0px 5px 5px #666;
-}
-
-/* header stuff */
