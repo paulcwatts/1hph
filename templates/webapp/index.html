@@ -7,7 +7,9 @@
 </div>
 <script type="text/javascript">
 $(function() {
-  $(".hunt-list").huntList({ 'url': "{% url api-current-hunts %}" });
+  $(".hunt-list").huntList({ url: "{% url api-current-hunts %}",
+    defaultImage: "{{ MEDIA_URL }}img/default_hunt.png"
+  });
 });
 </script>
 {% endblock %}
