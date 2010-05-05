@@ -18,6 +18,9 @@
 <div class="view-all"><a href="{{ show_all_url }}">Show all...</a></div>
 <script type="text/javascript">
 $(function() {
-  $(".comment-list").commentList({ 'url': "{{ comments_url }}", 'form': '.comment-form' });
+  $(".comment-list").commentList({ url: "{{ comments_url }}",
+    form: '.comment-form',
+    defaultImage: '{{ MEDIA_URL }}img/default_user.png'
+  });
 });
 </script>

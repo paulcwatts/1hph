@@ -1,5 +1,6 @@
 {% extends "base_title.html" %}
 {% load indicator %}
+{% load webapp_defaults %}
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/blueprint/buttons/screen.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ballot.css"/>
@@ -7,9 +8,10 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/ballot.js"></script>
 {% endblock %}
-{% block title-thumb-src %}{{ hunt.get_thumbnail_url }}{% endblock %}
+{% block title-thumb-src %}{% hunt_thumbnail hunt %}{% endblock %}
 {% block title-line1 %}Hunt: <span class="phrase">{{ hunt.phrase }}</span>{% endblock %}
 {% block title-line2 %}Some other info{% endblock %}
+
 {% block page-content %}
 {% comment %}
  A hunt can be in four states: FUTURE, CURRENT, VOTING, FINISHED
@@ -88,8 +90,6 @@
     </button>
   </div>
 </div>
-
-
 <script type="text/javascript">
 var huntURL = null;
 var huntObj = null;
@@ -142,5 +142,4 @@ $(function() {
   });
 })
 </script>
-
 {% endblock %}

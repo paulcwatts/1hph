@@ -201,19 +201,6 @@ ul.nav {
   margin: 2px;
   border-
 }
-.page-title {
-  margin-top: -10px;
-  margin-left: 10px;
-  border:  1px #FF9900 solid;
-  vertical-align: middle;
-}
-.page-title h1 {
-  padding: 0;
-  margin: 0;
-}
-.page-content {
-  margin: 1em;
-}
 
 /* generic properties for thumbnails */
 .thumb, .thumb-icon, .comment-thumb-icon, .submission-thumb-icon {
@@ -254,6 +241,24 @@ li.two-line-item {
 .two-line-item .line2 {
   margin-bottom: 0;
   color: #424242;
+}
+
+/* page title customizations */
+.page-title {
+  margin-top: -10px;
+  margin-left: 10px;
+  border:  1px #FF9900 solid;
+  vertical-align: middle;
+}
+.page-title .two-line-item {
+  background-color: white;
+}
+.page-title h1 {
+  padding: 0;
+  margin: 0;
+}
+.page-content {
+  margin: 1em;
 }
 
 /* Comment list */

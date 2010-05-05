@@ -96,7 +96,7 @@
               var li = $(html);
               var source = comment.source;
               // No profile image yet???
-              $("img",li).setImage("");
+              $("img",li).setImage(config.defaultImage);
               $(".from", li).setSource(source);
               $(".comment", li).text(comment.text);
 
