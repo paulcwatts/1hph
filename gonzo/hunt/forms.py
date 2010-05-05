@@ -11,7 +11,6 @@ class SubmissionForm(forms.ModelForm):
             'longitude': widgets.HiddenInput(),
             'via': widgets.HiddenInput(attrs={'value':'Web'})
         }
-    valid_check = forms.BooleanField()
 
 class CommentForm(forms.ModelForm):
     class Meta:

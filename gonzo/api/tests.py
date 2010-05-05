@@ -77,7 +77,7 @@ class HuntAPITest(TestCase):
                                       'source_via': 'unit test' })
         self.failUnlessEqual(response.status_code, 400)
         f = open(os.path.join(path,'testfiles/test1.jpg'))
-        response = c.post(submit_url, { 'photo': f, 'via': 'unit test', 'valid_check':True })
+        response = c.post(submit_url, { 'photo': f, 'via': 'unit test' })
         self.failUnlessEqual(response.status_code, 201)
         self.failUnlessEqual(response['Content-Type'],'application/json')
         photo1Url = response['Content-Location']
