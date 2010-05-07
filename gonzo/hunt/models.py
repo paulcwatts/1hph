@@ -16,6 +16,8 @@ def to_json_time(d):
 class Hunt(models.Model):
     """
     The model for a hunt.
+
+    start_time is inclusive, but end_time and vote_end_time are exclusive
     """
     # Owner of the hunt
     owner            = models.ForeignKey(User)
@@ -48,6 +50,28 @@ class Hunt(models.Model):
         self.clean()
         self.slug = slugify(Hunt, self.phrase, exclude_pk=self.id)
         return super(Hunt,self).save(**kwargs)
+
+    class State:
+        FUTURE = "FUTURE"
+        CURRENT = "CURRENT"
+        VOTING = "VOTING"
+        FINISHED = "FINISHED"
+
+    def get_state(self):
+        """
+        Returns one of the following strings: FUTURE, CURRENT, VOTING, FINISHED
+        For hunts where end_time == vote_end_time, there is no "VOTING" state.
+        """
+        now = datetime.utcnow()
+        # Note start time is inclusive, but end time is exclusive.
+        if now >= self.vote_end_time:
+            return Hunt.State.FINISHED
+        elif now >= self.end_time:
+            return Hunt.State.VOTING
+        elif now >= self.start_time:
+            return Hunt.State.CURRENT
+        else:
+            return Hunt.State.FUTURE
 
     def _get_url(self,viewname):
         return (viewname, (), { 'slug' : self.slug })

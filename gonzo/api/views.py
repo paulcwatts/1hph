@@ -15,6 +15,8 @@ from gonzo.hunt.forms import *
 from gonzo.hunt.models import *
 from gonzo.hunt.utils import *
 
+JSON_TYPE='text/plain'
+
 def json_default(request):
     def wrap(obj):
         if hasattr(obj,'to_dict'):
@@ -32,12 +34,12 @@ def _to_json(request,obj,*args,**kwargs):
                             **kwargs)
     else:
         return HttpResponse(s,
-                            content_type='application/json',
+                            content_type=JSON_TYPE,
                             *args,
                             **kwargs)
 
 def _api_error(request,text):
-    return HttpResponseBadRequest(_to_json(request,{'error':text}), content_type='application/json')
+    return HttpResponseBadRequest(_to_json(request,{'error':text}), content_type=JSON_TYPE)
 
 def _ensure_current(request,hunt):
     now = datetime.utcnow()
@@ -90,7 +92,7 @@ def index(request):
 def current_hunts(request):
     now = datetime.utcnow()
     return _get_hunts(request,
-                      Hunt.objects.filter(start_time__lte=now, end_time__gt=now))
+                      Hunt.objects.filter(start_time__lte=now, vote_end_time__gt=now))
 
 @require_GET
 def hunt_by_id(request,slug):
@@ -164,7 +166,7 @@ def _submit_comment(request, hunt, submission):
     comment.save()
     response = HttpResponse(_to_json(request,comment),
                             status=201,
-                            content_type='application/json')
+                            content_type=JSON_TYPE)
     response['Content-Location'] = request.build_absolute_uri(comment.get_api_url())
     return response
 
@@ -224,7 +226,7 @@ def _submit_photo(request,hunt):
     # weird interaction between JSONView and ajaxSubmit().
     response = HttpResponse(_to_json(request,photo),
                             status=201,
-                            content_type=request.POST.get('response_content_type','application/json'))
+                            content_type=request.POST.get('response_content_type',JSON_TYPE))
     response['Content-Location'] = request.build_absolute_uri(photo.get_api_url())
     return response;
 
