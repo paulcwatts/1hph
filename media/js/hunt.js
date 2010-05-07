@@ -39,9 +39,9 @@
                   var li = $(html);
                   $("img",li).setImage(hunt.thumbnail, config.defaultImage);
                   $("h2",li).text(hunt.phrase);
-                  var start_time = new Date(hunt.start_time);
-                  var end_time = new Date(hunt.end_time);
-                  var vote_end_time = new Date(hunt.vote_end_time);
+                  var start_time = Utils.iso_date(hunt.start_time);
+                  var end_time = Utils.iso_date(hunt.end_time);
+                  var vote_end_time = Utils.iso_date(hunt.vote_end_time);
                   var now = new Date();
                   var timeText = "";
                   // Future hunt?
@@ -89,7 +89,7 @@
       if (settings) {
          $.extend(config, settings)
       }
-      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="from"></a> <span class="comment"></span><br/><span class="comment-line2 time comment-time"></span></li>'
+      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="from"></a> <span class="comment"></span><br/><span class="comment-line2 comment-time"><span class="time"></span> ago</span></li>'
       this.each(function() {
           var list = this;
           function add(comment, slide, now) {
@@ -100,8 +100,8 @@
               $(".from", li).setSource(source);
               $(".comment", li).text(comment.text);
 
-              var time = new Date(comment.time);
-              $(".time", li).text(Utils.getRelativeTimeSpanString(time, now));
+              var time = Utils.iso_date(comment.time);
+              $(".time", li).text(Utils.time_since(time, now));
               if (slide) {
                 li.hide().prependTo(list).slideDown();
               }
@@ -147,7 +147,7 @@
       if (settings) {
          $.extend(config, settings)
       }
-      var html = '<li class="submission-item"><a class="img-link" href=""><img class="submission-thumb-icon" src="" alt="submitted photo"/></a><br/>Posted by <a class="from"></a><br/><span class="time"></span></li>';
+      var html = '<li class="submission-item"><a class="img-link" href=""><img class="submission-thumb-icon" src="" alt="submitted photo"/></a><br/>Posted by <a class="from"></a><br/><span class="time"></span> ago</li>';
       this.each(function() {
           var list = this;
           function add(photo, slide, now) {
@@ -157,8 +157,8 @@
               $(".img-link", li).attr("href", photo.url);
               $(".from", li).setSource(source);
 
-              var time = new Date(photo.time);
-              $(".time", li).text(Utils.getRelativeTimeSpanString(time, now));
+              var time = Utils.iso_date(photo.time);
+              $(".time", li).text(Utils.time_since(time, now));
               if (slide) {
                 li.hide().prependTo(list).slideDown();
               }
