@@ -1,4 +1,22 @@
 // Javascript Hunt objects
+function huntState(hunt, now) {
+  if (!now) {
+    now = new Date();
+  }
+  if (now >= Utils.iso_date(hunt.vote_end_time)) {
+    return "FINISHED";
+  }
+  else if (now >= Utils.iso_date(hunt.end_time)) {
+    return "VOTING"
+  }
+  else if (now >= Utils.iso_date(hunt.start_time)) {
+    return "CURRENT";
+  }
+  else {
+    return "FUTURE";
+  }
+}
+
 (function($) {
   $.fn.setImage	= function(src,def,width,height) {
     var img;
@@ -14,9 +32,6 @@
     }
     this.each(function() {
       var dest = $(this);
-      // TODO: When given width and height, use the width and height
-      // of the destination element as a guide to resizing the image
-      // so as to preserve its aspect ratio.
       dest.attr("src", img);
     });
     return this;
@@ -89,7 +104,7 @@
       if (settings) {
          $.extend(config, settings)
       }
-      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="from"></a> <span class="comment"></span><br/><span class="comment-line2 comment-time"><span class="time"></span> ago</span></li>'
+      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="from"></a> <span class="comment"></span><br/><span class="comment-line2 list-time"><span class="time"></span> ago</span></li>'
       this.each(function() {
           var list = this;
           function add(comment, slide, now) {
@@ -147,7 +162,7 @@
       if (settings) {
          $.extend(config, settings)
       }
-      var html = '<li class="submission-item"><a class="img-link" href=""><img class="submission-thumb-icon" src="" alt="submitted photo"/></a><br/>Posted by <a class="from"></a><br/><span class="time"></span> ago</li>';
+      var html = '<li class="submission-item"><a class="img-link" href=""><img class="submission-thumb-icon" src="" alt="submitted photo"/></a><br/>Posted by <a class="from"></a> <span class="list-time"><span class="time"></span> ago</span></li>';
       this.each(function() {
           var list = this;
           function add(photo, slide, now) {

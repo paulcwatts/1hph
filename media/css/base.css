@@ -156,7 +156,8 @@ ul.nav, .two-line, .submission-list, .comment-list {
 
 /* generic properties for string types */
 .from { font-weight: bold; }
-.time { color: #424242; }
+.time, .list-time { color: #424242; }
+.list-time { font-size: 75%; }
 .phrase { text-transform: lowercase; quotes: \&#8220\; \&#8221\; \&#8216\; \&#8217\;; }
 .phrase:before { content: open-quote; }
 .phrase:after { content: close-quote; }
@@ -261,6 +262,8 @@ li.two-line-item {
   margin: 1em;
 }
 
+
+
 /* Comment list */
 .comment-list {
 }
@@ -273,13 +276,13 @@ li.two-line-item {
   max-width: 30px;
 }
 .comment-time {
-  font-size: 75%;
 }
 
 /* Submission list */
 .submission-list {
 }
 .submission-item {
+  margin: 10px auto;
   text-align: center;
 }
 .submission-thumb-icon {
@@ -290,6 +293,11 @@ li.two-line-item {
 .counter {
    font-size: 700%;
    line-height: 1.0;
+}
+
+/* Hunt state objects initially begin invisible */
+.hunt-state-obj {
+   display: none;
 }
 
 /* Voting button */

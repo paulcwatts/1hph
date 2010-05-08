@@ -17,7 +17,8 @@ Utils.iso_date = function(dString) {
     result.setUTCSeconds(parseInt(d[11],10));
     if (d[12]) {
       result.setUTCMilliseconds(parseFloat(d[12]) * 1000);
-    } else {
+    }
+    else {
       result.setUTCMilliseconds(0);
     }
     if (d[13] != 'Z') {

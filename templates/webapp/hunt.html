@@ -15,20 +15,29 @@
 {% block page-content %}
 {% comment %}
  A hunt can be in four states: FUTURE, CURRENT, VOTING, FINISHED
- By default, all items that match $(".state-obj") will be hidden
+ By default, all items that match $(".hunt-state-obj") will be hidden
 
  Once we download the JSON and determine that which state we are in,
- we'll show all items that match $(".state-(statename)").
+ we'll show all items that match $(".hunt-state-(statename)").
 {% endcomment %}
 <div class="span-9 colborder">
-  <div class="vote-box">
+  <div class="hunt-state-obj hunt-state-FUTURE">
+    This hunt hasn't started yet. Check back later!
+    <hr/>
+  </div>
+  <div class="hunt-state-obj hunt-state-FINISHED">
+    <p>This hunt has ended.</p>
+    <p><a href="{% url photo-index hunt.slug %}">See all submissions</a></p>
+    <hr/>
+  </div>
+  <div class="vote-box hunt-state-obj hunt-state-CURRENT hunt-state-VOTING">
     <button id="vote-button" type="submit" class="vote-button button positive">
       <img src="{{ MEDIA_URL }}css/blueprint/buttons/icons/photos.png" alt=""/>
       Click here to start voting!
     </button>
     <hr/>
   </div>
-  <div class="submit-box">
+  <div class="submit-box hunt-state-obj hunt-state-CURRENT">
     <h3>Submit a photo</h3>
     {% if submit_form.is_multipart %}
     <form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}" enctype="multipart/form-data">
@@ -64,16 +73,23 @@
   </div>
 </div>
 <div class="span-5 last">
-    {% with hunt.submission_set.all|length as count %}
-      <div id="num-submissions" class="num-submissions counter center-text">{{ count }}</div>
-      <div class="center-text hint-color">submission{{ count|pluralize }}</div>
-    {% endwith %}
-    <hr/>
+    <div class="hunt-state-obj hunt-state-CURRENT hunt-state-VOTING hunt-state-FINISHED">
+      {% with hunt.submission_set.all|length as count %}
+        <div id="num-submissions" class="num-submissions counter center-text">{{ count }}</div>
+        <div class="center-text hint-color">submission{{ count|pluralize }}</div>
+      {% endwith %}
+      <hr/>
+    </div>
+    <div class="hunt-state-obj hunt-state-CURRENT hunt-state-VOTING">
      {% url api-photo-index hunt.slug as submissions_url %}
      {% url photo-index hunt.slug as show_all_url %}
      {% with "Recent Submissions" as submissions_title %}
          {% include "includes/submissions.html" %}
      {% endwith %}
+     </div>
+    <div class="hunt-state-obj hunt-state-FINISHED">
+    This will be the list of awards
+     </div>
 </div>
 <div id="vote-dialog" style="display: none;">
   <div class="head"><span class="phrase">{{ hunt.phrase }}</span><br/>Click on the photo you think better fits the phrase.</div>
@@ -98,7 +114,20 @@ $(function() {
   huntURL = $("link[type='application/json']").attr("href");
   $.getJSON(huntURL, function(data) {
     huntObj = data;
+    var state = huntState(huntObj);
+    $(".hunt-state-"+state).show();
+
+    // Only show the submissions (or bother retrieving them) if we need to.
+    if (state == "CURRENT" || state == "VOTING") {
+       $(".submission-list").submissionList({ 'url': huntObj.submissions });
+    }
   });
+
+  $(".comment-list").commentList({ url: "{{ comments_url }}",
+      form: '.comment-form',
+      defaultImage: '{{ MEDIA_URL }}img/default_user.png'
+  });
+
   var form = $("#upload");
   form.submit(function() {
     var indicator = $(".indicator", form);
