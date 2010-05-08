@@ -1,16 +1,22 @@
 {% extends "base_title.html" %}
 {% load indicator %}
-{% load webapp_defaults %}
-{% block head %}
+{% load webapp_extras %}
+{% block extra_css %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/blueprint/buttons/screen.css"/>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ballot.css"/>
+{% endblock %}
+{% block extra_links %}
 <link rel="alternate" type="application/json" href="{% url api-hunt hunt.slug %}"/>
+{% endblock %}
+{% block extra_script %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/ballot.js"></script>
 {% endblock %}
+
+{# Header stuff #}
 {% block title-thumb-src %}{% hunt_thumbnail hunt %}{% endblock %}
 {% block title-line1 %}Hunt: <span class="phrase">{{ hunt.phrase }}</span>{% endblock %}
-{% block title-line2 %}Some other info{% endblock %}
+{% block title-line2 %}{% hunt_status hunt %}{% endblock %}
 
 {% block page-content %}
 {% comment %}

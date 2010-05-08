@@ -8,12 +8,15 @@
 <!--[if lt IE 8]><link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/base.css"/>
 {% endblock %}
+{% block extra_css %}{% endblock %}
+{% block extra_links %}{% endblock %}
 {% block default_script %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.1.custom.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/hunt.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/utils.js"></script>
 {% endblock %}
+{% block extra_script %}{% endblock %}
 {% block head %}{% endblock %}
 </head>
 <body>
