@@ -119,7 +119,7 @@ class Hunt(models.Model):
 
 class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)
-    time            = models.DateTimeField(default=datetime.utcnow())
+    time            = models.DateTimeField(default=datetime.utcnow)
     # The URL to the photo
     photo           = ImageWithThumbsField(upload_to="photos",
                                         max_length=256,
@@ -185,7 +185,7 @@ class Submission(models.Model):
 class Comment(models.Model):
     hunt            = models.ForeignKey(Hunt)
     submission      = models.ForeignKey(Submission, null=True)
-    time            = models.DateTimeField(default=datetime.utcnow())
+    time            = models.DateTimeField(default=datetime.utcnow)
     text            = models.CharField(max_length=256)
 
     # Null means this comes from an unauthenticated user
@@ -226,7 +226,7 @@ class Comment(models.Model):
 class Vote(models.Model):
     hunt            = models.ForeignKey(Hunt)
     submission      = models.ForeignKey(Submission)
-    time            = models.DateTimeField(default=datetime.utcnow())
+    time            = models.DateTimeField(default=datetime.utcnow)
     value           = models.IntegerField()
 
     # Null means this comes from an unauthenticated user

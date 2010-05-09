@@ -4,14 +4,16 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-import json
+import json, time
 from datetime import datetime, timedelta
 
+from django.core.files import File
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 
 from gonzo.hunt import models
+from gonzo.hunt import testfiles
 
 def make_hunt(user, phrase, tag, start, end_delta=timedelta(hours=1), vote_delta=None):
     end = start + end_delta
@@ -26,7 +28,7 @@ def make_hunt(user, phrase, tag, start, end_delta=timedelta(hours=1), vote_delta
                     end_time=end,
                     vote_end_time=vote)
     h.save()
-    return h;
+    return h
 
 class HuntModelTest(TestCase):
     def setUp(self):
@@ -107,6 +109,107 @@ class HuntModelTest(TestCase):
                              start=now - timedelta(hours=2),
                              end_delta=timedelta(hours=1))
         self.assertEquals(finished.get_state(), models.Hunt.State.FINISHED)
+
+class SubmitTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('testdude','test@test.com','password')
+        self.user.save()
+        # Create a hunt
+        self.hunt = make_hunt(self.user,
+                              'my submit hunt',
+                              'submithunt',
+                              start=datetime.utcnow())
+
+    def tearDown(self):
+        self.hunt.delete()
+        self.user.delete()
+
+    def test_order(self):
+        s1 = models.Submission(hunt=self.hunt,
+                               user=self.user,
+                               ip_address='127.0.0.1',
+                               via='unit test')
+        s1.photo.file = File(testfiles.get_file_path('test1.jpg'))
+        s1.photo_width = 2048
+        s1.photo_height = 1536
+        s1.save()
+
+        time.sleep(1)
+        s2 = models.Submission(hunt=self.hunt,
+                                anon_source='twitter:joulespersecond',
+                                ip_address='127.0.0.1',
+                                via='unit test')
+        s2.photo.file = File(testfiles.get_file_path('test1.jpg'))
+        s2.photo_width = 2048
+        s2.photo_height = 1536
+        s2.save()
+
+        self.assertEquals(self.hunt.submission_set.count(), 2)
+        # The anonymous one should be first
+        self.assertEquals(self.hunt.submission_set.all()[0].anon_source, 'twitter:joulespersecond')
+        self.assertEquals(self.hunt.submission_set.all()[1].user, self.user)
+
+
+class CommentTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('testdude','test@test.com','password')
+        self.user.save()
+        # Create a hunt
+        self.hunt = make_hunt(self.user,
+                              'my comment hunt',
+                              'commenthunt',
+                              start=datetime.utcnow())
+        self.submission = models.Submission(hunt=self.hunt,
+                                     user=self.user,
+                                     ip_address='127.0.0.1',
+                                     via='unit test')
+        self.submission.photo.file = File(testfiles.get_file_path('test1.jpg'))
+        self.submission.photo_width = 2048
+        self.submission.photo_height = 1536
+        self.submission.save()
+
+    def tearDown(self):
+        self.submission.delete()
+        self.hunt.delete()
+        self.user.delete()
+
+    def test_hunt_order(self):
+        # Make two comments on the hunt, separated by a second or so
+        hunt1 = models.Comment.objects.create(hunt=self.hunt,
+                                   user=self.user,
+                                   text='Comment 1',
+                                   ip_address='127.0.0.1')
+
+        time.sleep(1)
+        hunt2 = models.Comment.objects.create(hunt=self.hunt,
+                                    anon_source='twitter:joulespersecond',
+                                    text='Comment 2',
+                                    ip_address='127.0.0.1')
+        self.assertEquals(self.hunt.comment_set.count(), 2)
+        # Make sure 'Comment 2' is first
+        self.assertEquals(self.hunt.comment_set.all()[0].text, 'Comment 2')
+        self.assertEquals(self.hunt.comment_set.all()[1].text, 'Comment 1')
+
+        s1 = models.Comment.objects.create(hunt=self.hunt,
+                                   submission=self.submission,
+                                   user=self.user,
+                                   text='Photo Comment 1',
+                                   ip_address='127.0.0.1')
+
+        time.sleep(1)
+        s2 = models.Comment.objects.create(hunt=self.hunt,
+                                    submission=self.submission,
+                                    anon_source='twitter:joulespersecond',
+                                    text='Photo Comment 2',
+                                    ip_address='127.0.0.1')
+        self.assertEquals(self.submission.comment_set.count(), 2)
+        # Make sure 'comment 2' is first
+        self.assertEquals(self.submission.comment_set.all()[0].text, 'Photo Comment 2')
+        self.assertEquals(self.submission.comment_set.all()[1].text, 'Photo Comment 1')
+        # There should be 4 hunt comments how
+        self.assertEquals(self.hunt.comment_set.count(), 4)
+        # To get all the non-submission hunts
+        self.assertEquals(self.hunt.comment_set.filter(submission=None).count(), 2)
 
 
 __test__ = {}
