@@ -1,10 +1,33 @@
 {% extends "base.html" %}
+{% load webapp_extras %}
+{% block extra_links %}
+<link rel="alternate" type="application/json" href="{% url api-photo submission.hunt.slug submission.id %}"/>
+{% endblock %}
+{% block extra_script %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
+{% endblock %}
 {% block content %}
-<h2>{{ submission.hunt.phrase }}</h2>
+<div class="page-content">
+  {% with submission.get_source as source %}
+    <h1>Posted by <a class="from" href="{{ source.url }}">{{ source.name }}</a> via {{ source.via }}</h1>
+    <h2>{{ submission.time|mytimesince }} ago for hunt <a class="phrase" href="{% url hunt submission.hunt.slug %}">{{ submission.hunt.phrase }}</a></h2>
+  {% endwith %}
 
-<p>
-<a href="{{ submission.photo.url }}" title="Full size photo">
-<img src="{{ submission.photo.url_240x180 }}" />
-</a>
-</p>
+  <div class="photo">
+    <a href="{{ submission.photo.url }}" title="Full size photo">
+       <img class="thumb" src="{{ submission.photo.url_240x180 }}" alt="submitted photo"/>
+    </a>
+  </div>
+
+  {% url api-photo-comment-index submission.hunt.slug submission.id as comments_url %}
+  {% include "includes/comments.html" %}
+</div>
+<script type="text/javascript">
+$(function() {
+  $(".comment-list").commentList({ url: "{{ comments_url }}",
+      form: '.comment-form',
+      defaultImage: '{{ MEDIA_URL }}img/default_user.png'
+  });
+});
+</script>
 {% endblock %}

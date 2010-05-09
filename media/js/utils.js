@@ -77,6 +77,9 @@ Utils.time_since = function(d, now) {
        break;
      }
   }
+  if (i == chunks.length) {
+    return 'less than a minute';
+  }
   var s = count + " " + chunks[i].text(count);
   if (i + 1 < chunks.length) {
     // now get the second item

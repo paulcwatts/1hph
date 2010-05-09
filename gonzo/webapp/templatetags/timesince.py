@@ -7,7 +7,7 @@ import time
 from django.utils.tzinfo import LocalTimezone
 from django.utils.translation import ungettext, ugettext
 
-def timesince(d, now=None):
+def mytimesince(d, now=None):
     """
     Takes two datetime objects and returns the time between d and now
     as a nicely formatted string, e.g. "10 minutes".  If d occurs after now,
@@ -35,10 +35,7 @@ def timesince(d, now=None):
         now = datetime.datetime(now.year, now.month, now.day)
 
     if not now:
-        if d.tzinfo:
-            now = datetime.datetime.now(LocalTimezone(d))
-        else:
-            now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
 
     # ignore microsecond part of 'd' since we removed it from 'now'
     delta = now - (d - datetime.timedelta(0, 0, d.microsecond))
@@ -50,6 +47,8 @@ def timesince(d, now=None):
         count = since // seconds
         if count != 0:
             break
+    if not count:
+        return 'less than a minute'
     s = ugettext('%(number)d %(type)s') % {'number': count, 'type': name(count)}
     if i + 1 < len(chunks):
         # Now get the second item
@@ -59,14 +58,11 @@ def timesince(d, now=None):
             s += ugettext(', %(number)d %(type)s') % {'number': count2, 'type': name2(count2)}
     return s
 
-def timeuntil(d, now=None):
+def mytimeuntil(d, now=None):
     """
     Like timesince, but returns a string measuring the time until
     the given time.
     """
     if not now:
-        if getattr(d, 'tzinfo', None):
-            now = datetime.datetime.now(LocalTimezone(d))
-        else:
-            now = datetime.datetime.now()
-    return timesince(now, d)
+        now = datetime.datetime.utcnow()
+    return mytimesince(now, d)

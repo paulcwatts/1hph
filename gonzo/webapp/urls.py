@@ -38,6 +38,7 @@ urlpatterns = patterns('gonzo.webapp.views',
             'template_name':'webapp/submission.html',
             'template_object_name':'submission',
             'extra_context': {
+                'comment_form': CommentForm()
             }
         },
         name='photo'),
