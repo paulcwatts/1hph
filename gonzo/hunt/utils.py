@@ -6,19 +6,20 @@ from django.utils.translation import ugettext_lazy as _
 def get_anon_source(request):
     return None
 
-def get_source_json(request, obj):
+def get_source(obj):
     if obj.user:
         username = obj.user.username
-        result = { 'name': username,
-                'url': request.build_absolute_uri(
-                        reverse('profile', kwargs={ 'slug': username })) }
+        result = {'name': username, 'url': reverse('profile', kwargs={ 'slug': username }) }
     else:
-        # TODO:
-        # For 'twitter:' urls, get the twitter username and twitter profile url
-        # For 'facebook:' urls, the same
-        # For 'anon:' urls, the phrase "anonymous"
-        result = { 'name': 'anonymous' }
+        # TODO: Twitter, Facebook
+        result = {'name': 'anonymous' }
     if hasattr(obj,'via'):
         result['via'] = obj.via
+    return result
+
+def get_source_json(request, obj):
+    result = get_source(obj)
+    if 'url' in result:
+        result['url'] = request.build_absolute_uri(result['url'])
     return result
 

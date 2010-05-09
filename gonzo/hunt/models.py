@@ -5,8 +5,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
+from django.core.urlresolvers import reverse
+
 from gonzo.utils import slugify
-from gonzo.hunt.utils import get_source_json
+from gonzo.hunt import utils
 from gonzo.hunt.thumbs import ImageWithThumbsField
 
 def to_json_time(d):
@@ -163,6 +165,9 @@ class Submission(models.Model):
     def get_comment_stream_url(self):
         return self._get_url('api-photo-comment-stream')
 
+    def get_source(self):
+        return utils.get_source(self)
+
     def to_dict(self,request):
         json = { 'time': to_json_time(self.time),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
@@ -173,7 +178,7 @@ class Submission(models.Model):
             json['latitude'] = self.latitude
         if self.longitude:
             json['longitude'] = self.longitude
-        json['source'] = get_source_json(request, self)
+        json['source'] = utils.get_source_json(request, self)
         return json
 
 
@@ -209,10 +214,13 @@ class Comment(models.Model):
                     { 'slug': self.hunt.slug,
                       'comment_id': self.id })
 
+    def get_source(self):
+        return utils.get_source(self)
+
     def to_dict(self, request):
         return {
             'time': to_json_time(self.time),
-            'source': get_source_json(request, self),
+            'source': utils.get_source_json(request, self),
             'text': self.text }
 
 class Vote(models.Model):
@@ -238,6 +246,9 @@ class Vote(models.Model):
 
     def __unicode__(self):
         return "%s %s %+d" % (self.hunt.slug, self.user or self.anon_source, self.value)
+
+    def get_source(self):
+        return utils.get_source(self)
 
 #
 # This class captures any awards given to each submission.
@@ -274,6 +285,9 @@ class Award(models.Model):
 
     def __unicode__(self):
         return '%s %s %s' % (self.hunt.slug, self.user or self.anon_source, self.value)
+
+    def get_source(self):
+        return utils.get_source(self)
 
 #
 # Admin
