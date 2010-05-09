@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 
 from gonzo.hunt import models
 from gonzo.hunt.tests import make_hunt
+from gonzo.hunt import testfiles
 
 class StringFile(StringIO.StringIO):
     def __init__(self,name,buffer):
@@ -68,13 +69,11 @@ class HuntAPITest(TestCase):
         # TODO: Test submssion -- authenticated and anonymous
         # photo, latitude, longitude, source_via
         # First test an invalid file
-        import os.path
-        path = os.path.abspath(os.path.dirname(__file__))
         response = c.post(submit_url, { 'photo':
                                       StringFile("testfile.txt","This is an invalid photo"),
                                       'source_via': 'unit test' })
         self.failUnlessEqual(response.status_code, 400)
-        f = open(os.path.join(path,'testfiles/test1.jpg'))
+        f = testfiles.open_file('test1.jpg')
         response = c.post(submit_url, { 'photo': f, 'via': 'unit test' })
         self.failUnlessEqual(response.status_code, 201)
         #self.failUnlessEqual(response['Content-Type'],'application/json')
