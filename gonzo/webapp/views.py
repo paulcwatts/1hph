@@ -16,4 +16,9 @@ def hunt_comments(request, slug):
                         })
 
 def photo_index(request, slug):
-    return HttpResponse("photo index")
+    hunt = get_object_or_404(Hunt,slug=slug)
+    return object_list(request,
+                       queryset=hunt.submission_set.filter(is_removed=False),
+                       template_name='webapp/hunt_submission_list.html',
+                       template_object_name='submission',
+                       extra_context={ 'hunt': hunt })

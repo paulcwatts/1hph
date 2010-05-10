@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load webapp_extras %}
+{% block extra_css %}
+<style type="text/css">
+.hunt-state-{{ hunt.get_state }} { display: block; }
+</style>
+{% endblock %}
+{% block extra_links %}
+<link rel="alternate" type="application/json" href="{% url api-photo-index hunt.slug %}"/>
+{% endblock %}
+{% block content %}
+<div class="page-content">
+   <h1>Entries for <a class="phrase" href="{% url hunt hunt.slug %}">{{ hunt.phrase }}</a></h1>
+  <div class="span-9 colborder">
+    <div class="hunt-state-obj hunt-state-FUTURE">
+      This hunt hasn't started yet. Check back later!
+      <hr/>
+    </div>
+    <div class="hunt-state-obj hunt-state-CURRENT hunt-state-VOTING">
+      {% if submission_list %}
+      <ul class="submission-list">
+        {% for submission in submission_list %}
+          <li class="submission-item">
+            <a class="img-link" href="{% url photo hunt.slug submission.id %}">
+              <img class="submission-thumb-icon" src="{{ submission.photo.url_240x180 }}" alt="submitted photo"/></a><br/>
+              {% with submission.get_source as source %}
+                Posted by <a class="from">{{ source.name }}</a>
+                  <span class="list-time"><span class="time">{{ submission.time|mytimesince }}</span> ago</span>
+              {% endwith %}
+          </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+        No submissions yet. Be the first!
+      {% endif %}
+     </div>
+  </div>
+  <div class="span-5 last">
+      <div class="hunt-state-obj hunt-state-CURRENT hunt-state-VOTING hunt-state-FINISHED">
+        {% with submission_list|length as count %}
+          <div id="num-submissions" class="num-submissions counter center-text">{{ count }}</div>
+          <div class="center-text hint-color">submission{{ count|pluralize }}</div>
+        {% endwith %}
+        <hr/>
+      </div>
+  </div>
+</div>
+{% endblock %}
