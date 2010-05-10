@@ -4,7 +4,7 @@ from django.views.generic.list_detail import object_detail
 
 ALLUSERS = User.objects.all()
 
-urlpatterns = patterns('gonzo.uprofile.views',
+urlpatterns = patterns('gonzo.webapp.user.views',
     url(r'^settings/$',
         'settings',
         name='profile-settings'),

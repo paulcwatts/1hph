@@ -10,7 +10,7 @@ urlpatterns = patterns('',
         },
         name='account-logout'),
     url(r'^signup/',
-        'gonzo.account.views.signup',
+        'gonzo.webapp.account.views.signup',
         name='account-signup'),
     # TODO: All the password change/reset/stuff
 )

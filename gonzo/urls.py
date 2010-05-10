@@ -8,12 +8,13 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', direct_to_template, { 'template':'home.html'}),
-    (r'^hunt/', include('gonzo.webapp.urls')),
-    (r'^profile/', include('gonzo.uprofile.urls')),
+    (r'^hunt/', include('gonzo.webapp.hunt.urls')),
+    (r'^user/', include('gonzo.webapp.user.urls')),
+    (r'^account/', include('gonzo.webapp.account.urls')),
+    (r'^help/', include('gonzo.webapp.help.urls')),
+
     (r'^api/', include('gonzo.api.urls')),
-    (r'^account/', include('gonzo.account.urls')),
     (r'^oauth/', include('gonzo.oauth.urls')),
-    (r'^help/', include('gonzo.help.urls')),
 
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),

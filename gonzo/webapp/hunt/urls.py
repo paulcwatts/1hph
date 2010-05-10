@@ -32,7 +32,7 @@ submission_detail = {
     }
 }
 
-urlpatterns = patterns('gonzo.webapp.views',
+urlpatterns = patterns('gonzo.webapp.hunt.views',
     url(r'^$',
         'current_hunts',
         name='hunt-index'),
