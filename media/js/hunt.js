@@ -97,14 +97,14 @@ function huntState(hunt, now) {
 
   $.fn.commentList = function(settings) {
       var config = {
-        'url': '',
+        'url': null,
         'form': '',
         'defaultImage': null
       };
       if (settings) {
          $.extend(config, settings)
       }
-      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="from"></a> <span class="comment"></span><br/><span class="comment-line2 list-time"><span class="time"></span> ago</span></li>'
+      var html = '<li class="comment-item"><img class="comment-thumb-icon thumb-icon-left"/><div class="clearfix"><a class="from"></a> <span class="comment"></span><br/><span class="comment-line2 list-time"><span class="time"></span> ago</span></div></li>'
       this.each(function() {
           var list = this;
           function add(comment, slide, now) {
@@ -144,19 +144,21 @@ function huntState(hunt, now) {
             return false;
           });
 
-          $.getJSON(config.url, function(data) {
-              var now = new Date();
-              $.each(data.comments, function(i,comment) {
-                add(comment, false, now);
-              });
-          });
+          if (config.url) {
+            $.getJSON(config.url, function(data) {
+                var now = new Date();
+                $.each(data.comments, function(i,comment) {
+                  add(comment, false, now);
+                });
+            });
+          }
       });
       return this;
   };
 
   $.fn.submissionList = function(settings) {
       var config = {
-        'url': '',
+        'url': null,
         'add': null
       };
       if (settings) {
@@ -186,12 +188,14 @@ function huntState(hunt, now) {
             return this;
           }
 
-          $.getJSON(config.url, function(data) {
-              var now = new Date();
-              $.each(data.submissions, function(i,submissions) {
-                add(submissions, false, now);
-              });
-          });
+          if (config.url) {
+            $.getJSON(config.url, function(data) {
+                var now = new Date();
+                $.each(data.submissions, function(i,submissions) {
+                  add(submissions, false, now);
+                });
+            });
+          }
       });
       return this;
   };

@@ -1,18 +1,5 @@
-{% load indicator %}
 <h3>Leave a comment</h3>
-<form class="comment-form" method="POST" action="{{ comments_url }}">
-  <table>
-    <tr>
-      <td>You say</td>
-      <td>
-        {{ comment_form.text }}
-        {% csrf_token %}
-        <input type="submit" value="Comment"/>
-        {% indicator "sending..." %}
-      </td>
-    </tr>
-  </table>
-</form>
+{% include "includes/comment_form.html" %}
 <ul class="comment-list">
 </ul>
 {% if show_all_url %}

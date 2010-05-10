@@ -1,0 +1,14 @@
+{% load indicator %}
+<form class="comment-form" method="POST" action="{{ comments_url }}">
+  <table>
+    <tr>
+      <td>You say</td>
+      <td>
+        {{ comment_form.text }}
+        {% csrf_token %}
+        <input type="submit" value="Comment"/>
+        {% indicator "sending..." %}
+      </td>
+    </tr>
+  </table>
+</form>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load webapp_extras %}
+{% block extra_links %}
+<link rel="alternate" type="application/json" href="{% url api-hunt-comment-index hunt.slug %}"/>
+{% endblock %}
+{% block extra_script %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
+{% endblock %}
+{% block content %}
+<div class="page-content">
+<h1>Comments for hunt <a class="phrase" href="{% url hunt hunt.slug %}">{{ hunt.phrase }}</a></h1>
+{% url api-hunt-comment-index hunt.slug as comments_url %}
+{% include "includes/comment_form.html" %}
+{% if comment_list %}
+  <ul class="comment-list">
+  {% for comment in comment_list %}
+    <li class="comment-item">
+      <img class="comment-thumb-icon thumb-icon-left" src="{{ MEDIA_URL }}img/default_user.png" />
+      <div class="clearfix">
+        {% with comment.get_source as source %}
+          <a class="from" href="{{ source.url }}">{{ source.name }}</a> <span class="comment">{{ comment.text }}</span><br/>
+        {% endwith %}
+        <span class="comment-line2 list-time"><span class="time">{{ comment.time|mytimesince }}</span> ago</span>
+      </div>
+    </li>
+   {% endfor %}
+   </ul>
+{% else %}
+  No comments.
+{% endif %}
+</div>
+<script type="text/javascript">
+$(function() {
+  $(".comment-list").commentList({ url: null,
+      form: '.comment-form',
+      defaultImage: '{{ MEDIA_URL }}img/default_user.png'
+  });
+});
+</script>
+{% endblock %}
