@@ -1,15 +1,38 @@
 {% extends "base.html" %}
+{% load webapp_extras %}
 {% block content %}
 <div class="page-content">
-  <h1>Current and past hunts</h1>
+  <h1>{{ title }}</h1>
+  {% if hunt_list %}
   <ul class="hunt-list two-line">
+     {% for hunt in hunt_list %}
+       <li class="two-line-item clickable">
+         <img class="thumb-icon thumb-icon-left" src="{% hunt_thumbnail hunt %}" />
+         <div class="clearfix">
+           <h2 class="line1 phrase"><a href="{% url hunt hunt.slug %}">{{ hunt.phrase }}</a></h2>
+           <h3 class="line2">{% hunt_status hunt %}</h3>
+         </div>
+       </li>
+     {% endfor %}
   </ul>
+  {% else %}
+   No hunts.
+  {% endif %}
+  {% if show_all %}
+  <p><a href="{% url all-hunt-index %}">Show all hunts</a></p>
+  {% endif %}
 </div>
 <script type="text/javascript">
 $(function() {
-  $(".hunt-list").huntList({ url: "{% url api-current-hunts %}",
-    defaultImage: "{{ MEDIA_URL }}img/default_hunt.png"
-  });
+   $(".two-line-item").hover(function(e) {
+     $(this).addClass("hover");
+   },
+   function(e) {
+     $(this).removeClass("hover");
+   }).click(function() {
+     // Pretend we clicked on the link
+     window.location = $(".phrase a", this).attr("href");
+   });
 });
 </script>
 {% endblock %}

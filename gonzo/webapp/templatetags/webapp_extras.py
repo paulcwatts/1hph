@@ -26,7 +26,7 @@ def hunt_status(hunt):
     elif state == Hunt.State.VOTING:
         return "Voting ends in " + mytimeuntil(hunt.vote_end_time)
     elif state == Hunt.State.FINISHED:
-        return "Hunt ended % ago" % (mytimesince(hunt.vote_end_time))
+        return "Hunt ended %s ago" % (mytimesince(hunt.vote_end_time),)
 
 @register.filter
 def mytimesince(value, arg=None):

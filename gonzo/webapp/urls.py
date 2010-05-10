@@ -1,16 +1,26 @@
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
-from django.views.generic.list_detail import object_detail
+from django.views.generic.list_detail import object_detail, object_list
 from gonzo.hunt.models import Hunt,Submission
 from gonzo.hunt.forms import *
 
+ALLHUNTS = Hunt.objects.all()
+
 hunt_detail = {
-    'queryset': Hunt.objects.all(),
+    'queryset': ALLHUNTS,
     'template_name':'webapp/hunt_detail.html',
     'template_object_name':'hunt',
     'extra_context': {
         'submit_form': SubmissionForm(),
         'comment_form': CommentForm()
+    }
+}
+hunt_list = {
+    'queryset': ALLHUNTS,
+    'template_name':'webapp/hunt_list.html',
+    'template_object_name':'hunt',
+    'extra_context': {
+        'title': 'All hunts past and present (and future)'
     }
 }
 submission_detail = {
@@ -24,9 +34,13 @@ submission_detail = {
 
 urlpatterns = patterns('gonzo.webapp.views',
     url(r'^$',
-        direct_to_template,
-        {'template':'webapp/hunt_list.html'},
+        'current_hunts',
         name='hunt-index'),
+
+    url(r'^all/$',
+        object_list,
+        hunt_list,
+        name='all-hunt-index'),
 
     url(r'^(?P<slug>[\w-]+)/$',
         object_detail,

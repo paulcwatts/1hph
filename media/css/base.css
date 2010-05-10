@@ -262,7 +262,13 @@ li.two-line-item {
   margin: 1em;
 }
 
-
+/* Hunt list -- the phrase link should not have an underline */
+.hunt-list .phrase a:hover {
+  text-decoration: none;
+}
+.hunt-list li.hover a {
+  color: #FF9900;
+}
 
 /* Comment list */
 .comment-list {
