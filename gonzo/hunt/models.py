@@ -1,5 +1,5 @@
 from datetime import datetime
-import pytz
+import pytz, random
 
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -23,6 +23,7 @@ class Hunt(models.Model):
     """
     # Owner of the hunt
     owner            = models.ForeignKey(User)
+    create_time      = models.DateTimeField(default=datetime.utcnow)
     # Three word phrase (crazy model submarine)
     phrase           = models.CharField(max_length=128)
     # The hunt slug (based on the phrase)
@@ -105,6 +106,7 @@ class Hunt(models.Model):
                 'phrase': self.phrase,
                 'slug': self.slug,
                 'tag': self.tag,
+                'create_time': to_json_time(self.create_time),
                 'start_time': to_json_time(self.start_time),
                 'end_time': to_json_time(self.end_time),
                 'vote_end_time': to_json_time(self.vote_end_time),
@@ -116,6 +118,11 @@ class Hunt(models.Model):
         if thumb:
             json['thumbnail'] = request.build_absolute_uri(thumb)
         return json
+
+
+shorten_chars="abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+def shorten_id():
+    return ''.join([random.choice(shorten_chars) for i in range(5)])
 
 class Submission(models.Model):
     hunt            = models.ForeignKey(Hunt)
@@ -133,6 +140,12 @@ class Submission(models.Model):
     latitude        = models.FloatField(null=True,blank=True)
     longitude       = models.FloatField(null=True,blank=True)
 
+    description     = models.TextField(blank=True)
+    # for right now, we will generate 5 character paths.
+    shortened_path  = models.CharField(unique=True,max_length=6,default=shorten_id)
+    # The MD5 sum will be used to see if there are any duplicates in the hunt
+    md5sum          = models.CharField(max_length=32,blank=True)
+
     # Null means this comes from an unauthenticated user
     user            = models.ForeignKey(User,null=True)
     # For anonymous entries, this will keep track of from where we found it.
@@ -142,13 +155,6 @@ class Submission(models.Model):
     # Where this was submitted, e.g., "Web" "Twitter", "1hph for Android"
     via             = models.CharField(max_length=32)
     is_removed      = models.BooleanField(default=False)
-    # TODO: To add when we get around to updating the model:
-    #remove_reason = models.CharField(max_length=32)
-    #description   = models.TextField()
-    # for right now, we will generate 5 character paths.
-    #shortened_path = models.CharField(unique=True,max_length=6,default=shorten_id)
-    # The MD5 sum will be used to see if there are any duplicates in the hunt
-    #md5sum        = models.CharField(max_length=32)
 
     class Meta:
         ordering = ["-time"]
@@ -177,6 +183,8 @@ class Submission(models.Model):
 
     def to_dict(self,request):
         json = { 'time': to_json_time(self.time),
+                'description': self.description,
+                'via': self.via,
                 'url': request.build_absolute_uri(self.get_absolute_url()),
                 'photo_url': request.build_absolute_uri(self.photo.url),
                 'thumbnail_url': request.build_absolute_uri(self.photo.url_240x180),
@@ -257,6 +265,10 @@ class Vote(models.Model):
     def get_source(self):
         return utils.get_source(self)
 
+    # Votes are anonymous, and these are "cleaned" to appear in the user's activity stream.
+    def to_dict(self, request):
+        return { 'type': 'vote', 'time': to_json_time(self.time) }
+
 #
 # This class captures any awards given to each submission.
 # For instance, "Hunt Winner" is the most common.
@@ -273,6 +285,7 @@ class Award(models.Model):
     )
 
     hunt            = models.ForeignKey(Hunt)
+    time            = models.DateTimeField(default=datetime.utcnow)
     # If we want to have any hunt-wide awards, rather than one
     # tied to a permission
     submission      = models.ForeignKey(Submission,null=True,blank=True)
@@ -281,6 +294,8 @@ class Award(models.Model):
     user            = models.ForeignKey(User,null=True)
     anon_source     = models.CharField(max_length=64,null=True,blank=True)
     value           = models.IntegerField(choices=AWARDS)
+    # The number of points this is worth
+    points          = models.IntegerField(default=0)
 
     # Make sure that, if there is a submission, and there is a hunt,
     # they are the same (a bit of a normalization problem)
