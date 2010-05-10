@@ -39,6 +39,7 @@ GET : Get the comment stream for this hunt
 
 urlpatterns = patterns('',
     (r'^hunt/', include('gonzo.api.hunt.urls')),
+    (r'^user/', include('gonzo.api.user.urls')),
 
     (r'^internal/assign_awards$', 'gonzo.api.hunt.views.assign_awards')
 )
