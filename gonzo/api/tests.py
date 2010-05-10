@@ -4,7 +4,7 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-import json
+import json, time
 import StringIO
 from datetime import datetime, timedelta
 
@@ -186,6 +186,96 @@ class CurrentHuntAPITest(TestCase):
         self.assert_(obj['hunts'])
         hunts = obj['hunts']
         self.assertEquals(len(hunts),2)
+
+
+class LimitAPITest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('testdude','test@test.com','password')
+        self.user.save()
+        self.hunt = make_hunt(self.user,
+                             'first test hunt',
+                             'firsttest',
+                             datetime.utcnow(),
+                             vote_delta=timedelta(hours=1))
+
+    def tearDown(self):
+        self.hunt.delete()
+        self.user.delete()
+
+    def _newSubmission(self,c,submit_url,f):
+        f.seek(0)
+        response = c.post(submit_url, { 'photo': f, 'via': 'unit test' })
+        self.failUnlessEqual(response.status_code, 201)
+        return (response['Content-Location'],json.loads(response.content))
+
+    def _newComment(self,c,comments_url,text):
+        response = c.post(comments_url, { 'text': text })
+        self.failUnlessEqual(response.status_code,201)
+
+    def _getChildArray(self,c,url,array):
+        response = c.get(url)
+        self.failUnlessEqual(response.status_code,200)
+        obj = json.loads(response.content)
+        return obj[array]
+
+
+
+    def test_limit(self):
+        c = Client()
+        c.login(username='testdude',password='password')
+        response = c.get('/api/hunt/')
+        self.failUnlessEqual(response.status_code,200)
+        obj = json.loads(response.content)
+        self.assert_(obj['hunts'])
+        hunts = obj['hunts']
+        self.assertEquals(len(hunts),1)
+        # Follow the URLs and see what we get
+        hunt = hunts[0]
+        response = c.get(hunt['url'])
+        self.failUnlessEqual(response.status_code,200)
+
+        submit_url = hunt['submissions']
+        hunt_comments_url = hunt['comments']
+
+        f = testfiles.open_file('test1.jpg')
+        photo1 = self._newSubmission(c,submit_url,f)
+        photo2 = self._newSubmission(c,submit_url,f)
+        photo3 = self._newSubmission(c,submit_url,f)
+
+        # Get the submissions, there should be three
+        submissions = self._getChildArray(c, submit_url, 'submissions')
+        self.failUnlessEqual(len(submissions), 3)
+        # Limit
+        submissions = self._getChildArray(c, submit_url+"?limit=1", 'submissions')
+        self.failUnlessEqual(len(submissions), 1)
+
+        # Post a few comments (stagger them so we can predict their order)
+        for t in ('one','two','three','four'):
+            time.sleep(1)
+            self._newComment(c,hunt_comments_url,t)
+
+        comments = self._getChildArray(c, hunt_comments_url, 'comments')
+        self.failUnlessEqual(len(comments), 4)
+        # Limit
+        comments = self._getChildArray(c, hunt_comments_url+"?limit=2", 'comments')
+        self.failUnlessEqual(len(comments), 2)
+        # Limit over how many there actually are
+        comments = self._getChildArray(c, hunt_comments_url+"?limit=5", 'comments')
+        self.failUnlessEqual(len(comments), 4)
+        # Offset
+        comments = self._getChildArray(c, hunt_comments_url+"?offset=1", 'comments')
+        self.failUnlessEqual(len(comments), 3)
+        self.failUnlessEqual(comments[0]['text'], 'three')
+        self.failUnlessEqual(comments[1]['text'], 'two')
+        self.failUnlessEqual(comments[2]['text'], 'one')
+        # Offset off the end
+        comments = self._getChildArray(c, hunt_comments_url+"?offset=5", 'comments')
+        self.failUnlessEqual(len(comments), 0)
+        # Offset + limit
+        comments = self._getChildArray(c, hunt_comments_url+"?offset=2&limit=2", 'comments')
+        self.failUnlessEqual(len(comments), 2)
+        self.failUnlessEqual(comments[0]['text'], 'two')
+        self.failUnlessEqual(comments[1]['text'], 'one')
 
 
 __test__ = {}

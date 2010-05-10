@@ -58,20 +58,29 @@ def _ensure_vote_current(request,hunt):
 def _get_json_or_404(klass,request,*args,**kwargs):
     return _to_json(request,get_object_or_404(klass,*args,**kwargs))
 
+def _slice(request,set):
+    limit = request.REQUEST.get('limit')
+    offset = request.REQUEST.get('offset')
+    if offset:
+        set = set[offset:]
+    if limit:
+        set = set[:limit]
+    return set
+
 def _get_hunts(request,set):
     # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
     # We should use pagination for this.
-    return _to_json(request,{ 'hunts':list(set)})
+    return _to_json(request,{ 'hunts':list(_slice(request,set))})
 
 def _get_photos(request,set):
     # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
     # We should use pagination for this.
-    return _to_json(request,{ 'submissions':list(set)})
+    return _to_json(request,{ 'submissions':list(_slice(request,set))})
 
 def _get_comments(request,set):
     # TODO: BAD! Don't use list() on a QuerySet. We don't know how large it is!
     # We should use pagination for this.
-    return _to_json(request,{ 'comments':list(set)})
+    return _to_json(request,{ 'comments':list(_slice(request,set))})
 
 def _new_hunt(request):
     # TODO: new-hunt requires a logged-in user with the appropriate permissions
@@ -101,7 +110,7 @@ def hunt_by_id(request,slug):
 def _get_ballot(request,hunt):
     try:
         return _get_photos(request,
-                           random.sample(hunt.submission_set.all(), 2))
+                           random.sample(hunt.submission_set.filter(is_removed=False), 2))
     except ValueError:
         return _api_error(request, "Not enough submissions")
 
@@ -187,7 +196,8 @@ def _comment_by_id(request,slug,comment_id,object_id=None):
 def hunt_comments(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
     if request.method == 'GET':
-        return _get_comments(request, hunt.comment_set.all())
+        return _get_comments(request,
+                             hunt.comment_set.filter(submission=None,is_removed=False))
     elif request.method == 'POST':
         return _submit_comment(request, hunt, None)
     else:
@@ -236,7 +246,8 @@ def _submit_photo(request,hunt):
 def photo_index(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
     if request.method == 'GET':
-        return _get_photos(request, hunt.submission_set.all())
+        return _get_photos(request,
+                           hunt.submission_set.filter(is_removed=False))
     elif request.method == 'POST':
         return _submit_photo(request, hunt)
     else:
@@ -261,7 +272,7 @@ def photo_stream(request,slug):
 def photo_comments(request,slug,object_id):
     photo = get_object_or_404(Submission,pk=object_id)
     if request.method == 'GET':
-        return _get_comments(request, photo.comment_set.all())
+        return _get_comments(request, photo.comment_set.filter(is_removed=False))
     elif request.method == 'POST':
         return _submit_comment(request, photo.hunt, photo)
     else:
@@ -298,7 +309,7 @@ def assign_awards(request):
         votes = []
         # There's probably a better way of doing this (all in SQL),
         # but who knows if it's fast at all.
-        for s in h.submission_set.all():
+        for s in h.submission_set.filter(is_removed=False):
             votes.append((s,s.vote_set.aggregate(Count('value'))['value__count']))
         votes.sort(lambda lhs, rhs: lhs[1] - rhs[1])
         votes = votes[:3]
