@@ -125,11 +125,11 @@ $(function() {
 
     // Only show the submissions (or bother retrieving them) if we need to.
     if (state == "CURRENT" || state == "VOTING") {
-       $(".submission-list").submissionList({ 'url': huntObj.submissions });
+       $(".submission-list").submissionList({ 'url': huntObj.submissions+"?limit=5" });
     }
   });
 
-  $(".comment-list").commentList({ url: "{{ comments_url }}",
+  $(".comment-list").commentList({ url: "{{ comments_url }}?limit=10",
       form: '.comment-form',
       defaultImage: '{{ MEDIA_URL }}img/default_user.png'
   });
