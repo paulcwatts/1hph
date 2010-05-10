@@ -142,6 +142,13 @@ class Submission(models.Model):
     # Where this was submitted, e.g., "Web" "Twitter", "1hph for Android"
     via             = models.CharField(max_length=32)
     is_removed      = models.BooleanField(default=False)
+    # TODO: To add when we get around to updating the model:
+    #remove_reason = models.CharField(max_length=32)
+    #description   = models.TextField()
+    # for right now, we will generate 5 character paths.
+    #shortened_path = models.CharField(unique=True,max_length=6,default=shorten_id)
+    # The MD5 sum will be used to see if there are any duplicates in the hunt
+    #md5sum        = models.CharField(max_length=32)
 
     class Meta:
         ordering = ["-time"]
