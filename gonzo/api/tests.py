@@ -324,6 +324,11 @@ class UserActivityAPITest(TestCase):
         self.failUnlessEqual(response.status_code, 201)
         return json.loads(response.content)
 
+    def _newCommentUrl(self, c, url, comment):
+        response = c.post(url, { 'text': comment })
+        self.failUnlessEqual(response.status_code, 201)
+        return json.loads(response.content)
+
     def _newVote(self, c, hunt, submission):
         response = c.post(hunt.get_ballot_url(), { 'url': submission })
         self.failUnlessEqual(response.status_code, 200)
@@ -342,6 +347,8 @@ class UserActivityAPITest(TestCase):
         s2 = self._newSubmission(c, self.private_hunt)
         self._newComment(c, self.public_hunt, 'public guy on public hunt')
         self._newComment(c, self.private_hunt, 'public guy on private hunt')
+        self._newCommentUrl(c, s1['comments'], 'public guy on s1')
+        self._newCommentUrl(c, s2['comments'], 'public guy on s2')
         c.logout()
 
         c.login(username='privateguy',password='password')
@@ -349,6 +356,8 @@ class UserActivityAPITest(TestCase):
         s4 = self._newSubmission(c, self.private_hunt)
         self._newComment(c, self.public_hunt, 'private guy on public hunt')
         self._newComment(c, self.private_hunt, 'private guy on private hunt')
+        self._newCommentUrl(c, s3['comments'], 'private guy on s3')
+        self._newCommentUrl(c, s4['comments'], 'private guy on s4')
         c.logout()
 
         c.login(username='publicguy',password='password')
@@ -376,12 +385,13 @@ class UserActivityAPITest(TestCase):
         response = c.get(private_activity_url)
         self.failUnlessEqual(response.status_code, 403)
 
+        EXPECTED = 8
         # Log in as public guy, it should be the same
         c.login(username='publicguy',password='password')
         public_activity = self._get(c, public_activity_url)
         self.assert_(public_activity['activity'])
         # One hunt, two submissions, two comments, two (=one) vote
-        self.failUnlessEqual(len(public_activity['activity']), 6)
+        self.failUnlessEqual(len(public_activity['activity']), EXPECTED)
         # private guy should be inaccessible
         response = c.get(private_activity_url)
         self.failUnlessEqual(response.status_code, 403)
@@ -393,7 +403,7 @@ class UserActivityAPITest(TestCase):
         self.assert_(public_activity['activity'])
         private_activity = self._get(c, private_activity_url)
         self.assert_(private_activity['activity'])
-        self.failUnlessEqual(len(private_activity['activity']), 6)
+        self.failUnlessEqual(len(private_activity['activity']), EXPECTED)
         c.logout()
 
         total_len = len(public_activity['activity'])
@@ -402,7 +412,20 @@ class UserActivityAPITest(TestCase):
         # so we are mainly just testing the argument and its parsing
         since = self.before.isoformat()
         activity = self._get(c, public_activity_url, data={'since': since})
-        self.failUnlessEqual(len(activity['activity']), 6)
+        self.failUnlessEqual(len(activity['activity']), EXPECTED)
+
+        # We can't necessarily test the order (since we added them too quickly)
+        # But we can test a few things that should be there
+        self.failUnlessEqual(activity['user']['name'], 'publicguy')
+        for a in activity['activity']:
+            self.assert_(a['type'])
+            self.assert_(a['time'])
+            self.assert_(a['hunt'])
+            t = a['type']
+            if t == "submission" or t == "award":
+                self.assert_(a['submission'])
+            if t == "comment":
+                self.assert_('submission' in a or 'hunt' in a)
 
         future = (self.before + timedelta(hours=2)).isoformat()
         activity = self._get(c, public_activity_url, data={'since': future})
