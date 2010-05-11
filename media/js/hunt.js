@@ -243,7 +243,7 @@ function huntState(hunt, now) {
             }
             else if (type == "comment") {
               if (submission) {
-                li = $(START + ' commented <a class="photo">a photo</a> to ' + HUNT_TIME_END);
+                li = $(START + ' commented on <a class="photo">a photo</a> in ' + HUNT_TIME_END);
               }
               else {
                 li = $(START + ' commented on ' + HUNT_TIME_END);
