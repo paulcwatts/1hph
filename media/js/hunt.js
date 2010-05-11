@@ -199,4 +199,93 @@ function huntState(hunt, now) {
       });
       return this;
   };
+
+  $.fn.activityList = function(settings) {
+      var config = {
+        'url': null,
+        'current_user': null,
+        'profile_user': null,
+        'loading': ''
+      };
+      if (settings) {
+         $.extend(config, settings)
+      }
+      // Current activities:
+      // <person> created hunt <hunt> <time> ago.
+      // <person> uploaded <a>a photo</a>  to hunt <hunt> <time> ago.
+      // <person> won <a>award</a> in the hunt <hunt> <time> ago.
+      // <person> commented on <a>a photo</a> in hunt <hunt> <time> ago.
+      // <person> commented on hunt <hunt> <time> ago.
+      // <person> voted in hunt <hunt> <time> ago.
+      //
+      // Where:
+      // <person> = <username>|"you"
+      // <hunt> = <a href="<hunt_url" class="phrase"><hunt_phrase></a>
+
+      var START = '<li class="activity-item"><a class="from"/>';
+      var HUNT_TIME_END = 'hunt <a class="phrase"></a> <span class="time"></span> ago.</li>'
+      this.each(function() {
+          var list = this;
+          function add(user, activity, slide, now) {
+            var li;
+            var type = activity.type;
+            var hunt = activity.hunt;
+            var submission = activity.submission;
+            var time = Utils.iso_date(activity.time);
+            if (type == "hunt") {
+              li = $(START + ' created ' + HUNT_TIME_END);
+              // Hunts
+              //$(".from").appendTo({ 'name': activity.hunt.owner, 'url': "" });
+
+            }
+            else if (type == "submission") {
+              li = $(START + ' uploaded <a class="photo">a photo</a> to ' + HUNT_TIME_END);
+            }
+            else if (type == "comment") {
+              if (submission) {
+                li = $(START + ' commented <a class="photo">a photo</a> to ' + HUNT_TIME_END);
+              }
+              else {
+                li = $(START + ' commented on ' + HUNT_TIME_END);
+              }
+            }
+            else if (type == "vote") {
+                li = $(START + ' voted in ' + HUNT_TIME_END);
+            }
+            else if (type == "award") {
+                li = $(START + ' won <a>award name</a> in hunt ' + HUNT_TIME_END);
+            }
+            else {
+              // Unknown
+              return;
+            }
+            var name = (user.name == config.current_user) ? "You" : user.name;
+            $(".from", li).text(name).attr("href", user.url);
+            $(".phrase", li).text(hunt.phrase).attr("href", hunt.url);
+            $(".time", li).text(Utils.time_since(time, now));
+
+            if (submission) {
+              $(".photo", li).attr("href", submission.url)
+            }
+            li.appendTo(list);
+          }
+          if (config.url) {
+          var loading = $(config.loading);
+            loading.show();
+            $.getJSON(config.url, function(data) {
+                var now = new Date();
+                if (data.activity.length > 0) {
+                  $.each(data.activity, function(i,activity) {
+                    add(data.user, activity, false, now);
+                  });
+                }
+                else {
+                  $(list).replaceWith("<div>No recent activity.</div>");
+                }
+                loading.hide();
+            });
+          }
+      });
+      return this;
+  }
 })(jQuery);

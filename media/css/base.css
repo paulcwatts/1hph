@@ -41,7 +41,7 @@ a:hover {
   color: #FF9900;
   text-decoration: underline;
 }
-ul.nav, .two-line, .submission-list, .comment-list {
+ul.nav, .two-line, .submission-list, .comment-list, .user-activity-list {
   list-style: none;
   margin: 0;
   padding: 0;
