@@ -91,8 +91,10 @@ def user_activity(user,since=None):
             in_vote=False
         i = i+1
 
+    index = 0
     for r in to_remove:
-        result[r[0]:r[1]] = []
+        result[r[0]-index:r[1]-index] = []
+        index = r[1]-r[0]
 
     return result
 

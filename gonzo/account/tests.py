@@ -69,10 +69,12 @@ class UserActivityTest(TestCase):
         v1 = self._newVote(hunt1, sub1, timedelta(minutes=21))
         v2 = self._newVote(hunt1, sub1, timedelta(minutes=45))
         v3 = self._newVote(hunt1, sub2, timedelta(minutes=46))
+        v4 = self._newVote(hunt1, sub1, timedelta(minutes=16))
+        v5 = self._newVote(hunt1, sub1, timedelta(minutes=17))
 
-        # What it would be: [v3,v2,hunt2,v1,sub2,sub1,hunt1]
+        # What it would be: [v3,v2,hunt2,v1,sub2,v5,v4,sub1,hunt1]
         activity = user_activity(self.user)
-        self.failUnlessEqual(activity,[v3,hunt2,v1,sub2,sub1,hunt1])
+        self.failUnlessEqual(activity,[v3,hunt2,v1,sub2,v5,sub1,hunt1])
 
         activity = user_activity(self.user, self.start_time+timedelta(minutes=45,seconds=30))
         self.failUnlessEqual(activity,[v3])
