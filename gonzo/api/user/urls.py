@@ -6,6 +6,6 @@ urlpatterns = patterns('gonzo.api.user.views',
         name='api-user'),
 
     url(r'^(?P<slug>[\w-]+)/activity/$',
-        'user_activity',
+        'user_activity_view',
         name='api-user-activity'),
 )

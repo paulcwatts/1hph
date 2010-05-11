@@ -31,6 +31,8 @@ class Profile(models.Model):
     twitter_screen_name = models.CharField(max_length=128,null=True,blank=True)
     twitter_oauth_token = models.CharField(max_length=200,null=True,blank=True)
     twitter_oauth_secret = models.CharField(max_length=200,null=True,blank=True)
+    # Whether or not your activity is public
+    public_activity = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.user.username
@@ -58,6 +60,9 @@ def user_activity(user,since=None):
 
     result = []
     if since:
+        if since.utcoffset():
+            raise ValueError("We don't support TZ-aware times just yet")
+        since = since.replace(tzinfo=None)
         result.extend(Hunt.objects.filter(owner=user,create_time__gte=since))
         result.extend(Submission.objects.filter(user=user,time__gte=since))
         result.extend(Comment.objects.filter(user=user,time__gte=since))

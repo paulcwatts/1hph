@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import admin
-from django.core.urlresolvers import reverse
 
 from gonzo.utils import slugify
 from gonzo.hunt import utils
@@ -110,6 +109,7 @@ class Hunt(models.Model):
                 'start_time': to_json_time(self.start_time),
                 'end_time': to_json_time(self.end_time),
                 'vote_end_time': to_json_time(self.vote_end_time),
+                'api_url': request.build_absolute_uri(self.get_api_url()),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
                 'submissions': request.build_absolute_uri(self.get_submission_url()),
                 'ballot': request.build_absolute_uri(self.get_ballot_url()),
@@ -186,6 +186,7 @@ class Submission(models.Model):
                 'description': self.description,
                 'via': self.via,
                 'url': request.build_absolute_uri(self.get_absolute_url()),
+                'api_url': request.build_absolute_uri(self.get_api_url()),
                 'photo_url': request.build_absolute_uri(self.photo.url),
                 'thumbnail_url': request.build_absolute_uri(self.photo.url_240x180),
                 'comments': request.build_absolute_uri(self.get_comments_url()) }

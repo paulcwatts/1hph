@@ -4,7 +4,7 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-import json, time
+import json, time, pytz
 import StringIO
 from datetime import datetime, timedelta
 
@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from gonzo.hunt import models
 from gonzo.hunt.tests import make_hunt
 from gonzo.hunt import testfiles
+from gonzo.account.models import Profile
 
 class StringFile(StringIO.StringIO):
     def __init__(self,name,buffer):
@@ -48,6 +49,8 @@ class HuntAPITest(TestCase):
         # Follow the URLs and see what we get
         hunt = hunts[0]
         response = c.get(hunt['url'])
+        self.failUnlessEqual(response.status_code,200)
+        response = c.get(hunt['api_url'])
         self.failUnlessEqual(response.status_code,200)
 
         submit_url = hunt['submissions']
@@ -101,6 +104,9 @@ class HuntAPITest(TestCase):
         #self.failUnlessEqual(response['Content-Type'],'application/json')
         obj = json.loads(response.content)
         self.assertEquals(len(obj['submissions']),2)
+        # Test the submissions URL
+        response = c.get(obj['submissions'][0]['api_url'])
+        self.failUnlessEqual(response.status_code,200)
 
         # We should now have a valid ballot
         response = c.get(ballot_url)
@@ -277,6 +283,130 @@ class LimitAPITest(TestCase):
         self.failUnlessEqual(comments[0]['text'], 'two')
         self.failUnlessEqual(comments[1]['text'], 'one')
 
+
+class UserActivityAPITest(TestCase):
+    def setUp(self):
+        self.before = (datetime.utcnow() - timedelta(hours=1)).replace(tzinfo=pytz.utc)
+        # Two users
+        self.public_user = User.objects.create_user('publicguy','public@test.com','password')
+        self.public_user.save()
+        self.private_user = User.objects.create_user('privateguy', 'private@test.com', 'password')
+        self.private_user.save()
+        profile = self.private_user.get_profile()
+        profile.public_activity=False
+        profile.save()
+
+        self.public_hunt = make_hunt(self.public_user,
+                             'public test hunt',
+                             'publictest',
+                             datetime.utcnow(),
+                             vote_delta=timedelta(hours=1))
+        self.private_hunt = make_hunt(self.private_user,
+                             'private test hunt',
+                             'privatetest',
+                             datetime.utcnow(),
+                             vote_delta=timedelta(hours=1))
+
+    def tearDown(self):
+        self.public_hunt.delete()
+        self.private_hunt.delete()
+        self.public_user.delete()
+        self.private_user.delete()
+
+    def _newSubmission(self, c, hunt):
+        f = testfiles.open_file('test1.jpg')
+        response = c.post(hunt.get_submission_url(), { 'photo': f, 'via': 'unit test' })
+        self.failUnlessEqual(response.status_code, 201)
+        return json.loads(response.content)
+
+    def _newComment(self, c, hunt, comment):
+        response = c.post(hunt.get_comments_url(), { 'text': comment })
+        self.failUnlessEqual(response.status_code, 201)
+        return json.loads(response.content)
+
+    def _newVote(self, c, hunt, submission):
+        response = c.post(hunt.get_ballot_url(), { 'url': submission })
+        self.failUnlessEqual(response.status_code, 200)
+        return json.loads(response.content)
+
+    def _get(self, c, url, data={}):
+        response = c.get(url, data)
+        self.failUnlessEqual(response.status_code, 200)
+        return json.loads(response.content)
+
+    def test_user_activity(self):
+        c = Client()
+        # Add each type of object to each hunt and make sure it comes out correctly.
+        c.login(username='publicguy',password='password')
+        s1 = self._newSubmission(c, self.public_hunt)
+        s2 = self._newSubmission(c, self.private_hunt)
+        self._newComment(c, self.public_hunt, 'public guy on public hunt')
+        self._newComment(c, self.private_hunt, 'public guy on private hunt')
+        c.logout()
+
+        c.login(username='privateguy',password='password')
+        s3 = self._newSubmission(c, self.public_hunt)
+        s4 = self._newSubmission(c, self.private_hunt)
+        self._newComment(c, self.public_hunt, 'private guy on public hunt')
+        self._newComment(c, self.private_hunt, 'private guy on private hunt')
+        c.logout()
+
+        c.login(username='publicguy',password='password')
+        self._newVote(c, self.public_hunt, s1['url'])
+        self._newVote(c, self.private_hunt, s2['url'])
+        c.logout()
+
+        c.login(username='privateguy',password='password')
+        self._newVote(c, self.public_hunt, s3['url'])
+        self._newVote(c, self.private_hunt, s4['url'])
+        c.logout()
+
+        public_json = self._get(c, '/api/user/publicguy/')
+        private_json = self._get(c, '/api/user/privateguy/')
+        public_activity_url = public_json['activity']
+        private_activity_url = private_json['activity']
+
+        # Currently we are logged in as no one
+        # Get the public guy's activity
+        public_activity = self._get(c, public_activity_url)
+        self.assert_(public_activity['activity'])
+        # TODO: test more on this
+        #print public_activity
+        # private guy should be inaccessible
+        response = c.get(private_activity_url)
+        self.failUnlessEqual(response.status_code, 403)
+
+        # Log in as public guy, it should be the same
+        c.login(username='publicguy',password='password')
+        public_activity = self._get(c, public_activity_url)
+        self.assert_(public_activity['activity'])
+        # One hunt, two submissions, two comments, two (=one) vote
+        self.failUnlessEqual(len(public_activity['activity']), 6)
+        # private guy should be inaccessible
+        response = c.get(private_activity_url)
+        self.failUnlessEqual(response.status_code, 403)
+        c.logout()
+
+        # Log in as private guy, both should be available
+        c.login(username='privateguy',password='password')
+        public_activity = self._get(c, public_activity_url)
+        self.assert_(public_activity['activity'])
+        private_activity = self._get(c, private_activity_url)
+        self.assert_(private_activity['activity'])
+        self.failUnlessEqual(len(private_activity['activity']), 6)
+        c.logout()
+
+        total_len = len(public_activity['activity'])
+        # Test since YYYY-MM-DDTHH:MM:SS.mmmmmm
+        # the logic for determining what is returned is tested at the model layer,
+        # so we are mainly just testing the argument and its parsing
+        since = self.before.isoformat()
+        activity = self._get(c, public_activity_url, data={'since': since})
+        self.failUnlessEqual(len(activity['activity']), 6)
+
+        future = (self.before + timedelta(hours=2)).isoformat()
+        activity = self._get(c, public_activity_url, data={'since': future})
+        self.failUnlessEqual(len(activity['activity']), 0)
 
 __test__ = {}
 
