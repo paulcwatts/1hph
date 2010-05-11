@@ -98,7 +98,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'gonzo.hunt',
     'gonzo.api',
-    'gonzo.uprofile',
     'gonzo.account',
     'gonzo.oauth',
     'gonzo.webapp'
