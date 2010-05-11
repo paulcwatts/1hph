@@ -3,6 +3,7 @@ import os.path
 from django import template
 
 from gonzo.hunt.models import Hunt
+from gonzo.account.models import Profile
 from gonzo import settings
 
 register = template.Library()
@@ -14,6 +15,25 @@ def hunt_thumbnail(hunt):
         return thumb
     else:
         return os.path.join(settings.MEDIA_URL, 'img/default_hunt.png')
+
+@register.simple_tag
+def user_thumbnail(user):
+    profile,created = Profile.objects.get_or_create(user=user)
+    if profile.photo:
+        return profile.photo.url_60x60
+    else:
+        return os.path.join(settings.MEDIA_URL, 'img/default_user.png')
+
+@register.simple_tag
+def user_display_name(user,logged_in_user):
+    result = user.username
+    if user.first_name and user.last_name:
+        result += " (%s %s)" % (user.first_name, user.last_name)
+    elif user.first_name or user.last_name:
+        result += " (%s)" % (user.first_name or user.last_name)
+    if logged_in_user and logged_in_user.is_authenticated() and user == logged_in_user:
+        result += " (that's you)"
+    return result
 
 @register.simple_tag
 def hunt_status(hunt):

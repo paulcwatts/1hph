@@ -102,7 +102,7 @@ INSTALLED_APPS = (
     'gonzo.oauth',
     'gonzo.webapp'
 )
-AUTH_PROFILE_MODULE='gonzo.uprofile.Profile'
+AUTH_PROFILE_MODULE='account.Profile'
 LOGIN_REDIRECT_URL='/'
 SIGNUP_EMAIL_WHITELIST=()
 

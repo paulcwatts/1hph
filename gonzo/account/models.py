@@ -4,9 +4,21 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 
 from gonzo.hunt.models import *
+from gonzo.utils.thumbs import ImageWithThumbsField
 
 class Profile(models.Model):
-    user = models.ForeignKey(User)
+    user = models.OneToOneField(User, primary_key=True)
+    # User's profile pic
+    photo = ImageWithThumbsField(null=True,
+                                 blank=True,
+                                 upload_to="profile_photos",
+                                 max_length=256,
+                                 height_field='photo_height',
+                                 width_field='photo_width',
+                                 sizes=((60,60),))
+    photo_width = models.IntegerField(null=True)
+    photo_height = models.IntegerField(null=True)
+
     # The user gets points by doing stuff, and can spend them somehow
     points = models.IntegerField(default=0)
     # The user's score is the total number of points they have amassed,
@@ -22,7 +34,6 @@ class Profile(models.Model):
 
     def __unicode__(self):
         return self.user.username
-
 
 """
 User activity:
