@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 
 from gonzo.utils import slugify
 from gonzo.hunt import utils
-from gonzo.hunt.thumbs import ImageWithThumbsField
+from gonzo.utils.thumbs import ImageWithThumbsField
 
 def to_json_time(d):
     return d.replace(tzinfo=pytz.utc).isoformat()
