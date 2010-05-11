@@ -1,12 +1,19 @@
 import json
+import pytz
+from datetime import datetime
 
 from django.http import HttpResponse,HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 
 JSON_TYPE='text/plain'
 
+def to_json_time(d):
+    return d.replace(tzinfo=pytz.utc).isoformat()
+
 def json_default(request):
     def wrap(obj):
+        if isinstance(obj,datetime):
+            return to_json_time(obj)
         if hasattr(obj,'to_dict'):
             return obj.to_dict(request)
         raise TypeError("Unable to encode: " + str(type(obj)))

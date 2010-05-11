@@ -1,5 +1,5 @@
 from datetime import datetime
-import pytz, random
+import random
 
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -9,10 +9,6 @@ from django.contrib import admin
 from gonzo.utils import slugify
 from gonzo.hunt import utils
 from gonzo.utils.thumbs import ImageWithThumbsField
-
-def to_json_time(d):
-    return d.replace(tzinfo=pytz.utc).isoformat()
-
 
 class Hunt(models.Model):
     """
@@ -105,10 +101,10 @@ class Hunt(models.Model):
                 'phrase': self.phrase,
                 'slug': self.slug,
                 'tag': self.tag,
-                'create_time': to_json_time(self.create_time),
-                'start_time': to_json_time(self.start_time),
-                'end_time': to_json_time(self.end_time),
-                'vote_end_time': to_json_time(self.vote_end_time),
+                'create_time': self.create_time,
+                'start_time': self.start_time,
+                'end_time': self.end_time,
+                'vote_end_time': self.vote_end_time,
                 'api_url': request.build_absolute_uri(self.get_api_url()),
                 'url': request.build_absolute_uri(self.get_absolute_url()),
                 'submissions': request.build_absolute_uri(self.get_submission_url()),
@@ -182,7 +178,7 @@ class Submission(models.Model):
         return utils.get_source(self)
 
     def to_dict(self,request):
-        json = { 'time': to_json_time(self.time),
+        json = { 'time': self.time,
                 'description': self.description,
                 'via': self.via,
                 'url': request.build_absolute_uri(self.get_absolute_url()),
@@ -235,7 +231,7 @@ class Comment(models.Model):
 
     def to_dict(self, request):
         return {
-            'time': to_json_time(self.time),
+            'time': self.time,
             'source': utils.get_source_json(request, self),
             'text': self.text }
 
@@ -268,7 +264,7 @@ class Vote(models.Model):
 
     # Votes are anonymous, and these are "cleaned" to appear in the user's activity stream.
     def to_dict(self, request):
-        return { 'type': 'vote', 'time': to_json_time(self.time) }
+        return { 'time': self.time }
 
 #
 # This class captures any awards given to each submission.
