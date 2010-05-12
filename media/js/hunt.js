@@ -231,6 +231,7 @@ function huntState(hunt, now) {
             var type = activity.type;
             var hunt = activity.hunt;
             var submission = activity.submission;
+            var me = (user.name == config.current_user);
             var time = Utils.iso_date(activity.time);
             if (type == "hunt") {
               li = $(START + ' created ' + HUNT_TIME_END);
@@ -253,13 +254,19 @@ function huntState(hunt, now) {
                 li = $(START + ' voted in ' + HUNT_TIME_END);
             }
             else if (type == "award") {
-                li = $(START + ' won <a>award name</a> in hunt ' + HUNT_TIME_END);
+              if (me) {
+                    li = $(START + ' won the <a class="award"></a> in hunt <a class="phrase"></a>! Congratulations!</li>');
+              }
+              else {
+                    li = $(START + ' won the <a class="award"></a> in hunt <a class="phrase"></a>!</li>');
+              }
+                $(".award", li).attr("href", submission.url).text(activity.award.name);
             }
             else {
               // Unknown
               return;
             }
-            var name = (user.name == config.current_user) ? "You" : user.name;
+            var name = me ? "You" : user.name;
             $(".from", li).text(name).attr("href", user.url);
             $(".phrase", li).text(hunt.phrase).attr("href", hunt.url);
             $(".time", li).text(Utils.time_since(time, now));

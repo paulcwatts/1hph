@@ -2,7 +2,7 @@ import os.path
 
 from django import template
 
-from gonzo.hunt.models import Hunt
+from gonzo.hunt.models import Hunt,Award
 from gonzo.account.models import Profile
 from gonzo import settings
 
@@ -47,6 +47,31 @@ def hunt_status(hunt):
         return "Voting ends in " + mytimeuntil(hunt.vote_end_time)
     elif state == Hunt.State.FINISHED:
         return "Hunt ended %s ago" % (mytimesince(hunt.vote_end_time),)
+
+AWARD_MAP = {
+    Award.GOLD: (
+        os.path.join(settings.MEDIA_URL, 'img/icons/medal_gold_3.png'),
+        os.path.join(settings.MEDIA_URL, 'img/awards/gold_medal.png')
+    ),
+    Award.SILVER: (
+        os.path.join(settings.MEDIA_URL, 'img/icons/medal_silver_3.png'),
+        os.path.join(settings.MEDIA_URL, 'img/awards/silver_medal.png')
+    ),
+    Award.BRONZE: (
+        os.path.join(settings.MEDIA_URL, 'img/icons/medal_bronze_3.png'),
+        os.path.join(settings.MEDIA_URL, 'img/awards/silver_medal.png')
+    )
+}
+
+@register.simple_tag
+def award_icon(award):
+    return AWARD_MAP[award.value][0]
+award_icon.is_safe = True
+
+@register.simple_tag
+def award_badge(award):
+    return AWARD_MAP[award.value][1]
+award_badge.is_safe = True
 
 @register.filter
 def mytimesince(value, arg=None):

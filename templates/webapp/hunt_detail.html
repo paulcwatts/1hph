@@ -15,7 +15,7 @@
 
 {# Header stuff #}
 {% block title-thumb-src %}{% hunt_thumbnail hunt %}{% endblock %}
-{% block title-line1 %}Hunt: <span class="phrase">{{ hunt.phrase }}</span>{% endblock %}
+{% block title-line1 %}<span class="phrase">{{ hunt.phrase }}</span>{% endblock %}
 {% block title-line2 %}{% hunt_status hunt %}{% endblock %}
 
 {% block page-content %}
@@ -94,7 +94,7 @@
      {% endwith %}
      </div>
     <div class="hunt-state-obj hunt-state-FINISHED">
-    This will be the list of awards
+     {% include "includes/award_submission_list.html" %}
      </div>
 </div>
 <div id="vote-dialog" style="display: none;">

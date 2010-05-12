@@ -1,0 +1,24 @@
+{% load webapp_extras %}
+<h3>Awards</h3>
+{% if profile_user.award_set.all|length > 0 %}
+  <ul class="award-list">
+  {% for award in profile_user.award_set.all %}
+      {% with award.submission as submission %}
+      {% with award.hunt as hunt %}
+      <li class="award-item">
+        <div class="award-title">{{ award.get_value_display }}</div>
+        <div>
+          <a class="img-link" href="{% url photo hunt.slug submission.id %}">
+            <img src="{% award_badge award %}" alt="submitted photo"/>
+          </a>
+        </div>
+          For hunt <a class="phrase" href="{% url hunt hunt.slug %}">{{ hunt.phrase }}</a>
+      </li>
+      {% endwith %}
+      {% endwith %}
+  {% endfor %}
+  </ul>
+{% else %}{% if user == profile_user %}
+You haven't won any awards yet. <a href="{% url hunt-index %}">Enter some photos in hunts</a> to win!
+{% endif %}
+{% endif %}

@@ -294,6 +294,9 @@ class Award(models.Model):
     # The number of points this is worth
     points          = models.IntegerField(default=0)
 
+    class Meta:
+        ordering = ["-time"]
+
     # Make sure that, if there is a submission, and there is a hunt,
     # they are the same (a bit of a normalization problem)
     def clean(self):
@@ -307,6 +310,14 @@ class Award(models.Model):
 
     def get_source(self):
         return utils.get_source(self)
+
+    def to_dict(self, request):
+        return { 'time': self.time,
+                 'submission': request.build_absolute_uri(self.submission.get_absolute_url()),
+                 'winner': utils.get_source_json(request, self),
+                 'name': self.get_value_display(),
+                 'points': self.points }
+
 
 #
 # Admin

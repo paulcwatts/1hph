@@ -1,0 +1,20 @@
+{% load webapp_extras %}
+<h3>Winners</h3>
+<ul class="award-list submission-list">
+{% for award in hunt.award_set.all %}
+    {% with award.submission as submission %}
+    <li class="award-item submission-item">
+      <div class="award-title">{{ award.get_value_display }}</div>
+      <div class="award-image-container">
+        <a class="img-link" href="{% url photo hunt.slug submission.id %}">
+          <img class="submission-thumb-icon" src="{{ submission.photo.url_240x180 }}" alt="submitted photo"/>
+        </a>
+        <img class="award-icon" src="{% award_icon award %}" alt=""/>
+      </div>
+        {% with submission.get_source as source %}
+          Posted by <a class="from" href="{{ source.url }}">{{ source.name }}</a>
+        {% endwith %}
+    </li>
+    {% endwith %}
+{% endfor %}
+</ul>

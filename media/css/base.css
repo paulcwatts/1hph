@@ -41,7 +41,7 @@ a:hover {
   color: #FF9900;
   text-decoration: underline;
 }
-ul.nav, .two-line, .submission-list, .comment-list, .user-activity-list {
+ul.nav, .two-line, .submission-list, .comment-list, .user-activity-list, .award-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -287,13 +287,24 @@ li.two-line-item {
 /* Submission list */
 .submission-list {
 }
-.submission-item {
+.submission-item, .award-item {
   margin: 10px auto;
   text-align: center;
 }
 .submission-thumb-icon {
   max-width: 200px;
   max-height: 150px;
+}
+.award-title {
+  font-size: 120%;
+}
+.award-image-container {
+  position: relative;
+}
+.award-icon {
+  position: absolute;
+  top: 5px;
+  left: 5px;
 }
 
 .counter {

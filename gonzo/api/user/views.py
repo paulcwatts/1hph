@@ -56,6 +56,8 @@ def _convert_to_activity(request):
         s = t[3](request,obj)
         if s:
             result['submission'] = s
+        if isinstance(obj,Award):
+            result['award'] = obj
         return result
     return wrap
 
