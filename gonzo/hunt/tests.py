@@ -12,8 +12,9 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 
-from gonzo.hunt import models
+from gonzo.hunt.models import *
 from gonzo.hunt import testfiles
+from gonzo.hunt import game
 
 def make_hunt(user, phrase, tag, start, end_delta=timedelta(hours=1), vote_delta=None):
     end = start + end_delta
@@ -21,14 +22,18 @@ def make_hunt(user, phrase, tag, start, end_delta=timedelta(hours=1), vote_delta
         vote = end + vote_delta
     else:
         vote = end
-    h = models.Hunt(owner=user,
-                    phrase=phrase,
-                    tag=tag,
-                    start_time=start,
-                    end_time=end,
-                    vote_end_time=vote)
+    h = Hunt(owner=user, phrase=phrase, tag=tag, start_time=start, end_time=end, vote_end_time=vote)
     h.save()
     return h
+
+def make_submission(hunt, path, **kwargs):
+    s = Submission(hunt=hunt, ip_address='127.0.0.1', via='unit test', **kwargs)
+    s.photo.file = File(testfiles.get_file_path(path))
+    s.photo_width = 2048
+    s.photo_height = 1536
+    s.save()
+    return s
+
 
 class HuntModelTest(TestCase):
     def setUp(self):
@@ -62,7 +67,7 @@ class HuntModelTest(TestCase):
 
     def test_validation(self):
         from django.core.exceptions import ValidationError
-        h = models.Hunt()
+        h = Hunt()
         h.owner = self.user
         h.phrase = 'not valid hunt'
         h.tag = 'notvalid'
@@ -87,13 +92,13 @@ class HuntModelTest(TestCase):
                        'future hunt',
                        'future',
                        now + timedelta(1))
-        self.assertEquals(future.get_state(), models.Hunt.State.FUTURE)
+        self.assertEquals(future.get_state(), Hunt.State.FUTURE)
 
         current = make_hunt(self.user,
                         'current hunt',
                         'current',
                         now)
-        self.assertEquals(current.get_state(), models.Hunt.State.CURRENT)
+        self.assertEquals(current.get_state(), Hunt.State.CURRENT)
 
         voting = make_hunt(self.user,
                            'voting hunt',
@@ -101,14 +106,14 @@ class HuntModelTest(TestCase):
                            start=now - timedelta(hours=2),
                            end_delta=timedelta(hours=1),
                            vote_delta=timedelta(hours=2))
-        self.assertEquals(voting.get_state(), models.Hunt.State.VOTING)
+        self.assertEquals(voting.get_state(), Hunt.State.VOTING)
 
         finished = make_hunt(self.user,
                              'finished hunt',
                              'finished',
                              start=now - timedelta(hours=2),
                              end_delta=timedelta(hours=1))
-        self.assertEquals(finished.get_state(), models.Hunt.State.FINISHED)
+        self.assertEquals(finished.get_state(), Hunt.State.FINISHED)
 
 class SubmitTest(TestCase):
     def setUp(self):
@@ -125,25 +130,9 @@ class SubmitTest(TestCase):
         self.user.delete()
 
     def test_order(self):
-        s1 = models.Submission(hunt=self.hunt,
-                               user=self.user,
-                               ip_address='127.0.0.1',
-                               via='unit test')
-        s1.photo.file = File(testfiles.get_file_path('test1.jpg'))
-        s1.photo_width = 2048
-        s1.photo_height = 1536
-        s1.save()
-
+        s1 = make_submission(self.hunt, 'test1,jpg', user=self.user)
         time.sleep(1)
-        s2 = models.Submission(hunt=self.hunt,
-                                anon_source='twitter:joulespersecond',
-                                ip_address='127.0.0.1',
-                                via='unit test')
-        s2.photo.file = File(testfiles.get_file_path('test1.jpg'))
-        s2.photo_width = 2048
-        s2.photo_height = 1536
-        s2.save()
-
+        s2 = make_submission(self.hunt, 'test1.jpg', anon_source='twitter:joulespersecond')
         self.assertEquals(self.hunt.submission_set.count(), 2)
         # The anonymous one should be first
         self.assertEquals(self.hunt.submission_set.all()[0].anon_source, 'twitter:joulespersecond')
@@ -159,49 +148,33 @@ class CommentTest(TestCase):
                               'my comment hunt',
                               'commenthunt',
                               start=datetime.utcnow())
-        self.submission = models.Submission(hunt=self.hunt,
-                                     user=self.user,
-                                     ip_address='127.0.0.1',
-                                     via='unit test')
-        self.submission.photo.file = File(testfiles.get_file_path('test1.jpg'))
-        self.submission.photo_width = 2048
-        self.submission.photo_height = 1536
-        self.submission.save()
+        self.submission = make_submission(self.hunt, 'test1.jpg', user=self.user)
 
     def tearDown(self):
         self.submission.delete()
         self.hunt.delete()
         self.user.delete()
 
+    def _newComment(self, text, **kwargs):
+        return Comment.objects.create(hunt=self.hunt, text=text, ip_address='127.0.0.1', **kwargs)
+
     def test_hunt_order(self):
         # Make two comments on the hunt, separated by a second or so
-        hunt1 = models.Comment.objects.create(hunt=self.hunt,
-                                   user=self.user,
-                                   text='Comment 1',
-                                   ip_address='127.0.0.1')
-
+        hunt1 = self._newComment('Comment 1', user=self.user)
         time.sleep(1)
-        hunt2 = models.Comment.objects.create(hunt=self.hunt,
-                                    anon_source='twitter:joulespersecond',
-                                    text='Comment 2',
-                                    ip_address='127.0.0.1')
+        hunt2 = self._newComment('Comment 2', anon_source='twitter:joulespersecond')
         self.assertEquals(self.hunt.comment_set.count(), 2)
         # Make sure 'Comment 2' is first
         self.assertEquals(self.hunt.comment_set.all()[0].text, 'Comment 2')
         self.assertEquals(self.hunt.comment_set.all()[1].text, 'Comment 1')
 
-        s1 = models.Comment.objects.create(hunt=self.hunt,
-                                   submission=self.submission,
-                                   user=self.user,
-                                   text='Photo Comment 1',
-                                   ip_address='127.0.0.1')
-
+        s1 = self._newComment('Photo Comment 1',
+                              submission=self.submission,
+                              user=self.user)
         time.sleep(1)
-        s2 = models.Comment.objects.create(hunt=self.hunt,
-                                    submission=self.submission,
-                                    anon_source='twitter:joulespersecond',
-                                    text='Photo Comment 2',
-                                    ip_address='127.0.0.1')
+        s2 = self._newComment('Photo Comment 2',
+                              submission=self.submission,
+                              anon_source='twitter:joulespersecond')
         self.assertEquals(self.submission.comment_set.count(), 2)
         # Make sure 'comment 2' is first
         self.assertEquals(self.submission.comment_set.all()[0].text, 'Photo Comment 2')
@@ -211,6 +184,151 @@ class CommentTest(TestCase):
         # To get all the non-submission hunts
         self.assertEquals(self.hunt.comment_set.filter(submission=None).count(), 2)
 
+
+class AssignAwardsTest(TestCase):
+    def setUp(self):
+        self.users = [
+             User.objects.create_user('testdude0','test0@test.com','password'),
+             User.objects.create_user('testdude1','test1@test.com','password'),
+             User.objects.create_user('testdude2','test2@test.com','password'),
+             User.objects.create_user('testdude3','test3@test.com','password'),
+             User.objects.create_user('testdude4','test4@test.com','password')
+        ]
+        for u in self.users:
+            u.save()
+        self.hunt = make_hunt(self.users[0],
+                              'assign awards',
+                              'awards',
+                              start=datetime.utcnow() - timedelta(hours=2))
+        self.submissions = [
+            make_submission(self.hunt, 'test1.jpg', user=self.users[0]),
+            make_submission(self.hunt, 'test1.jpg', user=self.users[1]),
+            make_submission(self.hunt, 'test1.jpg', user=self.users[2]),
+            make_submission(self.hunt, 'test1.jpg', user=self.users[3]),
+            make_submission(self.hunt, 'test1.jpg', user=self.users[4]),
+        ]
+
+    def tearDown(self):
+        self.hunt.delete()
+        for u in self.users:
+            u.delete()
+
+    def _castVotes(self, votes):
+        """Votes are specified as (user, submission, value)"""
+        for v in votes:
+            Vote.objects.create(hunt=self.hunt,
+                                user=self.users[v[0]],
+                                submission=self.submissions[v[1]],
+                                value=v[2],
+                                ip_address='127.0.0.1')
+
+    def _checkAward(self,award,winners):
+        entries = Award.objects.filter(hunt=self.hunt,value=award)
+        self.assertEquals(winners, [e.submission for e in entries])
+
+    def _checkAwards(self, gold, silver, bronze):
+        """
+        Parameters are lists or tuples of the submission indexes that won.
+        We translate that into submissions
+        """
+        self._checkAward(Award.GOLD, [self.submissions[i] for i in gold])
+        self._checkAward(Award.SILVER, [self.submissions[i] for i in silver])
+        self._checkAward(Award.BRONZE, [self.submissions[i] for i in bronze])
+
+    def test_1_simple(self):
+        self._castVotes([
+            # user, submission, value
+            (0, 0, 1),
+            (1, 1, 2),
+            (2, 2, 3)
+        ])
+        game.assign_awards()
+        self._checkAwards((2,), (1,), (0,))
+
+    def test_2_no_bronze(self):
+        self._castVotes([
+            # user, submission, value
+            (0, 0, 1),
+            (0, 0, 1),
+            (1, 1, 1),
+        ])
+        game.assign_awards()
+        self._checkAwards((0,), (1,), ())
+
+    def test_3_no_silver(self):
+        self._castVotes([
+            # user, submission, value
+            (0, 0, 1),
+        ])
+        game.assign_awards()
+        self._checkAwards((0,), (), ())
+
+    def test_4_none(self):
+        game.assign_awards()
+        self._checkAwards((), (), ())
+
+    def test_5_shared_gold(self):
+        self._castVotes([
+            # user, submission, value
+            (0, 0, 1),
+            (1, 1, 2),
+            (2, 1, 2),
+            (1, 2, 2),
+            (2, 2, 2)
+        ])
+        game.assign_awards()
+        self._checkAwards((1,2), (0,), ())
+
+    def test_6_shared_gold_silver(self):
+        self._castVotes([
+            # user, submission, value
+            (0, 0, 2), # 0 has 2
+            (1, 1, 2),
+            (1, 1, 2), # 1 has 4
+            (1, 2, 2),
+            (2, 2, 2), # 2 has 4
+            (3, 3, 3),
+            (3, 3, 3), # 3 has 6
+            (0, 4, 3),
+            (1, 4, 3)  # 4 has 6
+        ])
+        game.assign_awards()
+        self._checkAwards((3,4), (1,2), ())
+
+    def test_7_shared_gold(self):
+        self._castVotes([
+            # user, submission, value
+            (0, 0, 4),
+            (1, 0, 4), # 0 has 8
+            (1, 1, 2),
+            (1, 1, 2),
+            (1, 1, 4), # 1 has 8
+            (1, 2, 4),
+            (2, 2, 4), # 2 has 8
+            (3, 3, 3),
+            (3, 3, 3), # 3 has 6
+            (0, 4, 3),
+            (1, 4, 3)  # 4 has 6
+        ])
+        game.assign_awards()
+        self._checkAwards((0,1,2), (), ())
+
+    def test_8_shared_bronze(self):
+        self._castVotes([
+            # user, submission, value
+            (0, 0, 1),
+            (1, 0, 1), # 0 has 2
+            (1, 1, 2),
+            (1, 1, 2), # 1 has 4
+            (1, 2, 1),
+            (2, 2, 1), # 2 has 2
+            (3, 3, 3),
+            (3, 3, 3), # 3 has 6
+            (0, 4, 1),
+            (1, 4, 1)  # 4 has 2
+        ])
+        game.assign_awards()
+        self._checkAwards((3,), (1,), (0,2,4))
 
 __test__ = {}
 

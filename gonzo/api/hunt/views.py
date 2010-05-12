@@ -8,8 +8,6 @@ from django.views.decorators.http import require_GET,require_POST,require_http_m
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import resolve
-from django.db import transaction
-from django.db.models import Count
 
 from gonzo.api import utils as api_utils
 from gonzo.hunt.forms import *
@@ -266,47 +264,14 @@ def photo_comment_stream(request,slug,object_id):
 # This would be really easy with MapReduce, wouldn't it??
 #
 @require_POST
-@transaction.commit_on_success
+@csrf_exempt
 def assign_awards(request):
-    # First, get all hunts that have passed and have no awards assigned.
-    # What we need is:
-    # SELECT * FROM hunt_hunt h WHERE h.vote_end_time >= now AND
-    #        h.id NOT IN (SELECT DISTINCT a.hunt_id from hunt_award a)
-    now = datetime.utcnow()
-    done = Award.objects.values_list('hunt_id', flat=True).distinct()
-    entries = Hunt.objects.filter(vote_end_time__lte=now).exclude(pk__in=done).select_related()
-    # entries is all the hunts that have not been assigned awards.
-    # For each of them, get the sum of the votes for all the submissions,
-    # and order them descending
-    for h in entries:
-        votes = []
-        # There's probably a better way of doing this (all in SQL),
-        # but who knows if it's fast at all.
-        for s in h.submission_set.filter(is_removed=False):
-            votes.append((s,s.vote_set.aggregate(Count('value'))['value__count']))
-        votes.sort(lambda lhs, rhs: lhs[1] - rhs[1])
-        votes = votes[:3]
-        if len(votes) > 0:
-            s = votes.pop()[0]
-            # Gold!
-            Award.objects.create(hunt=h,
-                                 submission=s,
-                                 user=s.user,
-                                 anon_source=s.anon_source,
-                                 value=Award.GOLD)
-        if len(votes) > 0:
-            s = votes.pop()[0]
-            Award.objects.create(hunt=h,
-                                 submission=s,
-                                 user=s.user,
-                                 anon_source=s.anon_source,
-                                 value=Award.SILVER)
-        if len(votes) > 0:
-            s = votes.pop()[0]
-            Award.objects.create(hunt=h,
-                                 submission=s,
-                                 user=s.user,
-                                 anon_source=s.anon_source,
-                                 value=Award.BRONZE)
+    # For the time being, we require the remote address to be localhost
+    if request.META.get('REMOTE_ADDR') != '127.0.0.1':
+        return HttpResponseBadRequest()
 
-    return HttpResponse()
+    from gonzo.hunt import game
+    game.assign_awards()
+    # The HTML is so that we can get the debug footer
+    return HttpResponse('<html><body>Done</body></html>')
+
