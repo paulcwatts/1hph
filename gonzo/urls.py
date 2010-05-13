@@ -18,6 +18,9 @@ urlpatterns = patterns('',
 
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
+
+    (r'^test404', direct_to_template, { 'template':'404.html' }),
+    (r'^test500', direct_to_template, { 'template':'500.html' }),
 )
 
 if settings.DEBUG:
