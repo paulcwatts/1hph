@@ -118,7 +118,6 @@ try:
     # This mimics 'from local_settings import *'
     for name in dir(local):
         if not name.startswith('_'):
-            print name
             setattr(this, name, getattr(local, name))
 
 except ImportError:
