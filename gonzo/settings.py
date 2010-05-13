@@ -106,7 +106,21 @@ AUTH_PROFILE_MODULE='account.Profile'
 LOGIN_REDIRECT_URL='/'
 SIGNUP_EMAIL_WHITELIST=()
 
+import sys
+
+local_settings_name = os.environ.get('GONZO_LOCAL_SETTINGS_MODULE', 'local_settings')
 try:
-    from local_settings import *
-except:
+    __import__(local_settings_name)
+
+    local = sys.modules[local_settings_name]
+    this = sys.modules[__name__]
+
+    # This mimics 'from local_settings import *'
+    for name in dir(local):
+        if not name.startswith('_'):
+            print name
+            setattr(this, name, getattr(local, name))
+
+except ImportError:
     pass
+
