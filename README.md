@@ -15,16 +15,42 @@ apache2, mysql-server python-setuptools python-mysqldb python-dev git-core subve
 
 Ensure you have the required python tools: virtualenv
 
+### Installation
+
     sudo easy_install -U virtualenv
     virtualenv gonzo
     source gonzo/bin/activate
-
-Next, create a virtual environment for 1hph and install all dependencies:
-
     easy_install -U pip
-    pip install -U -r 1hph/requirements.txt
+
+Next, install 1hph from git and all of its dependencies
+
+    pip install -e git+git@github.com:paulcwatts/1hph.git#egg=1hph
+    pip install -U -r gonzo/src/1hph/requirements.txt
 
 ### Configuration
 
-You'll need to create a local_settings.py in the 1hph/gonzo directory (or otherwise in your PYTHONPATH)
-to add your database configuration and SECRET_KEY.
+Next you'll need to create a local settings module to add your specific database settings
+and SECRET_KEY. This can live anywhere in the Python path, and can be specified using the environment
+variable GONZO_LOCAL_SETTINGS_MODULE. The default is 'gonzo.local_settings'.
+
+TODO: Use the gonzo.wsgi file template to hook into Apache.
+
+### Database
+
+Step-by-step instructions to set up MySQL.
+
+    mysql -u root -p
+    (enter password)
+
+    mysql> create database gonzo;
+    mysql> create user 'gonzo'@'localhost' identified by 'some_pass';
+    mysql> grant all privileges on *.* to 'gonzo'@'localhost' with grant option;
+
+Use this user in your Django settings.
+
+### Syncing the database
+
+Once you have your database and Apache configuration set up, you can then sync the Django DB to MySQL:
+
+   source gonzo/bin/activate
+   django-admin.py syncdb --settings=gonzo.settings --pythonpath=<path_to_local_settings>
