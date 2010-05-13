@@ -1,15 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="page-content">
+  <div class="span-7 colborder prepend-top">
+    {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
-<form method="post" action="{% url account-login %}">
-{{ form.as_p }}
-{% csrf_token %}
-<input type="submit" value="login" />
-<input type="hidden" name="next" value="{{ next }}" />
-</form>
-
+    <form method="post" action="{% url account-login %}">
+    <table>
+       {{ form.as_table }}
+       <tr>
+         <td></td>
+         <td>
+           {% csrf_token %}
+           <input type="hidden" name="next" value="{{ next }}" />
+           <input type="submit" value="Sign in"/>
+         </td>
+       </tr>
+    </table>
+    <p><a href="{% url account-reset-password %}">Totally forgot your password?</a></p>
+    </form>
+  </div>
+  <div class="span-7 last">
+    <div>
+      Sign in with Twitter
+      <hr/>
+    </div>
+    <div>
+        <p>Not yet a member? Sign up! It's free and easy.</p>
+        <p><a class="positive button" href="{% url account-signup %}">Sign up now!</a></p>
+    </div>
+  </div>
+</div>
 {% endblock %}

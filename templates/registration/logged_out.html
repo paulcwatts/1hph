@@ -1,4 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-Buh-bye!
+<div class="page-content">
+<h1>You have been logged out.</h1>
+<a href="{% url account-login %}" class="positive button">Click here to log back in!</a>
+</div>
 {% endblock %}

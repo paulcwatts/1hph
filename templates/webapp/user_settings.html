@@ -1,0 +1,76 @@
+{% extends "base_title.html" %}
+{% load indicator %}
+{% load webapp_extras %}
+{% block extra_script %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
+{% endblock %}
+
+{# Header stuff #}
+{% block title-thumb-src %}{% user_thumbnail user %}{% endblock %}
+{% block title-line1 %}{% user_display_name user %}{% endblock %}
+{% block title-line2 %}Your settings{% endblock %}
+
+{% block page-content %}
+{% with user.get_profile as profile %}
+<div class="span-9 colborder prepend-top">
+  <h3>Profile Info</h3>
+    {% if submit_form.is_multipart %}
+    <form id="update_photo" method="POST" action="update_photo" enctype="multipart/form-data">
+    {% else %}
+    <form id="upload" method="POST" action="update_photo">
+    {% endif %}
+    </form>
+
+    <form id="update_user" method="POST" action="update_user">
+    <table cellspacing="0">
+      {{ user_update_form.as_table }}
+       <tr>
+         <td></td>
+         <td>
+           {% csrf_token %}
+           <input type="submit" value="Save"/>
+           {% indicator "saving..." %}
+           <span class="form-success" style="display: none;">Saved!</span>
+         </td>
+       </tr>
+    </table>
+    </form>
+    <hr/>
+  <h3>Password</h3>
+  <p><a href="{% url account-change-password %}">Click here to change or reset your password.</a></p>
+  <hr/>
+  <h3>Linked Accounts</h3>
+  <ul>
+  <li> Twitter: options when to send tweets (submit a photo, go up in rank, win an award, etc)</li>
+    <li>let people see my external profiles</li>
+  </ul>
+  <hr/>
+  <p><a href="{% url account-deactivate %}">Deactivate my account.</a></p>
+</div>
+<div class="span-5 last prepend-top">
+  <h3>Settings</h3>
+  <p>View and update your personal information, your password, and what others can see about you.</p>
+</div>
+<script type="text/javascript">
+$(function() {
+    $("form").submit(function() {
+      var form = $(this);
+      var indicator = $(".indicator", form);
+      var sucs = $(".form-success", form);
+      sucs.hide();
+      indicator.show();
+      form.ajaxSubmit({
+        success: function(data, status, xhr) {
+          sucs.show();
+        },
+        error: function(xhr, status, error) {
+        },
+        complete: function(xhr, status) {
+          indicator.hide();
+      }});
+      return false;
+    });
+});
+</script>
+{% endwith %}
+{% endblock %}

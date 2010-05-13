@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+
 from gonzo import settings
+from gonzo.account.models import Profile
 
 class UserCreationFormWithEmail(UserCreationForm):
     email = forms.EmailField()
@@ -27,3 +29,24 @@ class UserCreationFormWithEmail(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class UserUpdateForm(forms.Form):
+    """
+    Allows the user to set his "User" data and some profile data in the same go.
+    """
+    first_name = forms.CharField(required=False,max_length=30)
+    last_name = forms.CharField(required=False,max_length=30)
+    email = forms.EmailField()
+    user_location = forms.CharField(max_length=Profile.LOCATION_MAX_LEN,
+                                    required=False,
+                                    label='Your location',
+                                    help_text='Where are you?')
+
+
+class PhotoUpdateForm(forms.ModelForm):
+    """
+    Uploading a photo is a separate action in our settings page
+    """
+    class Meta:
+        model = Profile
+        fields = ['photo']

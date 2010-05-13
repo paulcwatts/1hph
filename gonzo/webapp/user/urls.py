@@ -11,9 +11,6 @@ user_detail = {
 }
 
 urlpatterns = patterns('gonzo.webapp.user.views',
-    url(r'^settings/$',
-        'settings',
-        name='profile-settings'),
     url(r'^(?P<slug>[\w-]+)/$',
         object_detail,
         user_detail,

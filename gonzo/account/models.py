@@ -7,6 +7,8 @@ from gonzo.hunt.models import *
 from gonzo.utils.thumbs import ImageWithThumbsField
 
 class Profile(models.Model):
+    LOCATION_MAX_LEN=64
+
     user = models.OneToOneField(User, primary_key=True)
     # User's profile pic
     photo = ImageWithThumbsField(null=True,
@@ -18,6 +20,13 @@ class Profile(models.Model):
                                  sizes=((60,60),))
     photo_width = models.IntegerField(null=True)
     photo_height = models.IntegerField(null=True)
+    # User specified location
+    user_location = models.CharField(max_length=LOCATION_MAX_LEN,blank=True)
+
+    # Whether or not your activity is public
+    public_activity = models.BooleanField(default=True)
+    # Whether or not your external links are public (Facebook, Twitter)
+    public_links = models.BooleanField(default=True)
 
     # The user gets points by doing stuff, and can spend them somehow
     points = models.IntegerField(default=0)
@@ -27,12 +36,18 @@ class Profile(models.Model):
     # The user's rank is a basic indication of how "experienced"
     # the user is, and grants a user additional privileges
     rank = models.PositiveIntegerField(default=0)
+
     # Twitter authentication
+    twitter_profile = models.URLField(null=True)
     twitter_screen_name = models.CharField(max_length=128,null=True,blank=True)
     twitter_oauth_token = models.CharField(max_length=200,null=True,blank=True)
     twitter_oauth_secret = models.CharField(max_length=200,null=True,blank=True)
-    # Whether or not your activity is public
-    public_activity = models.BooleanField(default=True)
+
+    # Facebook authentication
+    facebook_profile = models.URLField(null=True)
+    facebook_screen_name = models.CharField(max_length=128,null=True,blank=True)
+    facebook_oauth_token = models.CharField(max_length=200,null=True,blank=True)
+    facebook_oauth_secret = models.CharField(max_length=200,null=True,blank=True)
 
     def __unicode__(self):
         return self.user.username
