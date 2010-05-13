@@ -11,10 +11,6 @@
 
 apache2, mysql-server python-setuptools python-mysqldb python-dev git-core subversion libapache2-mod-wsgi build-essential libjpeg-dev libpng12-dev
 
-### Python dependencies
-
-Ensure you have the required python tools: virtualenv
-
 ### Installation
 
     sudo easy_install -U virtualenv
@@ -52,5 +48,5 @@ Use this user in your Django settings.
 
 Once you have your database and Apache configuration set up, you can then sync the Django DB to MySQL:
 
-   source gonzo/bin/activate
-   django-admin.py syncdb --settings=gonzo.settings --pythonpath=<path_to_local_settings>
+    source gonzo/bin/activate
+    django-admin.py syncdb --settings=gonzo.settings --pythonpath=<path_to_local_settings>
