@@ -27,10 +27,6 @@ def user_thumbnail(user):
 @register.simple_tag
 def user_display_name(user,logged_in_user=None):
     result = user.username
-    if user.first_name and user.last_name:
-        result += " (%s %s)" % (user.first_name, user.last_name)
-    elif user.first_name or user.last_name:
-        result += " (%s)" % (user.first_name or user.last_name)
     if logged_in_user and logged_in_user.is_authenticated() and user == logged_in_user:
         result += " (that's you)"
     return result
