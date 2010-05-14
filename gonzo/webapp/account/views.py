@@ -24,6 +24,13 @@ def _redirect_to_profile(user,new_user=False):
         qs = ''
     return HttpResponseRedirect(reverse('profile', kwargs={'slug':user.username})+qs)
 
+def _redirect_to_login(next):
+    login = HttpResponseRedirect(reverse('account-login'))
+    if next:
+        login += "?"
+        login += urllib.urlencode({ 'next': next })
+    return HttpResponseRedirect(login)
+
 def _new_user(request):
     f = UserCreationFormWithEmail(request.REQUEST)
     if not f.is_valid():
@@ -108,6 +115,15 @@ if hasattr(settings, 'TWITTER_CONSUMER_KEY') and hasattr(settings, 'TWITTER_CONS
 else:
     twitter_consumer = None
 
+def _build_oauth_callback(request):
+    url = request.build_absolute_uri(reverse('account-twitter-postauth'))
+    next = request.REQUEST.get('next')
+    if next:
+        url += "?"
+        url += urllib.urlencode({ 'next': next })
+    return url
+
+
 @secure_required
 def twitter_login(request):
     if not twitter_consumer:
@@ -127,8 +143,7 @@ def twitter_login(request):
     url += "?"
     url += urllib.urlencode({
             'oauth_token': request.session['request_token']['oauth_token'],
-            'oauth_callback': request.build_absolute_uri(
-                                reverse('account-twitter-postauth'))
+            'oauth_callback': _build_oauth_callback(request)
         })
     return HttpResponseRedirect(url)
 
@@ -192,18 +207,22 @@ def twitter_postauth(request):
         profile.save()
         new_user = True
 
+    next = request.REQUEST.get('next')
     # Authenticate the user and log them in using Django's pre-built
     # functions for these things.
     user = authenticate(screen_name=screen_name, secret=oauth_token_secret)
     if user is not None:
         if user.is_active:
             login(request, user)
-            return _redirect_to_profile(request.user,new_user)
+            if next:
+                return HttpResponseRedirect(next)
+            else:
+                return _redirect_to_profile(request.user,new_user)
         else:
             # TODO: Redirect to a "disabled account" page? Or just invalid?
-            return HttpResponseRedirect(reverse('account-login'))
+            return _redirect_to_login(next)
     else:
-        return HttpResponseRedirect(reverse('account-login'))
+        return _redirect_to_login(next)
 
 
 @login_required

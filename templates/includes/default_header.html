@@ -7,11 +7,12 @@
     <ul class="nav navtoolbar round-corners" role="navigation">
       {% if user.is_authenticated %}
         <li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
+        <li><a href="{% url hunt-index %}">Hunts</a></li>
         <li><a href="{% url profile-settings %}">Settings</a></li>
         <li><a href="{% url account-logout %}">Sign out</a></li>
       {% else %}
         <li>
-          <a href="{% url account-twitter-login %}">
+          <a href="{% url account-twitter-login %}?next={{ request.path }}">
             <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter-small.png" alt="Sign in with Twitter"/>
           </a>
         </li>
