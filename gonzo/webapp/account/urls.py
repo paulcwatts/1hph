@@ -10,6 +10,11 @@ urlpatterns = patterns('gonzo.webapp.account.views',
     # actual profile page.
     url(r'^profile/$', 'profile'),
 
+    # Twitter
+    url(r'^login/twitter/$', 'twitter_login', name='account-twitter-login'),
+    url(r'^logout/twitter/$', 'twitter_logout', name='account-twitter-logout'),
+    url(r'^login/twitter_postauth/$', 'twitter_postauth', name='account-twitter-postauth'),
+
     url(r'^change_password/$',       'change_password', name='account-change-password'),
     url(r'^password_changed/$',      'password_changed', name='account-password-changed'),
     url(r'^reset_password/$',        'reset_password', name='account-reset-password'),

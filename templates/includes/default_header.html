@@ -1,5 +1,5 @@
 {% block "header" %}
-<div class="span-16 base-header dropshadow">
+<div class="span-16 base-header last dropshadow">
   <div class="span-10">
     <a class="header-logo pull-1" href="/"><img class="header-logo" src="{{ MEDIA_URL }}img/logo.png" alt="One Hour Photo Hunt"/></a>
   </div>
@@ -10,7 +10,12 @@
         <li><a href="{% url profile-settings %}">Settings</a></li>
         <li><a href="{% url account-logout %}">Log out</a></li>
       {% else %}
-        <li><a href="{% url account-login %}">Log in</a></li>
+        <li>
+          <a href="{% url account-twitter-login %}">
+            <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter-small.png" alt="Sign in with Twitter"/>
+          </a>
+        </li>
+        <li><a href="{% url account-login %}">Sign in</a></li>
         <li><a href="{% url account-signup %}">Sign up</a></li>
       {% endif %}
     </ul>

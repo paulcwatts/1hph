@@ -187,21 +187,28 @@ ul.nav {
 }
 .base-header .nav-container {
   position: relative;
-  margin-top: 4px;
 }
 .nav li {
   display: inline-block;
   padding: 0 5px;
 }
 .navtoolbar {
+  position: absolute;
+  right: -5px;
+  top: 5px;
+  width: 310px;
   background-color: #ffffff;
   border: 1px #FF9900 solid;
   font-size: 90%;
 }
 .navtoolbar li {
-  margin: 2px;
-  border-
+  height: 20px;
 }
+.navtoolbar img {
+  position: relative;
+  top: 4px;
+}
+
 
 /* generic properties for thumbnails */
 .thumb, .thumb-icon, .comment-thumb-icon, .submission-thumb-icon {
