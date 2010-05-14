@@ -59,7 +59,7 @@ AWARD_MAP = {
     ),
     Award.BRONZE: (
         os.path.join(settings.MEDIA_URL, 'img/icons/medal_bronze_3.png'),
-        os.path.join(settings.MEDIA_URL, 'img/awards/silver_medal.png')
+        os.path.join(settings.MEDIA_URL, 'img/awards/bronze_medal.png')
     )
 }
 
