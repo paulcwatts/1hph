@@ -3,10 +3,6 @@
 <div class="page-content">
   <div class="span-7 colborder">
     <h3>Sign into your account</h3>
-    {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
-    {% endif %}
-
     <form method="post" action="{% url account-login %}">
     <table>
        {{ form.as_table }}

@@ -41,10 +41,27 @@ a:hover {
   color: #FF9900;
   text-decoration: underline;
 }
-ul.nav, .two-line, .submission-list, .comment-list, .user-activity-list, .award-list {
+ul.nav,
+.two-line,
+.submission-list,
+.comment-list,
+.user-activity-list,
+.award-list,
+.errorlist {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+.errorlist li {
+  background:#FBE3E4;
+  color:#8a1f11;
+  border-color:#FBC2C4;
+  margin: 0 5px;
+  padding: 5px;
+  -moz-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
 
 /*
