@@ -22,7 +22,7 @@
     <div>
       <h3>Use your Twitter account</h3>
       <p>
-        <a href="{% url account-twitter-login %}">
+        <a href="{% url account-twitter-login %}?next={{ request.REQUEST.next }}">
             <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter.png" alt="Sign in with Twitter"/>
         </a>
       </p>
@@ -31,7 +31,7 @@
     <div>
        <h3>Not a member?</h3>
         <p>Sign up! It's free and easy.</p>
-        <p><a class="positive button" href="{% url account-signup %}">Sign up now!</a></p>
+        <p><a class="positive button" href="{% url account-signup %}?next={{ request.REQUEST.next }}">Sign up now!</a></p>
     </div>
   </div>
 </div>

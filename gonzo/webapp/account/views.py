@@ -214,7 +214,8 @@ def twitter_postauth(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            if next:
+            # If this is a *new* user, always take them to their *new* profile.
+            if next and not new_user:
                 return HttpResponseRedirect(next)
             else:
                 return _redirect_to_profile(request.user,new_user)

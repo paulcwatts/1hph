@@ -22,7 +22,7 @@
       <h3>Use your Twitter account</h3>
       <p>You can also use your Twitter account to play.</p>
       <p>
-        <a href="{% url account-twitter-login %}">
+        <a href="{% url account-twitter-login %}?next={{ request.REQUEST.next }}">
             <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter.png" alt="Sign in with Twitter"/>
         </a>
       </p>
