@@ -101,7 +101,7 @@ REQUEST_TOKEN_URL='https://api.twitter.com/oauth/request_token'
 ACCESS_TOKEN_URL='https://api.twitter.com/oauth/access_token'
 AUTHORIZE_URL='https://api.twitter.com/oauth/authorize'
 
-if hasattr(settings, 'TWITTER_CONSUMER_KEY') and hasattr('TWITTER_CONSUMER_SECRET'):
+if hasattr(settings, 'TWITTER_CONSUMER_KEY') and hasattr(settings, 'TWITTER_CONSUMER_SECRET'):
     twitter_consumer = oauth.Consumer(settings.TWITTER_CONSUMER_KEY,
                                   settings.TWITTER_CONSUMER_SECRET)
 else:
