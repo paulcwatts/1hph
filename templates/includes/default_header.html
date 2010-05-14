@@ -8,7 +8,7 @@
       {% if user.is_authenticated %}
         <li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
         <li><a href="{% url profile-settings %}">Settings</a></li>
-        <li><a href="{% url account-logout %}">Log out</a></li>
+        <li><a href="{% url account-logout %}">Sign out</a></li>
       {% else %}
         <li>
           <a href="{% url account-twitter-login %}">

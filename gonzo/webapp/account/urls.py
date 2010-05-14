@@ -1,8 +1,8 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('gonzo.webapp.account.views',
-    url(r'^login/$',  'login',  name='account-login'),
-    url(r'^logout/$', 'logout', name='account-logout'),
+    url(r'^signin/$',  'login_view',  name='account-login'),
+    url(r'^signout/$', 'logout_view', name='account-logout'),
     url(r'^signup/$', 'signup', name='account-signup'),
     url(r'^deactivate/$', 'deactivate', name='account-deactivate'),
     url(r'^deactivate_confirmed/$', 'deactivate_confirmed', name='account-deactivate-confirmed'),

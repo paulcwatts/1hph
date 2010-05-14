@@ -36,12 +36,12 @@ def _new_user(request):
     return _redirect_to_profile(user,True)
 
 @secure_required
-def login(request):
+def login_view(request):
     return auth_views.login(request)
 
 @login_required
 @secure_required
-def logout(request):
+def logout_view(request):
     return auth_views.logout(request)
 
 @login_required
@@ -101,11 +101,17 @@ REQUEST_TOKEN_URL='https://api.twitter.com/oauth/request_token'
 ACCESS_TOKEN_URL='https://api.twitter.com/oauth/access_token'
 AUTHORIZE_URL='https://api.twitter.com/oauth/authorize'
 
-twitter_consumer = oauth.Consumer(settings.TWITTER_CONSUMER_KEY,
+if hasattr(settings, 'TWITTER_CONSUMER_KEY') and hasattr('TWITTER_CONSUMER_SECRET'):
+    twitter_consumer = oauth.Consumer(settings.TWITTER_CONSUMER_KEY,
                                   settings.TWITTER_CONSUMER_SECRET)
+else:
+    twitter_consumer = None
 
 @secure_required
 def twitter_login(request):
+    if not twitter_consumer:
+        return HttpResponseBadRequest("Twitter integration not enabled on this server.")
+
     client = oauth.Client(twitter_consumer)
     # Step 1. Get a request token from Twitter.
     resp, content = client.request(REQUEST_TOKEN_URL, "GET")
@@ -164,9 +170,10 @@ def twitter_postauth(request):
         # can prompt them for their email here. Either way, the password
         # should never be used.
         user = User.objects.create_user(access_token['screen_name'],
-            access_token['screen_name'],
+            '',
             access_token['oauth_token_secret'])
         # TODO: If this username is already taken, we need to prompt the user for one.
+        # Redirect him to another page that asks him or her to choose a new username.
 
         # Save our permanent token and secret for later.
         profile = user.get_profile()
