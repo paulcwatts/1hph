@@ -1,5 +1,6 @@
 import oauth2 as oauth
 import cgi, urllib
+from urlparse import urlparse
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -137,9 +138,10 @@ def twitter_logout(request):
     return logout(request)
 
 def twitter_postauth(request):
+    request_token = request.session['request_token']
+
     # Step 1. Use the request token in the session to build a new client.
-    token = oauth.Token(request.session['request_token']['oauth_token'],
-        request.session['request_token']['oauth_token_secret'])
+    token = oauth.Token(request_token['oauth_token'], request_token['oauth_token_secret'])
     client = oauth.Client(twitter_consumer, token)
 
     # Step 2. Request the authorized access token from Twitter.
@@ -158,41 +160,41 @@ def twitter_postauth(request):
     }
     """
     access_token = dict(cgi.parse_qsl(content))
+    screen_name = access_token['screen_name']
+    oauth_token_secret = access_token['oauth_token_secret']
+
     new_user = False
 
     # Step 3. Lookup the user or create them if they don't exist.
+    # NOTE: We want to look up the user by the screen name in their *profile*,
+    # in the case we asked them to change their 1hph username due to a conflict
+    # (or we at some point allow them to change their username themselves)
     try:
-        user = User.objects.get(username=access_token['screen_name'])
+        user = Profile.objects.get(twitter_screen_name=screen_name)
     except User.DoesNotExist:
         # When creating the user I just use their screen_name@twitter.com
         # for their email and the oauth_token_secret for their password.
         # These two things will likely never be used. Alternatively, you
         # can prompt them for their email here. Either way, the password
         # should never be used.
-        user = User.objects.create_user(access_token['screen_name'],
-            '',
-            access_token['oauth_token_secret'])
+        user = User.objects.create_user(screen_name, '', oauth_token_secret)
         # TODO: If this username is already taken, we need to prompt the user for one.
         # Redirect him to another page that asks him or her to choose a new username.
 
+        # TODO: Get the information we want for this person (Name, Location, Email)
+
         # Save our permanent token and secret for later.
         profile = user.get_profile()
-        profile.twitter_profile = 'http://twitter.com/'+access_token['screen_name']
-        profile.twitter_screen_name = access_token['screen_name']
+        profile.twitter_profile = 'http://twitter.com/'+screen_name
+        profile.twitter_screen_name = screen_name
         profile.twitter_oauth_token = access_token['oauth_token']
-        profile.twitter_oauth_secret = access_token['oauth_token_secret']
+        profile.twitter_oauth_secret = oauth_token_secret
         profile.save()
         new_user = True
 
     # Authenticate the user and log them in using Django's pre-built
     # functions for these things.
-    # TODO: This is a problem if the user changes his password
-    # and then tries logging in through. We need to enable a way for
-    # Django to set up a user without knowing his password.
-    # Perhaps we just set up a "Twitter" auth backend that authenticates
-    # based on the token and secret.
-    user = authenticate(username=access_token['screen_name'],
-        password=access_token['oauth_token_secret'])
+    user = authenticate(screen_name=screen_name, secret=oauth_token_secret)
     if user is not None:
         if user.is_active:
             login(request, user)

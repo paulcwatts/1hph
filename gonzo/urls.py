@@ -7,7 +7,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^$', direct_to_template, { 'template':'home.html'}),
+    (r'^$', 'gonzo.views.home'),
     (r'^hunt/', include('gonzo.webapp.hunt.urls')),
     (r'^user/', include('gonzo.webapp.user.urls')),
     (r'^account/', include('gonzo.webapp.account.urls')),

@@ -15,7 +15,7 @@
             <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter-small.png" alt="Sign in with Twitter"/>
           </a>
         </li>
-        <li><a href="{% url account-login %}">Sign in</a></li>
+        <li><a href="{% url account-login %}?next={{ request.path }}">Sign in</a></li>
         <li><a href="{% url account-signup %}">Sign up</a></li>
       {% endif %}
     </ul>
