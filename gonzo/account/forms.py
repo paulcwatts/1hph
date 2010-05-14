@@ -6,6 +6,9 @@ from gonzo import settings
 from gonzo.account.models import Profile
 
 class UserCreationFormWithEmail(UserCreationForm):
+    error_css_class = 'error'
+    required_css_class = 'required'
+
     email = forms.EmailField()
 
     def clean_email(self):
@@ -31,6 +34,8 @@ class UserCreationFormWithEmail(UserCreationForm):
         return user
 
 class UserUpdateForm(forms.Form):
+    error_css_class = 'error'
+    required_css_class = 'required'
     """
     Allows the user to set his "User" data and some profile data in the same go.
     """
@@ -44,6 +49,8 @@ class UserUpdateForm(forms.Form):
 
 
 class PhotoUpdateForm(forms.ModelForm):
+    error_css_class = 'error'
+    required_css_class = 'required'
     """
     Uploading a photo is a separate action in our settings page
     """
