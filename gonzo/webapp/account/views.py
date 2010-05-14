@@ -186,7 +186,7 @@ def twitter_postauth(request):
     # (or we at some point allow them to change their username themselves)
     try:
         user = Profile.objects.get(twitter_screen_name=screen_name)
-    except User.DoesNotExist:
+    except Profile.DoesNotExist:
         # When creating the user I just use their screen_name@twitter.com
         # for their email and the oauth_token_secret for their password.
         # These two things will likely never be used. Alternatively, you
