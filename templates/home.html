@@ -1,15 +1,35 @@
 {% extends "base.html" %}
+{% block extra_css %}
+<style type="text/css">
+.therules {
+  font-size: 200%;
+  margin: 0.5em;
+}
+ol {
+  padding-left: 3em;
+}
+#join-button {
+  display: block;
+  width: 90%;
+  line-height: 4em;
+  font-size: 150%;
+  text-align: center;
+  vertical-align: middle;
+}
+</style>
+{% endblock %}
 {% block content %}
-<!-- temporary content to give a sense of proportion -->
-<p><a href="{% url hunt-index %}">Join a hunt</a><br/>
-Submit your own photos<br/>
-Vote for your favorites<br/>
-Win big prizes (not really)</p>
-<p style="height: 100px; border: 1px blue solid; float: left;">
-Scrolling info of current hunts
-</p>
-<p style="height: 100px; border: 1px blue solid; float: right;">
-Get our mobile apps
-</p>
-<p style="clear:both;">Some other type of content</p>
+<div class="span-9">
+  <div class="therules">
+    <strong>The rules are simple.</strong>
+    <ol>
+    <li>Take a three word phrase.</li>
+    <li>Upload a photo you think fits the phrase.</li>
+    <li>Vote on who wins.</li>
+    </ol>
+  </div>
+</div>
+<div class="span-7 last">
+   <a id="join-button" class="positive button" href="{% url hunt-index %}">Join a hunt now!</a>
+</div>
 {% endblock %}
