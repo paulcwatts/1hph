@@ -173,6 +173,9 @@ class Submission(models.Model):
     @models.permalink
     def get_comment_stream_url(self):
         return self._get_url('api-photo-comment-stream')
+    @models.permalink
+    def get_short_url(self):
+        return ('photo-short-url', (), { 'slug' : self.shortened_path })
 
     def get_source(self):
         return utils.get_source(self)

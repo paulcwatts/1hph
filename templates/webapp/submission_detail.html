@@ -18,6 +18,9 @@
        <img class="thumb" src="{{ submission.photo.url_240x180 }}" alt="submitted photo"/>
     </a>
   </div>
+  <div>
+  Short Path: <input type="text" value="{% abs_url request submission.get_short_url %}"/>
+  </div>
 
   {% url api-photo-comment-index submission.hunt.slug submission.id as comments_url %}
   {% include "includes/comments.html" %}

@@ -69,6 +69,10 @@ def award_badge(award):
     return AWARD_MAP[award.value][1]
 award_badge.is_safe = True
 
+@register.simple_tag
+def abs_url(request, url):
+    return request.build_absolute_uri(url)
+
 @register.filter
 def mytimesince(value, arg=None):
     """Formats a date as the time since that date (i.e. "4 days, 6 hours")."""
