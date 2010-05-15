@@ -2,6 +2,7 @@
 -e git+git://github.com/simplegeo/python-oauth2.git#egg=oath2
 -e git+git://github.com/rackspace/python-cloudfiles.git@1.7.0#egg=python-cloudfiles
 -e git+git://github.com/richleland/django-cumulus.git@0.2.3#egg=python-cumulus
+tweepy
 simplejson
 pil
 pytz

@@ -1,6 +1,6 @@
-import oauth2 as oauth
 import cgi, urllib
 from urlparse import urlparse
+import tweepy
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -16,6 +16,7 @@ from django.views.decorators.http import require_GET,require_POST
 
 from gonzo.account.forms import *
 from gonzo.utils.decorators import secure_required
+from gonzo.utils import twitter
 
 def _redirect_to_profile(user,new_user=False):
     if new_user:
@@ -105,47 +106,19 @@ def deactivate(request):
 def deactivate_confirmed(request):
     return HttpResponse()
 
-REQUEST_TOKEN_URL='https://api.twitter.com/oauth/request_token'
-ACCESS_TOKEN_URL='https://api.twitter.com/oauth/access_token'
-AUTHORIZE_URL='https://api.twitter.com/oauth/authorize'
-
-if hasattr(settings, 'TWITTER_CONSUMER_KEY') and hasattr(settings, 'TWITTER_CONSUMER_SECRET'):
-    twitter_consumer = oauth.Consumer(settings.TWITTER_CONSUMER_KEY,
-                                  settings.TWITTER_CONSUMER_SECRET)
-else:
-    twitter_consumer = None
-
-def _build_oauth_callback(request):
-    url = request.build_absolute_uri(reverse('account-twitter-postauth'))
-    next = request.REQUEST.get('next')
-    if next:
-        url += "?"
-        url += urllib.urlencode({ 'next': next })
-    return url
-
-
 @secure_required
 def twitter_login(request):
-    if not twitter_consumer:
+    try:
+        auth = twitter.get_auth_from_request(request)
+        redirect_url = auth.get_authorization_url()
+        #  Store the request token in a session for later use.
+        request.session['request_token'] = (auth.request_token.key, auth.request_token.secret)
+        return HttpResponseRedirect(redirect_url)
+
+    except twitter.NotEnabled:
         return HttpResponseBadRequest("Twitter integration not enabled on this server.")
-
-    client = oauth.Client(twitter_consumer)
-    # Step 1. Get a request token from Twitter.
-    resp, content = client.request(REQUEST_TOKEN_URL, "GET")
-    if resp['status'] != '200':
-        raise Exception("Invalid response from Twitter: " + content)
-
-    # Step 2. Store the request token in a session for later use.
-    request.session['request_token'] = dict(cgi.parse_qsl(content))
-
-    # Step 3. Redirect the user to the authentication URL.
-    url = AUTHORIZE_URL
-    url += "?"
-    url += urllib.urlencode({
-            'oauth_token': request.session['request_token']['oauth_token'],
-            'oauth_callback': _build_oauth_callback(request)
-        })
-    return HttpResponseRedirect(url)
+    except tweepy.TweepError, e:
+        raise Exception("Twitter error: " + str(e))
 
 @login_required
 @secure_required
@@ -153,30 +126,23 @@ def twitter_logout(request):
     return logout(request)
 
 def twitter_postauth(request):
+    try:
+        auth = twitter.get_auth()
+    except twitter.NotEnabled:
+        return HttpResponseBadRequest("Twitter isn't enabled")
+
     request_token = request.session['request_token']
+    auth.set_request_token(request_token[0], request_token[1])
+    del request.session['request_token']
 
-    # Step 1. Use the request token in the session to build a new client.
-    token = oauth.Token(request_token['oauth_token'], request_token['oauth_token_secret'])
-    client = oauth.Client(twitter_consumer, token)
+    try:
+        auth.get_access_token()
+    except tweepy.TweepError, e:
+        return HttpResponseBadRequest("Unable to get access token from Twitter: " + str(e))
 
-    # Step 2. Request the authorized access token from Twitter.
-    resp, content = client.request(ACCESS_TOKEN_URL, "GET")
-    if resp['status'] != '200':
-        raise Exception("Invalid response from Twitter: " + content)
-
-    """
-    This is what you'll get back from Twitter. Note that it includes the
-    user's user_id and screen_name.
-    {
-        'oauth_token_secret': 'IcJXPiJh8be3BjDWW50uCY31chyhsMHEhqJVsphC3M',
-        'user_id': '120889797',
-        'oauth_token': '120889797-H5zNnM3qE0iFoTTpNEHIz3noL9FKzXiOxwtnyVOD',
-        'screen_name': 'heyismysiteup'
-    }
-    """
-    access_token = dict(cgi.parse_qsl(content))
-    screen_name = access_token['screen_name']
-    oauth_token_secret = access_token['oauth_token_secret']
+    screen_name = auth.get_username()
+    auth_token = auth.access_token.key
+    auth_secret = auth.access_token.secret
 
     new_user = False
 
@@ -192,7 +158,7 @@ def twitter_postauth(request):
         # These two things will likely never be used. Alternatively, you
         # can prompt them for their email here. Either way, the password
         # should never be used.
-        user = User.objects.create_user(screen_name, '', oauth_token_secret)
+        user = User.objects.create_user(screen_name, '', auth_secret)
         # TODO: If this username is already taken, we need to prompt the user for one.
         # Redirect him to another page that asks him or her to choose a new username.
 
@@ -202,15 +168,15 @@ def twitter_postauth(request):
         profile = user.get_profile()
         profile.twitter_profile = 'http://twitter.com/'+screen_name
         profile.twitter_screen_name = screen_name
-        profile.twitter_oauth_token = access_token['oauth_token']
-        profile.twitter_oauth_secret = oauth_token_secret
+        profile.twitter_oauth_token = auth_token
+        profile.twitter_oauth_secret = auth_secret
         profile.save()
         new_user = True
 
     next = request.REQUEST.get('next')
     # Authenticate the user and log them in using Django's pre-built
     # functions for these things.
-    user = authenticate(screen_name=screen_name, secret=oauth_token_secret)
+    user = authenticate(screen_name=screen_name, secret=auth_secret)
     if user is not None:
         if user.is_active:
             login(request, user)

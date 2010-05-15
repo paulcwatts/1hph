@@ -109,7 +109,8 @@ INSTALLED_APPS = (
     'gonzo.api',
     'gonzo.account',
     'gonzo.oauth',
-    'gonzo.webapp'
+    'gonzo.webapp',
+    'gonzo.utils'
 )
 
 AUTHENTICATION_BACKENDS = (
