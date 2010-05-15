@@ -8,7 +8,7 @@
 {# Header stuff #}
 {% block title-thumb-src %}{% user_thumbnail profile_user %}{% endblock %}
 {% block title-line1 %}{% user_display_name profile_user user %}{% endblock %}
-{% block title-line2 %}Joined the hunt {{ profile_user.date_joined|timesince }} ago{% endblock %}
+{% block title-line2 %}Joined the hunt {{ profile_user.date_joined|mytimesince }} ago{% endblock %}
 
 {% block page-content %}
 {% with profile_user.get_profile as profile %}
