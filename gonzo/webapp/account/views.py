@@ -136,7 +136,7 @@ def twitter_postauth(request):
     del request.session['request_token']
 
     try:
-        auth.get_access_token()
+        auth.get_access_token(request.REQUEST.get('oauth_verifier'))
     except tweepy.TweepError, e:
         return HttpResponseBadRequest("Unable to get access token from Twitter: " + str(e))
 
