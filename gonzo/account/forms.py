@@ -41,7 +41,7 @@ class UserUpdateForm(forms.Form):
     """
     first_name = forms.CharField(required=False,max_length=30)
     last_name = forms.CharField(required=False,max_length=30)
-    email = forms.EmailField()
+    email = forms.EmailField(required=False)
     user_location = forms.CharField(max_length=Profile.LOCATION_MAX_LEN,
                                     required=False,
                                     label='Your location',
