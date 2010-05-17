@@ -1,10 +1,10 @@
 {% block "header" %}
-<div class="span-16 base-header last dropshadow">
+<div class="span-16 base-header last">
   <div class="span-10">
-    <a class="header-logo pull-1" href="/"><img class="header-logo" src="{{ MEDIA_URL }}img/logo.png" alt="One Hour Photo Hunt"/></a>
+    <a class="header-logo" href="/"><img class="header-logo" src="{{ MEDIA_URL }}img/logo.png" alt="One Hour Photo Hunt"/></a>
   </div>
   <div class="span-6 nav-container last">
-    <ul class="nav navtoolbar round-corners" role="navigation">
+    <ul class="nav navtoolbar" role="navigation">
       {% if user.is_authenticated %}
         <li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
         <li><a href="{% url hunt-index %}">Hunts</a></li>

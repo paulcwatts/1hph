@@ -14,19 +14,17 @@ Text Color: #222222
 Link Color: #CC7A00
 */
 body {
-  background-color: #AEEBFF;
+  background: url(img/bg.png) #AEEBFF repeat-x;
 }
 h1 {
-  font-size: 200%;
   /*font-weight: bold;*/
 }
 .container {
 }
 .base-header {
   background-color: #3299BB;
-  border-left: 1px #BCBCBC solid;
-  border-right: 1px #BCBCBC solid;
-  border-bottom:  1px #FF9900 solid;
+  height: 50px;
+  font-size: 12px;
 }
 .base-content {
   background-color: white;
@@ -174,7 +172,7 @@ ul.nav,
 /* generic properties for string types */
 .from { font-weight: bold; }
 .time, .list-time { color: #424242; }
-.list-time { font-size: 75%; }
+.list-time { font-size: 10px; }
 .phrase { text-transform: lowercase; quotes: \&#8220\; \&#8221\; \&#8216\; \&#8217\;; }
 .phrase:before { content: open-quote; }
 .phrase:after { content: close-quote; }
@@ -200,7 +198,7 @@ ul.nav {
 }
 .base-footer .nav {
   color: #CC7A00;
-  font-size: 75%;
+  font-size: 10px;
 }
 .base-header .nav-container {
   position: relative;
@@ -211,12 +209,12 @@ ul.nav {
 }
 .navtoolbar {
   position: absolute;
-  right: -5px;
+  right: 0px;
   top: 5px;
   width: 310px;
   background-color: #ffffff;
-  border: 1px #FF9900 solid;
-  font-size: 90%;
+  border: 1px #BCBCBC solid;
+  font-size: 11px;
 }
 .navtoolbar li {
   height: 20px;
@@ -270,17 +268,21 @@ li.two-line-item {
 
 /* page title customizations */
 .page-title {
-  margin-top: -10px;
-  margin-left: 10px;
-  border:  1px #FF9900 solid;
+  padding: 5px;
+  /*background-color: #AEEBFF;*/
   vertical-align: middle;
+  border-bottom: #FF9900 1px solid;
 }
 .page-title .two-line-item {
-  background-color: white;
+  background-color: transparent;
+  border: none;
 }
 .page-title h1 {
   padding: 0;
   margin: 0;
+}
+.page-title h2 {
+  font-size: 20px;
 }
 .page-content {
   margin: 1em;
@@ -332,7 +334,7 @@ li.two-line-item {
 }
 
 .counter {
-   font-size: 700%;
+   font-size: 96px;
    line-height: 1.0;
 }
 
@@ -343,7 +345,6 @@ li.two-line-item {
 
 /* Voting button */
 .vote-button {
-  font-size: 150%;
   width: 100%;
   height: 5em;
 }

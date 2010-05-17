@@ -8,22 +8,25 @@
 {% endblock %}
 {% block content %}
 <div class="page-content">
-  {% with submission.get_source as source %}
-    <h1>Posted by <a class="from" href="{{ source.url }}">{{ source.name }}</a> via {{ source.via }}</h1>
-    <h2>{{ submission.time|mytimesince }} ago for hunt <a class="phrase" href="{% url hunt submission.hunt.slug %}">{{ submission.hunt.phrase }}</a></h2>
-  {% endwith %}
+  <div class="span-9 colborder">
+    {% with submission.get_source as source %}
+      <h2>Posted by <a class="from" href="{{ source.url }}">{{ source.name }}</a> via {{ source.via }}</h1>
+      <h3>{{ submission.time|mytimesince }} ago for hunt <a class="phrase" href="{% url hunt submission.hunt.slug %}">{{ submission.hunt.phrase }}</a></h2>
+    {% endwith %}
 
-  <div class="photo">
-    <a href="{{ submission.photo.url }}" title="Full size photo">
-       <img class="thumb" src="{{ submission.photo.url_240x180 }}" alt="submitted photo"/>
-    </a>
-  </div>
-  <div>
-  Short Path: <input type="text" value="{% abs_url request submission.get_short_url %}"/>
-  </div>
+    <div class="photo">
+      <a href="{{ submission.photo.url }}" title="Full size photo">
+         <img class="thumb" src="{{ submission.photo.url_240x180 }}" alt="submitted photo"/>
+      </a>
+    </div>
+    <div>
+    Short Path: <input type="text" value="{% abs_url request submission.get_short_url %}"/>
+    </div>
 
-  {% url api-photo-comment-index submission.hunt.slug submission.id as comments_url %}
-  {% include "includes/comments.html" %}
+    {% url api-photo-comment-index submission.hunt.slug submission.id as comments_url %}
+    {% include "includes/comments.html" %}
+  </div>
+  <div class="span-7 last"></div>
 </div>
 <script type="text/javascript">
 $(function() {
