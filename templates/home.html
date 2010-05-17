@@ -7,13 +7,20 @@
 }
 ol {
   padding-left: 3em;
+  margin: 0;
 }
 #join-button {
   display: block;
-  width: 90%;
   line-height: 4em;
   text-align: center;
   vertical-align: middle;
+  float: none;
+}
+@media only screen and (max-device-width: 480px) {
+  .therules {
+    font-size: 120%;
+    margin: 0.5em;
+  }
 }
 </style>
 {% endblock %}

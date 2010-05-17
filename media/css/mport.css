@@ -1,0 +1,31 @@
+.container {width:95%; margin: 0px auto;}
+.area-all, .area-main, .area-main-short, .area-sidebar, .area-sidebar-short {float: none;margin-right:5px;}
+.area-all { width: auto; margin-right:0; }
+.area-main, .area-main-short {padding-right:0;margin-right:0;border:none;}
+.area-main { width: auto; }
+.area-main-short { width:auto; }
+.area-sidebar { width:auto; margin-right: 0; }
+.area-sidebar-short {width: auto; margin-right: 0; }
+
+h1 { font-size: 1.6em; }
+h2 { font-size: 1.3em; }
+h3 { font-size: 1.3em; }
+.page-content {
+  margin: 0.4em;
+}
+a.button, button {
+  float: none;
+}
+.page-title {
+  border-bottom: #BCBCBC 1px solid;
+}
+
+ul.navtoolbar {
+  position: static;
+  padding: 0;
+  text-align: left;
+}
+.base-header {
+  position: static;
+}
+hr.colend { display: block; }

@@ -5,7 +5,9 @@
 {% block default_css %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/screen.css" type="text/css" media="screen, projection">
 <!--[if lt IE 8]><link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/base.css"/>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/base.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/mport.css" media="only screen and (max-device-width: 480px)" />
+<meta name="viewport" content="width=320; initial-scale=1; maximum-scale=1.0; minimum-scale=1" />
 {% endblock %}
 {% block extra_css %}{% endblock %}
 {% block extra_links %}{% endblock %}
