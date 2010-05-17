@@ -1,4 +1,4 @@
--e svn+http://code.djangoproject.com/svn/django/trunk/
+Django==1.2
 -e git+git://github.com/simplegeo/python-oauth2.git#egg=oath2
 -e git+git://github.com/rackspace/python-cloudfiles.git@1.7.0#egg=python-cloudfiles
 django-cumulus
