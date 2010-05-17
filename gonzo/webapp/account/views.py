@@ -162,7 +162,13 @@ def twitter_postauth(request):
         # TODO: If this username is already taken, we need to prompt the user for one.
         # Redirect him to another page that asks him or her to choose a new username.
 
-        # TODO: Get the information we want for this person (Name, Location, Email)
+        # Get the information we want for this person (Name, Location, Email)
+        try:
+            twitter.fill_profile(user, auth)
+        except:
+            # Ignore any exceptions -- it's quite possible it's because Twitter is too busy.
+            # (TODO: We should at least LOG it)
+            pass
 
         # Save our permanent token and secret for later.
         profile = user.get_profile()
@@ -205,7 +211,7 @@ def settings(request):
                                     'email': user.email,
                                     'user_location': user.get_profile().user_location
                                 }),
-                                'photo_update_form': PhotoUpdateForm(instance=request.user)
+                                'photo_update_form': PhotoUpdateForm()
                             })
 
 @login_required
@@ -231,3 +237,14 @@ def update_user(request):
     profile.save()
 
     return HttpResponse("OK")
+
+@login_required
+@require_POST
+def update_photo(request):
+    f = PhotoUpdateForm(request.POST, request.FILES)
+    if not f.is_valid():
+        return HttpResponseBadRequest(str(f.errors))
+    profile = request.user.get_profile()
+    profile.photo = f.cleaned_data['photo']
+    profile.save()
+    return HttpResponseRedirect(reverse('profile-settings'))

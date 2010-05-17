@@ -14,16 +14,24 @@
 {% with user.get_profile as profile %}
 <div class="span-9 colborder prepend-top">
   <h3>Profile Info</h3>
-    {% if submit_form.is_multipart %}
-    <form id="update_photo" method="POST" action="update_photo" enctype="multipart/form-data">
-    {% else %}
-    <form id="upload" method="POST" action="update_photo">
-    {% endif %}
-    </form>
-
     <form id="update_user" method="POST" action="update_user">
     <table cellspacing="0">
       {{ user_update_form.as_table }}
+       <tr>
+         <td></td>
+         <td>
+           {% csrf_token %}
+           <input type="submit" value="Save"/>
+           {% indicator "saving..." %}
+           <span class="form-success" style="display: none;">Saved!</span>
+         </td>
+       </tr>
+    </table>
+    </form>
+
+    <form id="update_photo" method="POST" action="update_photo" enctype="multipart/form-data">
+    <table cellspacing="0">
+      {{ photo_update_form.as_table }}
        <tr>
          <td></td>
          <td>
@@ -53,7 +61,7 @@
 </div>
 <script type="text/javascript">
 $(function() {
-    $("form").submit(function() {
+    $("#update_user").submit(function() {
       var form = $(this);
       var indicator = $(".indicator", form);
       var sucs = $(".form-success", form);

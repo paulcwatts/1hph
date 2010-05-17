@@ -1,11 +1,16 @@
 import re
 import unicodedata
 from htmlentitydefs import name2codepoint
+from StringIO import StringIO
+
 try:
     from django.utils.encoding import smart_unicode
 except ImportError:
     def smart_unicode(s):
         return s
+
+from django import forms
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 # From http://www.djangosnippets.org/snippets/369/
 def slugify(klass, s, exclude_pk=None, entities=True, decimal=True, hexadecimal=True,
@@ -45,3 +50,18 @@ def slugify(klass, s, exclude_pk=None, entities=True, decimal=True, hexadecimal=
         slug = "%s-%s" % (s, counter)
         counter += 1
     return slug
+
+
+def assign_image_to_model(instance, field_name, file, name=None, content_type=None):
+    """Makes assigning an image to a model field less of a PITA."""
+    # Pumping it through a form seems to be the easiest way
+    class MyForm(forms.Form):
+        image = forms.ImageField()
+
+    frm = MyForm(files={ 'image':
+         SimpleUploadedFile(name=name,
+                            content=file.read(),
+                              content_type=content_type)
+    })
+    frm.full_clean()
+    setattr(instance, field_name, frm.cleaned_data['image'])

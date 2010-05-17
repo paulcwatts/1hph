@@ -12,7 +12,8 @@ class TwitterTest(TestCase):
         self.user = User.objects.create_user('testdude', '', 'testpassword')
         self.enabled_user = User.objects.create_user('enabled', '', 'enabled')
         profile = self.enabled_user.get_profile()
-        profile.twitter_screen_name = 'enabled'
+        # It's easiest to test with a public profile.
+        profile.twitter_screen_name = '1hph'
         profile.twitter_oauth_token = 'xxxxx'
         profile.twitter_oauth_secret = 'yyyyy'
         profile.save()
@@ -52,4 +53,19 @@ class TwitterTest(TestCase):
             self.assert_(twitter.get_api_for_user(self.enabled_user))
         except twitter.NotEnabled:
             self.assert_(not self.is_enabled)
+
+
+    def test_5_fill_profile(self):
+        # It's easiest to test with a public profile.
+        auth = twitter.get_auth_for_self()
+        user = self.enabled_user
+        profile = twitter.fill_profile(user, auth=auth)
+        self.assert_(profile)
+        self.assertEquals(profile.user_location, "Seattle, WA")
+        self.assertEquals(user.first_name, "One Hour Photo")
+        self.assertEquals(user.last_name, "Hunt!")
+        self.assert_(profile.photo)
+        self.assert_(profile.photo.url)
+        self.assert_(profile.photo_width > 0)
+        self.assert_(profile.photo_height > 0)
 

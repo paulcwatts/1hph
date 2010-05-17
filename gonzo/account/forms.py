@@ -48,12 +48,8 @@ class UserUpdateForm(forms.Form):
                                     help_text='Where are you?')
 
 
-class PhotoUpdateForm(forms.ModelForm):
+class PhotoUpdateForm(forms.Form):
     error_css_class = 'error'
     required_css_class = 'required'
-    """
-    Uploading a photo is a separate action in our settings page
-    """
-    class Meta:
-        model = Profile
-        fields = ['photo']
+    photo = forms.ImageField()
+

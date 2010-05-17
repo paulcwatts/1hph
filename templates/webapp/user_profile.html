@@ -14,7 +14,29 @@
 {% with profile_user.get_profile as profile %}
 <div class="span-9 colborder">
   <div>
-    Basic info!
+    <table cellspacing="0">
+    {% if profile_user.first_name and profile_user.last_name %}
+    <tr>
+      <th>Name:</th>
+      <td>{{ profile_user.first_name }} {{ profile_user.last_name }}</td>
+    </tr>
+    {% endif %}
+    {% if profile.user_location %}
+    <tr>
+      <th>Location:</th>
+      <td>{{ profile.user_location }}</td>
+    </tr>
+    {% endif %}
+    {% if user == profile_user and user.is_authenticated or profile.public_links %}
+      {% if profile.twitter_profile %}
+      <tr>
+        <th>Twitter:</th>
+        <td><a href="{{ profile.twitter_profile }}">{{ profile.twitter_screen_name }}</a></td>
+      </tr>
+      {% endif %}
+    {% endif %}
+    </table>
+    <p><a href="{% url profile-settings %}">Update your profile.</a></p>
     <hr/>
   </div>
   <div>

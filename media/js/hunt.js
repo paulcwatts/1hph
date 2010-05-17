@@ -111,7 +111,12 @@ function huntState(hunt, now) {
               var li = $(html);
               var source = comment.source;
               // No profile image yet???
-              $("img",li).setImage(config.defaultImage);
+              if (source.profile_image_url) {
+                $("img",li).setImage(source.profile_image_url);
+              }
+              else {
+                $("img",li).setImage(config.defaultImage);
+              }
               $(".from", li).setSource(source);
               $(".comment", li).text(comment.text);
 

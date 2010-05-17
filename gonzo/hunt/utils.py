@@ -10,6 +10,9 @@ def get_source(obj):
     if obj.user:
         username = obj.user.username
         result = {'name': username, 'url': reverse('profile', kwargs={ 'slug': username }) }
+        profile = obj.user.get_profile()
+        if profile.photo:
+            result['profile_image_url'] = profile.photo.url
     else:
         # TODO: Twitter, Facebook
         result = {'name': 'anonymous' }

@@ -1,10 +1,12 @@
 """
 Some helpers for using tweepy with our setup.
 """
-import urllib
+import urllib, urllib2, os.path
+from urlparse import urlparse
 import tweepy
 
 from django.core.urlresolvers import reverse
+from django.core.files import File
 from django.conf import settings
 
 REQUEST_TOKEN_URL='https://api.twitter.com/oauth/request_token'
@@ -98,6 +100,52 @@ def get_api():
 def get_api_for_user(user):
     return tweepy.API(get_auth_for_user(user))
 
-
 def get_api_for_self():
     return tweepy.API(get_auth_for_self())
+
+def fill_profile(user, auth=None):
+    """Fill's a user's profile from Twitter."""
+    if not auth:
+        auth = get_auth()
+    api = tweepy.API(auth)
+
+    profile = user.get_profile()
+    screen_name = profile.twitter_screen_name
+    twiuser = api.get_user(screen_name)
+    save = False
+
+    if not user.first_name and not user.last_name and hasattr(twiuser, 'name'):
+        parts = twiuser.name.split()
+        if len(parts) == 0:
+            # The normal slicing logic would put this as the *last* name,
+            # but we want it as the *first* name.
+            user.first_name = parts[0]
+        else:
+            user.first_name = ' '.join(parts[:-1])
+            user.last_name = ' '.join(parts[-1:])
+        save = True
+
+    if not profile.user_location and hasattr(twiuser, 'location'):
+        profile.user_location = twiuser.location
+        save = True
+
+    if not profile.photo and hasattr(twiuser, 'profile_image_url'):
+        try:
+            f = urllib2.urlopen(twiuser.profile_image_url)
+            upload_name = os.path.split(urlparse(f.geturl()).path)[-1]
+            from gonzo.utils import assign_image_to_model
+            assign_image_to_model(profile,
+                                  'photo',
+                                  f,
+                                  upload_name,
+                                  f.info().get('Content-Type'))
+
+            save = True
+        except urllib2.URLError, e:
+            print "Failed to get profile image: " + str(e)
+            pass
+
+    if save:
+        profile.save()
+
+    return profile
