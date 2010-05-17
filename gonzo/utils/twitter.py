@@ -123,7 +123,7 @@ def fill_profile(user, auth=None):
         else:
             user.first_name = ' '.join(parts[:-1])
             user.last_name = ' '.join(parts[-1:])
-        save = True
+        user.save()
 
     if not profile.user_location and hasattr(twiuser, 'location'):
         profile.user_location = twiuser.location
