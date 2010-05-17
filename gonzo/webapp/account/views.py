@@ -162,6 +162,13 @@ def twitter_postauth(request):
         # TODO: If this username is already taken, we need to prompt the user for one.
         # Redirect him to another page that asks him or her to choose a new username.
 
+        # Save our permanent token and secret for later.
+        profile = user.get_profile()
+        profile.twitter_profile = 'http://twitter.com/'+screen_name
+        profile.twitter_screen_name = screen_name
+        profile.twitter_oauth_token = auth_token
+        profile.twitter_oauth_secret = auth_secret
+
         # Get the information we want for this person (Name, Location, Email)
         try:
             twitter.fill_profile(user, auth)
@@ -169,13 +176,6 @@ def twitter_postauth(request):
             # Ignore any exceptions -- it's quite possible it's because Twitter is too busy.
             # (TODO: We should at least LOG it)
             pass
-
-        # Save our permanent token and secret for later.
-        profile = user.get_profile()
-        profile.twitter_profile = 'http://twitter.com/'+screen_name
-        profile.twitter_screen_name = screen_name
-        profile.twitter_oauth_token = auth_token
-        profile.twitter_oauth_secret = auth_secret
         profile.save()
         new_user = True
 
