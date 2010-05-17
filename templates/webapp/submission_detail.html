@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content %}
 <div class="page-content">
-  <div class="span-9 colborder">
+  <div class="area-main">
     {% with submission.get_source as source %}
       <h2>Posted by <a class="from" href="{{ source.url }}">{{ source.name }}</a> via {{ source.via }}</h1>
       <h3>{{ submission.time|mytimesince }} ago for hunt <a class="phrase" href="{% url hunt submission.hunt.slug %}">{{ submission.hunt.phrase }}</a></h2>
@@ -26,7 +26,7 @@
     {% url api-photo-comment-index submission.hunt.slug submission.id as comments_url %}
     {% include "includes/comments.html" %}
   </div>
-  <div class="span-7 last"></div>
+  <div class="area-sidebar-short"></div>
 </div>
 <script type="text/javascript">
 $(function() {

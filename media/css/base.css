@@ -16,13 +16,8 @@ Link Color: #CC7A00
 body {
   background: url(img/bg.png) #AEEBFF repeat-x;
 }
-h1 {
-  /*font-weight: bold;*/
-}
-.container {
-}
 .base-header {
-  background-color: #3299BB;
+  position: relative;
   height: 50px;
   font-size: 12px;
 }
@@ -115,9 +110,8 @@ ul.nav,
 }
 /*
  generic cool UI classes
- at some point we can converge just using the jQuery UI name
 */
-.round-top-corners, .ui-corner-top {
+.ui-corner-top {
   -moz-border-radius-topleft: 5px;
   -moz-border-radius-topright: 5px;
   -khtml-border-radius-topleft: 5px;
@@ -127,7 +121,7 @@ ul.nav,
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
-.round-bottom-corners, .ui-corner-bottom {
+.ui-corner-bottom {
   -moz-border-radius-bottomleft: 5px;
   -moz-border-radius-bottomright: 5px;
   -khtml-border-radius-bottomleft: 5px;
@@ -137,7 +131,7 @@ ul.nav,
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
-.round-left-corners, .ui-corner-left {
+.ui-corner-left {
   -moz-border-radius-topleft: 5px;
   -moz-border-radius-bottomleft: 5px;
   -khtml-border-radius-topleft: 5px;
@@ -147,7 +141,7 @@ ul.nav,
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
-.round-right-corners, .ui-corner-right {
+.ui-corner-right {
   -moz-border-radius-topright: 5px;
   -moz-border-radius-bottomright: 5px;
   -khtml-border-radius-topright: 5px;
@@ -157,7 +151,7 @@ ul.nav,
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
-.round-corners, .ui-corner-all {
+.ui-corner-all {
   -moz-border-radius: 5px;
   -khtml-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -181,6 +175,110 @@ ul.nav,
 .hint { font-size: 80%; }
 .hint-color { color: #BCBCBC; }
 
+/* buttons.css */
+a.button, button {
+  display:block;
+  float:left;
+  margin: 0.7em 0.5em 0.7em 0;
+  padding:5px 10px 5px 7px;   /* Links */
+
+  border:1px solid #dedede;
+  border-top:1px solid #eee;
+  border-left:1px solid #eee;
+
+  background-color:#f5f5f5;
+  font-family:"Helvetica Neue", Arial, Helvetica;
+  font-size:100%;
+  line-height:130%;
+  text-decoration:none;
+  /*font-weight:bold;*/
+  color:#565656;
+  cursor:pointer;
+}
+button {
+  width:auto;
+  overflow:visible;
+  padding:4px 10px 3px 7px;   /* IE6 */
+}
+button[type] {
+  padding:4px 10px 4px 7px;   /* Firefox */
+  line-height:17px;           /* Safari */
+}
+*:first-child+html button[type] {
+  padding:4px 10px 3px 7px;   /* IE7 */
+}
+button img, a.button img{
+  margin:0 3px -3px 0 !important;
+  padding:0;
+  border:none;
+  width:16px;
+  height:16px;
+  float:none;
+}
+input[type=submit] {
+  padding:2px 10px 2px 7px;   /* Links */
+
+  border:1px solid #dedede;
+  border-top:1px solid #eee;
+  border-left:1px solid #eee;
+
+  background-color:#f5f5f5;
+  font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+  font-size:12px;
+  line-height:130%;
+  text-decoration:none;
+  /*font-weight:bold;*/
+  color:#565656;
+  cursor:pointer;
+}
+
+
+/* Button colors
+-------------------------------------------------------------- */
+
+/* Standard */
+button:hover, a.button:hover, input[type=submit]:hover {
+  background-color:#dff4ff;
+  border:1px solid #c2e1ef;
+  color:#336699;
+  text-decoration: none;
+}
+a.button:active, input[type=submit]:active {
+  background-color:#6299c5;
+  border:1px solid #6299c5;
+  color:#fff;
+}
+
+/* Positive */
+body .positive {
+  color:#529214;
+}
+a.positive:hover, button.positive:hover {
+  background-color:#E6EFC2;
+  border:1px solid #C6D880;
+  color:#529214;
+}
+a.positive:active {
+  background-color:#529214;
+  border:1px solid #529214;
+  color:#fff;
+}
+
+/* Negative */
+body .negative {
+  color:#d12f19;
+}
+a.negative:hover, button.negative:hover {
+  background-color:#fbe3e4;
+  border:1px solid #fbc2c4;
+  color:#d12f19;
+}
+a.negative:active {
+  background-color:#d12f19;
+  border:1px solid #d12f19;
+  color:#fff;
+}
+
 /* all buttons and inputs should have round corners */
 a.button, button, input[type=text], input[type=password], input[type=file], input[type=submit], textarea {
   -moz-border-radius: 5px;
@@ -192,32 +290,26 @@ input[type=text], input[type=password], input[type=file], textarea {
   padding: 0.25em;
 }
 
-
-ul.nav {
+.base-footer {
   text-align: center;
-}
-.base-footer .nav {
+  margin-top: 1.5em !important;
   color: #CC7A00;
   font-size: 10px;
-}
-.base-header .nav-container {
-  position: relative;
 }
 .nav li {
   display: inline-block;
   padding: 0 5px;
+  height: 20px;
 }
-.navtoolbar {
+ul.navtoolbar {
+  text-align: center;
   position: absolute;
   right: 0px;
   top: 5px;
-  width: 310px;
+  padding: 0 10px;
   background-color: #ffffff;
   border: 1px #BCBCBC solid;
   font-size: 11px;
-}
-.navtoolbar li {
-  height: 20px;
 }
 .navtoolbar img {
   position: relative;

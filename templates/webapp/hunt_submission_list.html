@@ -11,7 +11,7 @@
 {% block content %}
 <div class="page-content">
    <h1>Entries for <a class="phrase" href="{% url hunt hunt.slug %}">{{ hunt.phrase }}</a></h1>
-  <div class="span-9 colborder">
+  <div class="area-main">
     <div class="hunt-state-obj hunt-state-FUTURE">
       This hunt hasn't started yet. Check back later!
       <hr/>
@@ -35,7 +35,7 @@
       {% endif %}
      </div>
   </div>
-  <div class="span-5 last">
+  <div class="area-sidebar-short">
       <div class="hunt-state-obj hunt-state-CURRENT hunt-state-VOTING hunt-state-FINISHED">
         {% with submission_list|length as count %}
           <div id="num-submissions" class="num-submissions counter center-text">{{ count }}</div>

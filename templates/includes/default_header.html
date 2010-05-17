@@ -1,25 +1,21 @@
 {% block "header" %}
-<div class="span-16 base-header last">
-  <div class="span-10">
-    <a class="header-logo" href="/"><img class="header-logo" src="{{ MEDIA_URL }}img/logo.png" alt="One Hour Photo Hunt"/></a>
-  </div>
-  <div class="span-6 nav-container last">
-    <ul class="nav navtoolbar" role="navigation">
-      {% if user.is_authenticated %}
-        <li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
-        <li><a href="{% url hunt-index %}">Hunts</a></li>
-        <li><a href="{% url profile-settings %}">Settings</a></li>
-        <li><a href="{% url account-logout %}">Sign out</a></li>
-      {% else %}
-        <li>
-          <a href="{% url account-twitter-login %}?next={{ request.path }}">
-            <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter-small.png" alt="Sign in with Twitter"/>
-          </a>
-        </li>
-        <li><a href="{% url account-login %}?next={{ request.path }}">Sign in</a></li>
-        <li><a href="{% url account-signup %}">Sign up</a></li>
-      {% endif %}
-    </ul>
-  </div>
+<div class="base-header">
+  <a class="header-logo" href="/"><img class="header-logo" src="{{ MEDIA_URL }}img/logo.png" alt="One Hour Photo Hunt"/></a>
+  <ul class="nav navtoolbar" role="navigation">
+    {% if user.is_authenticated %}
+      <li><a href="{% url profile user.username %}">{{ user.username }}</a></li>
+      <li><a href="{% url hunt-index %}">Hunts</a></li>
+      <li><a href="{% url profile-settings %}">Settings</a></li>
+      <li><a href="{% url account-logout %}">Sign out</a></li>
+    {% else %}
+      <li>
+        <a href="{% url account-twitter-login %}?next={{ request.path }}">
+          <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter-small.png" alt="Sign in with Twitter"/>
+        </a>
+      </li>
+      <li><a href="{% url account-login %}?next={{ request.path }}">Sign in</a></li>
+      <li><a href="{% url account-signup %}">Sign up</a></li>
+    {% endif %}
+  </ul>
 </div>
 {% endblock %}

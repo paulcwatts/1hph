@@ -12,7 +12,7 @@
 
 {% block page-content %}
 {% with user.get_profile as profile %}
-<div class="span-9 colborder prepend-top">
+<div class="area-main">
   <h3>Profile Info</h3>
     <form id="update_user" method="POST" action="update_user">
     <table cellspacing="0">
@@ -55,7 +55,7 @@
   <hr/>
   <p><a href="{% url account-deactivate %}">Deactivate my account.</a></p>
 </div>
-<div class="span-5 last prepend-top">
+<div class="area-sidebar-short">
   <h3>Settings</h3>
   <p>View and update your personal information, your password, and what others can see about you.</p>
 </div>

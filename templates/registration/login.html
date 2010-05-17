@@ -1,7 +1,12 @@
 {% extends "base.html" %}
+{% block extra_css %}
+<style type="text/css">
+ul.navtoolbar { display: none; }
+</style>
+{% endblock %}
 {% block content %}
 <div class="page-content">
-  <div class="span-7 colborder">
+  <div class="area-main-short">
     <h3>Sign into your account</h3>
     <form method="post" action="{% url account-login %}">
     <table>
@@ -18,7 +23,7 @@
     <p><a href="{% url account-reset-password %}">Totally forgot your password?</a></p>
     </form>
   </div>
-  <div class="span-7 last">
+  <div class="area-sidebar">
     <div>
       <h3>Use your Twitter account</h3>
       <p>
@@ -29,7 +34,7 @@
       <hr/>
     </div>
     <div>
-       <h3>Not a member?</h3>
+       <h3>Haven't yet joined?</h3>
         <p>Sign up! It's free and easy.</p>
         <p><a class="positive button" href="{% url account-signup %}?next={{ request.REQUEST.next }}">Sign up now!</a></p>
     </div>

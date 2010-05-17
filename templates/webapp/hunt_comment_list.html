@@ -8,8 +8,8 @@
 {% endblock %}
 {% block content %}
 <div class="page-content">
-  <div class="span-9 colborder">
-    <h2>Comments for hunt <a class="phrase" href="{% url hunt hunt.slug %}">{{ hunt.phrase }}</a></h2>
+  <h1>Comments for hunt <a class="phrase" href="{% url hunt hunt.slug %}">{{ hunt.phrase }}</a></h1>
+  <div class="area-main">
     {% url api-hunt-comment-index hunt.slug as comments_url %}
     {% include "includes/comment_form.html" %}
     {% if comment_list %}
@@ -30,7 +30,7 @@
       No comments.
     {% endif %}
     </div>
-  <div class="span-7 last"></div>
+  <div class="area-sidebar-short"></div>
 </div>
 <script type="text/javascript">
 $(function() {

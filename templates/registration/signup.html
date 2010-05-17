@@ -1,7 +1,12 @@
 {% extends "base.html" %}
+{% block extra_css %}
+<style type="text/css">
+ul.navtoolbar { display: none; }
+</style>
+{% endblock %}
 {% block content %}
 <div class="page-content">
-  <div class="span-9 colborder">
+  <div class="area-main">
     <h3>Create an account</h3>
     <form method="post" action="{% url account-signup %}">
       <table>
@@ -17,16 +22,17 @@
       </table>
     </form>
   </div>
-  <div class="span-5 last">
-    <div>
-      <h3>Use your Twitter account</h3>
-      <p>You can also use your Twitter account to play.</p>
-      <p>
-        <a href="{% url account-twitter-login %}?next={{ request.REQUEST.next }}">
-            <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter.png" alt="Sign in with Twitter"/>
-        </a>
-      </p>
-    </div>
+  <div class="area-sidebar-short">
+     <h3>Use your Twitter account</h3>
+     <p>You can also use your Twitter account to play.</p>
+     <p>
+       <a href="{% url account-twitter-login %}?next={{ request.REQUEST.next }}">
+           <img src="{{ MEDIA_URL }}/img/buttons/Sign-in-with-Twitter-lighter.png" alt="Sign in with Twitter"/>
+       </a>
+     </p>
+     <hr/>
+     <h3>Already in the hunt?</h3>
+     <p><a class="positive button" href="{% url account-login %}">Click here to sign in.</a></p>
   </div>
 </div>
 {% endblock %}

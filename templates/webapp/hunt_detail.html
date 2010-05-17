@@ -25,7 +25,7 @@
  Once we download the JSON and determine that which state we are in,
  we'll show all items that match $(".hunt-state-(statename)").
 {% endcomment %}
-<div class="span-9 colborder">
+<div class="area-main">
   <div class="hunt-state-obj hunt-state-FUTURE">
     This hunt hasn't started yet. Check back later!
     <hr/>
@@ -77,7 +77,7 @@
     {% include "includes/comments.html" %}
   </div>
 </div>
-<div class="span-5 last">
+<div class="area-sidebar-short">
     <div class="hunt-state-obj hunt-state-CURRENT hunt-state-VOTING hunt-state-FINISHED">
       {% with hunt.submission_set.all|length as count %}
         <div id="num-submissions" class="num-submissions counter center-text">{{ count }}</div>

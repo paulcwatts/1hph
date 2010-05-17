@@ -12,7 +12,7 @@
 
 {% block page-content %}
 {% with profile_user.get_profile as profile %}
-<div class="span-9 colborder">
+<div class="area-main">
   <div>
     <table cellspacing="0">
     {% if profile_user.first_name and profile_user.last_name %}
@@ -36,7 +36,9 @@
       {% endif %}
     {% endif %}
     </table>
+    {% if user == profile_user and user.is_authenticated %}
     <p><a href="{% url profile-settings %}">Update your profile.</a></p>
+    {% endif %}
     <hr/>
   </div>
   <div>
@@ -54,7 +56,7 @@
     {% endif %}
   </div>
 </div>
-<div class="span-5 last">
+<div class="area-sidebar-short">
     <!--
     <div>
       Rank/score box

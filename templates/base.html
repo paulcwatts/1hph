@@ -4,10 +4,8 @@
 <title>{% block page-title %}One Hour Photo Hunt!{% endblock %}</title>
 {% block default_css %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/screen.css" type="text/css" media="screen, projection">
-<link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/print.css" type="text/css" media="print">
 <!--[if lt IE 8]><link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/base.css"/>
-<link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/buttons/screen.css" type="text/css" media="screen" />
 {% endblock %}
 {% block extra_css %}{% endblock %}
 {% block extra_links %}{% endblock %}
@@ -27,7 +25,7 @@
     {% include "includes/default_header.html" %}
   {% endblock %}
   {% block base-content %}
-    <div class="span-16 last base-content dropshadow">
+    <div class="area-all base-content dropshadow">
       {% block content %}{% endblock %}
     </div>
   {% endblock %}
