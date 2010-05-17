@@ -44,8 +44,7 @@ class UserUpdateForm(forms.Form):
     email = forms.EmailField(required=False)
     user_location = forms.CharField(max_length=Profile.LOCATION_MAX_LEN,
                                     required=False,
-                                    label='Your location',
-                                    help_text='Where are you?')
+                                    label='Your location')
 
 
 class PhotoUpdateForm(forms.Form):
