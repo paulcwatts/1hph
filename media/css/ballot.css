@@ -12,13 +12,8 @@
 #vote-dialog .phrase {
   font-size: 150%;
 }
-#ballot {
-  height: 180px;
-  padding-bottom: 1em;
-}
 #ballot .loading {
   text-align: center;
-  line-height: 180px;
   vertical-align: middle;
 }
 .ballot-img-container {
@@ -28,12 +23,10 @@
    in order that the animations look correct */
 .ballot-left, .ballot-right {
   position: absolute;
-  top: 0px;
   width: 240px;
   height: 180px;
+  text-align: center;
 }
-.ballot-left { left: 0px; }
-.ballot-right { right: 0px; }
 .ballot-overlay {
   position: absolute;
   top: 0px;
@@ -50,11 +43,6 @@
   display: block;
   background-color: black;
   opacity: .50;filter:Alpha(Opacity=50);
-}
-.ballot-left, .ballot-right {
-  width: 240px;
-  height: 180px;
-  text-align: center;
 }
 /* This allows the image to resize */
 .ballot-left img, .ballot-right img {
@@ -77,3 +65,54 @@
   background-color: #FF9900;
   border: 1px #FFFFFF solid;
 }
+/* normal positioning */
+.ui-dialog.vote-dialog-container { width: 520px !important; }
+#ballot { height: 180px; }
+#ballot .loading { line-height: 180px; }
+.ballot-left, .ballot-right { top: 0px; }
+.ballot-left { left: 0px; }
+.ballot-right { right: 0px; }
+
+/* portrait positioning */
+@media only screen and (max-device-width: 480px) and (orientation: portrait) {
+  .ui-dialog.vote-dialog-container { width: 260px !important; }
+  #ballot { height: 360px; }
+  .ballot-left, .ballot-right { left: 0px; }
+  .ballot-left { top: 0px }
+  .ballot-right { top: 182px; }
+   #vote-dialog .phrase { font-size: 100%; }
+   #vote-dialog .help { display: none; }
+}
+/* portrait positioning for iPhone */
+@media only screen and (max-width: 320px) {
+  .ui-dialog.vote-dialog-container { width: 260px !important; }
+  #ballot { height: 360px; }
+  .ballot-left, .ballot-right { left: 0px; }
+  .ballot-left { top: 0px }
+  .ballot-right { top: 182px; }
+   #vote-dialog .phrase { font-size: 100%; }
+   #vote-dialog .help { display: none; }
+}
+/* landscape positioning */
+@media only screen and (max-device-width: 480px) and (orientation: landscape) {
+  .ui-dialog.vote-dialog-container { width: 480px !important; }
+  #ballot { height: 180px; }
+  .ballot-left, .ballot-right { top: 0px; }
+  .ballot-left { left: 0px; }
+  .ballot-right { right: 0px; }
+   #vote-dialog .phrase { font-size: 100%; }
+   #vote-dialog .help { display: none; }
+   .ui-dialog .ui-dialog-content { padding: 2px }
+}
+/* landscape position for iPhone */
+@media only screen and (min-width: 321px) and (max-width: 480px) {
+  .ui-dialog.vote-dialog-container { width: 480px !important; }
+  #ballot { height: 180px; }
+  .ballot-left, .ballot-right { top: 0px; }
+  .ballot-left { left: 0px; }
+  .ballot-right { right: 0px; }
+   #vote-dialog .phrase { font-size: 100%; }
+   #vote-dialog .help { display: none; }
+   .ui-dialog .ui-dialog-content { padding: 2px }
+}
+

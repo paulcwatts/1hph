@@ -98,7 +98,7 @@
      </div>
 </div>
 <div id="vote-dialog" style="display: none;">
-  <div class="head"><span class="phrase">{{ hunt.phrase }}</span><br/>Click on the photo you think better fits the phrase.</div>
+  <div class="head"><span class="phrase">{{ hunt.phrase }}</span><span class="help"><br/>Click on the photo you think better fits the phrase.</span></div>
   <div id="ballot">
     <div class="ballot-img-container">
        <div class="ballot-left"><img src=""/><div class="ballot-overlay"></div></div>
@@ -163,7 +163,7 @@ $(function() {
   $("#vote-dialog").dialog({ modal: true,
     resizable: false,
     autoOpen: false,
-    width: 520,
+    width: 'auto',
     dialogClass: 'vote-dialog-container',
     open: function(event,ui) {
       $("#ballot").ballot({ url: huntObj.ballot });
