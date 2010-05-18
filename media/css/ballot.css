@@ -12,7 +12,7 @@
 #vote-dialog .phrase {
   font-size: 150%;
 }
-#ballot .loading {
+#ballot .loading, #ballot .load-error {
   text-align: center;
   vertical-align: middle;
 }
@@ -68,7 +68,7 @@
 /* normal positioning */
 .ui-dialog.vote-dialog-container { width: 520px !important; }
 #ballot { height: 180px; }
-#ballot .loading { line-height: 180px; }
+#ballot .loading, #ballot .load-error { line-height: 180px; }
 .ballot-left, .ballot-right { top: 0px; }
 .ballot-left { left: 0px; }
 .ballot-right { right: 0px; }

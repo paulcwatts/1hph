@@ -1,4 +1,13 @@
 (function($) {
+  $.fn.ballotError = function(xhr) {
+    if (xhr.responseText) {
+      var json = $.parseJSON(xhr.responseText);
+      if (json) {
+        this.text(json.error);
+      }
+    }
+    return this;
+  }
   $.fn.ballot = function(settings) {
       var config = {
           'url': "",
@@ -10,6 +19,7 @@
         var ballot = $(this);
         var imgcontainer = $(".ballot-img-container", ballot);
         var loading = $(".loading", ballot);
+        var error = $(".load-error", ballot);
         var overlays = $(".ballot-overlay", ballot);
         var ballotleft = $(".ballot-left", imgcontainer);
         var ballotright = $(".ballot-right", imgcontainer);
@@ -75,7 +85,8 @@
                       showBallot(data);
                     },
                     error: function(xhr, textStatus) {
-                      //alert("ERROR");
+                      loading.hide();
+                      error.ballotError(xhr).show();
                     }
                   });
                 });
@@ -85,11 +96,20 @@
 
         // show loading
         imgcontainer.hide();
+        error.hide();
         loading.show();
 
         // getJSON of ballot
-        $.getJSON(config.url, function(data) {
-          showBallot(data);
+        $.ajax({
+            url: config.url,
+            dataType: 'json',
+            success: function(data, textStatus, xhr) {
+              showBallot(data);
+            },
+            error: function(xhr, textStatus) {
+              loading.hide();
+              error.ballotError(xhr).show();
+            }
         });
       });
       return this;

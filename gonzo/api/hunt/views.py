@@ -82,7 +82,7 @@ def _get_ballot(request,hunt):
         return _get_photos(request,
                            random.sample(hunt.submission_set.filter(is_removed=False), 2))
     except ValueError:
-        return api_utils.api_error(request, "Not enough submissions")
+        return api_utils.api_error(request, "We're still waiting on photos. Check back later, or add your own!")
 
 def _submit_vote(request,hunt):
     url = request.POST.get("url")
