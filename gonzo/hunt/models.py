@@ -4,7 +4,6 @@ import random
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib import admin
 
 from gonzo.utils import slugify
 from gonzo.hunt import utils
@@ -320,18 +319,3 @@ class Award(models.Model):
                  'winner': utils.get_source_json(request, self),
                  'name': self.get_value_display(),
                  'points': self.points }
-
-
-#
-# Admin
-#
-class HuntAdmin(admin.ModelAdmin):
-    list_display = ('slug','start_time')
-    prepopulated_fields = {"slug":("phrase",)}
-
-
-admin.site.register(Hunt, HuntAdmin)
-admin.site.register(Submission)
-admin.site.register(Comment)
-admin.site.register(Vote)
-admin.site.register(Award)

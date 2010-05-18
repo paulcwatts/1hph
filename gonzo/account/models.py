@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models.signals import post_save
-from django.contrib import admin
 from django.contrib.auth.models import User
 
 from gonzo.hunt.models import *
@@ -128,4 +127,3 @@ post_save.connect(user_post_save, sender=User)
 # Submitting is X points
 # When an award is assigned, then add its value to our points/score
 
-admin.site.register(Profile)
