@@ -209,7 +209,6 @@ def update_user(request):
         # shouldn't happen to the user.
         return HttpResponseBadRequest(str(f.errors))
 
-    print f.cleaned_data
     user = request.user
     user.first_name = f.cleaned_data['first_name']
     user.last_name = f.cleaned_data['last_name']
