@@ -7,9 +7,11 @@
 .area-sidebar { width:auto; margin-right: 0; }
 .area-sidebar-short {width: auto; margin-right: 0; }
 
-h1 { font-size: 1.6em; }
-h2 { font-size: 1.3em; }
-h3 { font-size: 1.3em; }
+h1 { font-size: 130% }
+h2 { font-size: 120%; }
+h3 { font-size: 110% }
+.page-title h2 { font-size: 110% }
+
 .page-content {
   margin: 0.4em;
 }
