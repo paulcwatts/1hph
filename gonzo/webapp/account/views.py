@@ -15,7 +15,6 @@ from django.views.generic.simple import direct_to_template
 from django.views.decorators.http import require_GET,require_POST
 
 from gonzo.account.forms import *
-from gonzo.utils.decorators import secure_required
 from gonzo.utils import twitter
 
 def _redirect_to_profile(user,new_user=False):
@@ -44,12 +43,10 @@ def _new_user(request):
     login(request, user)
     return _redirect_to_profile(user,True)
 
-@secure_required
 def login_view(request):
     return auth_views.login(request)
 
 @login_required
-@secure_required
 def logout_view(request):
     return auth_views.logout(request)
 
@@ -57,7 +54,6 @@ def logout_view(request):
 def profile(request):
     return _redirect_to_profile(request.user)
 
-@secure_required
 def signup(request):
     if request.method == 'GET':
         return direct_to_template(request,
@@ -73,40 +69,32 @@ def signup(request):
 # TODO: All of these will most likely need to be configured differently.
 #
 @login_required
-@secure_required
 def change_password(request):
     redirect = reverse('account-password-changed')
     return auth_views.password_change(request, post_change_redirect=redirect)
 
 @login_required
-@secure_required
 def password_changed(request):
     return auth_views.password_change_done(request)
 
-@secure_required
 def reset_password(request):
     redirect = reverse('account-reset-password-done')
     return auth_views.password_reset(request, post_reset_redirect=redirect)
 
-@secure_required
 def reset_password_done(request):
     return auth_views.password_reset_done(request)
 
-@secure_required
 def reset_password_confirm(request):
     return auth_views.password_reset_confirm(request)
 
 @login_required
-@secure_required
 def deactivate(request):
     return HttpResponse()
 
 @login_required
-@secure_required
 def deactivate_confirmed(request):
     return HttpResponse()
 
-@secure_required
 def twitter_login(request):
     try:
         auth = twitter.get_auth_from_request(request)
@@ -121,7 +109,6 @@ def twitter_login(request):
         raise Exception("Twitter error: " + str(e))
 
 @login_required
-@secure_required
 def twitter_logout(request):
     return logout(request)
 
@@ -199,7 +186,6 @@ def twitter_postauth(request):
 
 
 @login_required
-@secure_required
 def settings(request):
     user = request.user
     return direct_to_template(request,
@@ -215,7 +201,6 @@ def settings(request):
                             })
 
 @login_required
-@secure_required
 @require_POST
 def update_user(request):
     f = UserUpdateForm(request.POST)
