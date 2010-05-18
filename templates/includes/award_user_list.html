@@ -9,7 +9,7 @@
         <div class="award-title">{{ award.get_value_display }}</div>
         <div>
           <a class="img-link" href="{% url photo hunt.slug submission.id %}">
-            <img src="{% award_badge award %}" alt="submitted photo"/>
+            <img class="award-badge" src="{% award_badge award %}" alt="submitted photo"/>
           </a>
         </div>
           For hunt <a class="phrase" href="{% url hunt hunt.slug %}">{{ hunt.phrase }}</a>

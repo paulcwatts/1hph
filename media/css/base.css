@@ -21,6 +21,15 @@ body {
   min-height: 50px;
   font-size: 14px;
 }
+/* image dimensions */
+img.header-logo {
+  width: 240px;
+  height: 35px;
+}
+img.indicator {
+  width: 16px;
+  height: 16px;
+}
 .base-content {
   background-color: white;
   border: 1px #BCBCBC solid;
@@ -416,6 +425,10 @@ li.two-line-item {
 }
 .award-title {
   font-size: 120%;
+}
+.award-badge {
+  width: 60px;
+  height: 60px;
 }
 .award-image-container {
   position: relative;
