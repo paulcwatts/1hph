@@ -232,3 +232,11 @@ def update_photo(request):
     profile.photo = f.cleaned_data['photo']
     profile.save()
     return HttpResponseRedirect(reverse('profile-settings'))
+
+@login_required
+@require_POST
+def delete_photo(request):
+    profile = request.user.get_profile()
+    profile.photo.delete()
+    profile.save()
+    return HttpResponseRedirect(reverse('profile-settings'))

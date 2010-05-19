@@ -26,5 +26,6 @@ urlpatterns = patterns('gonzo.webapp.account.views',
 
     # Ajax callbacks for update profile info
     url(r'^settings/update_user$', 'update_user'),
-    url(r'^settings/update_photo$', 'update_photo')
+    url(r'^settings/update_photo$', 'update_photo'),
+    url(r'^settings/delete_photo$', 'delete_photo')
 )

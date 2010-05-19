@@ -29,7 +29,27 @@
     </table>
     </form>
 
+    {% if profile.photo %}
+    <table id="update_or_delete_photo">
+      <tr>
+        <td rowspan="2" class="comment_thumb_icon">
+          <img class="thumb-icon" src="{% user_thumbnail user %}"/>
+        </td>
+        <td><span class="link" id="update_photo_link">Update profile photo</span></td>
+      </tr>
+      <tr>
+        <td>
+           <form id="delete_photo" method="POST" action="delete_photo">
+              {% csrf_token %}
+              <span class="link" id="delete_photo_link">Delete profile photo</span>
+            </form>
+        </td>
+      </tr>
+    </table>
+    <form id="update_photo" style="display: none;" method="POST" action="update_photo" enctype="multipart/form-data">
+    {% else %}
     <form id="update_photo" method="POST" action="update_photo" enctype="multipart/form-data">
+    {% endif %}
     <table cellspacing="0">
       {{ photo_update_form.as_table }}
        <tr>
@@ -43,6 +63,7 @@
        </tr>
     </table>
     </form>
+
     <hr/>
   <h3>Password</h3>
   <p><a href="{% url account-change-password %}">Click here to change or reset your password.</a></p>
@@ -77,6 +98,13 @@ $(function() {
           indicator.hide();
       }});
       return false;
+    });
+    $("#update_photo_link").click(function() {
+        $("#update_or_delete_photo").hide();
+        $("#update_photo").show();
+    });
+    $("#delete_photo_link").click(function() {
+        $("#delete_photo").submit();
     });
 });
 </script>
