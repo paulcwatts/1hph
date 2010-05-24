@@ -1,6 +1,7 @@
 {% extends "base_title.html" %}
 {% load indicator %}
 {% load webapp_extras %}
+{% load render_form %}
 {% block extra_script %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
 {% endblock %}
@@ -16,7 +17,7 @@
   <h3>Profile Info</h3>
     <form id="update_user" method="POST" action="update_user">
     <table cellspacing="0">
-      {{ user_update_form.as_table }}
+      {% render_form user_update_form %}
        <tr>
          <td></td>
          <td>
@@ -51,7 +52,7 @@
     <form id="update_photo" method="POST" action="update_photo" enctype="multipart/form-data">
     {% endif %}
     <table cellspacing="0">
-      {{ photo_update_form.as_table }}
+      {% render_form photo_update_form %}
        <tr>
          <td></td>
          <td>
