@@ -81,7 +81,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
-    'gonzo.utils.middleware.debug.DebugFooter',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -110,7 +110,8 @@ INSTALLED_APPS = (
     'gonzo.account',
     'gonzo.oauth',
     'gonzo.webapp',
-    'gonzo.utils'
+    'gonzo.utils',
+    'debug_toolbar'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -124,6 +125,13 @@ AUTH_PROFILE_MODULE='account.Profile'
 LOGIN_URL='/account/signin/'
 LOGIN_REDIRECT_URL='/account/profile/'
 SIGNUP_EMAIL_WHITELIST=()
+
+# Debug toolbar
+DEBUG_TOOLBAR_CONFIG={
+    'INTERNAL_IPS': ('127.0.0.1',),
+    'INTERCEPT_REDIRECTS': False
+}
+
 
 import sys
 

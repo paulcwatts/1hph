@@ -9,7 +9,11 @@
 
 ### Package requirements (Ubuntu)
 
-apache2, mysql-server python-setuptools python-mysqldb python-dev git-core subversion libapache2-mod-wsgi build-essential libjpeg-dev libpng12-dev
+apache2, mysql-server python-setuptools python-mysqldb python-dev git-core subversion libapache2-mod-wsgi build-essential libjpeg-dev libpng12-dev rabbitmq-server
+
+### Non-package requirements
+
+celeryd (http://ask.github.com/celery/getting-started/broker-installation.html)
 
 ### Installation
 
