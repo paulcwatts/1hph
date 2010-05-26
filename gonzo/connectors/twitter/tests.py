@@ -2,8 +2,10 @@ from urlparse import urlparse
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.test.client import Client
 
 from gonzo.connectors import twitter
+from gonzo.connectors.twitter.models import TwitterProfile
 
 class TwitterTest(TestCase):
     def setUp(self):
@@ -11,6 +13,10 @@ class TwitterTest(TestCase):
         self.is_self_enabled = twitter.is_self_enabled()
         self.user = User.objects.create_user('testdude', '', 'testpassword')
         self.enabled_user = User.objects.create_user('enabled', '', 'enabled')
+        twitter_profile = TwitterProfile.objects.create(user=self.enabled_user,
+                                                        screen_name='1hph',
+                                                        oauth_token='xxxx',
+                                                        oauth_secret='yyyy')
 
     def test_0_auth(self):
         try:
@@ -63,3 +69,9 @@ class TwitterTest(TestCase):
         self.assert_(profile.photo_width > 0)
         self.assert_(profile.photo_height > 0)
 
+    def test_6_backend(self):
+        c = Client()
+        self.assert_(c.login(screen_name='1hph', secret='yyyy'))
+        c.logout()
+        self.assert_(not c.login(screen_name='1hph', secret='xxxx'))
+        self.assert_(not c.login(screen_name='testdude', secret='yyyyy'))

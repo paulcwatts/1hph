@@ -73,14 +73,13 @@ def get_auth_from_request(request):
 
 def get_auth_for_user(user):
     """Returns an Auth handler suitable for acting as a user."""
-    profile = user.get_profile()
-    if profile.twitter_oauth_token:
+    try:
+        profile = TwitterProfile.objects.get(user=user)
         auth = get_auth()
-        auth.set_access_token(profile.twitter_oauth_token, profile.twitter_oauth_secret)
+        auth.set_access_token(profile.oauth_token, profile.oauth_secret)
         return auth
-    else:
+    except TwitterProfile.DoesNotExist:
         raise UserNotAuthorized()
-
 
 def is_self_enabled():
     return getattr(settings, 'TWITTER_SELF_USER')
@@ -112,7 +111,12 @@ def fill_profile(user, auth=None):
     api = tweepy.API(auth)
 
     profile = user.get_profile()
-    screen_name = profile.twitter_screen_name
+    try:
+        twitter_profile = TwitterProfile.objects.get(user=user)
+    except TwitterProfile.DoesNotExist:
+        return
+
+    screen_name = twitter_profile.screen_name
     twiuser = api.get_user(screen_name)
     save = False
 

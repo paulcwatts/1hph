@@ -8,7 +8,8 @@ from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse,HttpResponseBadRequest,HttpResponseRedirect
 
-from gonzo.utils import twitter
+from gonzo.connectors import twitter
+from gonzo.connectors.twitter import TwitterProfile
 
 def _redirect_to_profile(user,new_user=False):
     if new_user:
@@ -69,8 +70,8 @@ def twitter_postauth(request):
     # in the case we asked them to change their 1hph username due to a conflict
     # (or we at some point allow them to change their username themselves)
     try:
-        user = Profile.objects.get(twitter_screen_name=screen_name)
-    except Profile.DoesNotExist:
+        twitter_profile = TwitterProfile.objects.get(screen_name=screen_name)
+    except TwitterProfile.DoesNotExist:
         # When creating the user I just use their screen_name@twitter.com
         # for their email and the oauth_token_secret for their password.
         # These two things will likely never be used. Alternatively, you
@@ -81,11 +82,10 @@ def twitter_postauth(request):
         # Redirect him to another page that asks him or her to choose a new username.
 
         # Save our permanent token and secret for later.
-        profile = user.get_profile()
-        profile.twitter_profile = 'http://twitter.com/'+screen_name
-        profile.twitter_screen_name = screen_name
-        profile.twitter_oauth_token = auth_token
-        profile.twitter_oauth_secret = auth_secret
+        twitter_profile = TwitterProfile.objects.create(user=user,
+                                                profile='http://twitter.com/'+screen_name,
+                                                oauth_token=auth_token,
+                                                oauth_secret=auth_secret)
 
         # Get the information we want for this person (Name, Location, Email)
         try:
@@ -94,7 +94,6 @@ def twitter_postauth(request):
             # Ignore any exceptions -- it's quite possible it's because Twitter is too busy.
             # (TODO: We should at least LOG it)
             pass
-        profile.save()
         new_user = True
 
     next = request.REQUEST.get('next')
