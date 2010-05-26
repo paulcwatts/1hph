@@ -3,7 +3,7 @@ from urlparse import urlparse
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from gonzo.utils import twitter
+from gonzo.connectors import twitter
 
 class TwitterTest(TestCase):
     def setUp(self):
@@ -11,12 +11,6 @@ class TwitterTest(TestCase):
         self.is_self_enabled = twitter.is_self_enabled()
         self.user = User.objects.create_user('testdude', '', 'testpassword')
         self.enabled_user = User.objects.create_user('enabled', '', 'enabled')
-        profile = self.enabled_user.get_profile()
-        # It's easiest to test with a public profile.
-        profile.twitter_screen_name = '1hph'
-        profile.twitter_oauth_token = 'xxxxx'
-        profile.twitter_oauth_secret = 'yyyyy'
-        profile.save()
 
     def test_0_auth(self):
         try:
