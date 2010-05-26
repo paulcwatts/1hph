@@ -116,24 +116,40 @@ INSTALLED_APPS = (
     'debug_toolbar'
 )
 
+#
+# Authentication backends
+#
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'gonzo.connectors.twitter.backends.TwitterAuthBackend'
 )
 
+#
 # Default celery configuration
+#
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = "1hph"
 BROKER_PASSWORD = "1hph"
 BROKER_VHOST = "1hph"
 
+#
+# Email
+#
+EMAIL_HOST='localhost'
+EMAIL_PORT=1025
+
+#
+# Authentication configuration
+#
 AUTH_PROFILE_MODULE='account.Profile'
 LOGIN_URL='/account/signin/'
 LOGIN_REDIRECT_URL='/account/profile/'
 SIGNUP_EMAIL_WHITELIST=()
 
+#
 # Debug toolbar
+#
 DEBUG_TOOLBAR_CONFIG={
     'INTERNAL_IPS': ('127.0.0.1',),
     'INTERCEPT_REDIRECTS': False
