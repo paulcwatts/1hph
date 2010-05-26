@@ -10,5 +10,5 @@ class TwitterAuthTest(TestCase):
 
     def test_1_new_user(self):
         c = Client()
-        response = c.get("/account/login/twitter/")
+        response = c.get("/account/twitter/login/")
         self.assertEquals(response.status_code, 302)

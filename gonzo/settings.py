@@ -112,12 +112,13 @@ INSTALLED_APPS = (
     'gonzo.oauth',
     'gonzo.webapp',
     'gonzo.utils',
+    'gonzo.connectors.twitter',
     'debug_toolbar'
 )
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'gonzo.account.backends.TwitterAuthBackend'
+    'gonzo.connectors.twitter.backends.TwitterAuthBackend'
 )
 
 # Default celery configuration

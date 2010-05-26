@@ -36,17 +36,11 @@ class Profile(models.Model):
     # the user is, and grants a user additional privileges
     rank = models.PositiveIntegerField(default=0)
 
-    # Twitter authentication
-    twitter_profile = models.URLField(null=True)
-    twitter_screen_name = models.CharField(max_length=128,null=True,blank=True)
-    twitter_oauth_token = models.CharField(max_length=200,null=True,blank=True)
-    twitter_oauth_secret = models.CharField(max_length=200,null=True,blank=True)
-
     # Facebook authentication
-    facebook_profile = models.URLField(null=True)
-    facebook_screen_name = models.CharField(max_length=128,null=True,blank=True)
-    facebook_oauth_token = models.CharField(max_length=200,null=True,blank=True)
-    facebook_oauth_secret = models.CharField(max_length=200,null=True,blank=True)
+    #facebook_profile = models.URLField(null=True)
+    #facebook_screen_name = models.CharField(max_length=128,null=True,blank=True)
+    #facebook_oauth_token = models.CharField(max_length=200,null=True,blank=True)
+    #facebook_oauth_secret = models.CharField(max_length=200,null=True,blank=True)
 
     def __unicode__(self):
         return self.user.username
