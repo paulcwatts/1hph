@@ -105,6 +105,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
+    'celery',
     'gonzo.hunt',
     'gonzo.api',
     'gonzo.account',
@@ -119,7 +120,12 @@ AUTHENTICATION_BACKENDS = (
     'gonzo.account.backends.TwitterAuthBackend'
 )
 
-
+# Default celery configuration
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "1hph"
+BROKER_PASSWORD = "1hph"
+BROKER_VHOST = "1hph"
 
 AUTH_PROFILE_MODULE='account.Profile'
 LOGIN_URL='/account/signin/'
