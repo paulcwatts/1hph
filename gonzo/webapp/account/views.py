@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http import HttpResponse,HttpResponseBadRequest,HttpResponseRedirect
@@ -31,13 +30,6 @@ def _new_user(request):
     login(request, user)
     return _redirect_to_profile(user,True)
 
-def login_view(request):
-    return auth_views.login(request)
-
-@login_required
-def logout_view(request):
-    return auth_views.logout(request)
-
 @login_required
 def profile(request):
     return _redirect_to_profile(request.user)
@@ -52,28 +44,6 @@ def signup(request):
     elif request.method == 'POST':
         return _new_user(request)
     return HttpResponseBadRequest()
-
-#
-# TODO: All of these will most likely need to be configured differently.
-#
-@login_required
-def change_password(request):
-    redirect = reverse('account-password-changed')
-    return auth_views.password_change(request, post_change_redirect=redirect)
-
-@login_required
-def password_changed(request):
-    return auth_views.password_change_done(request)
-
-def reset_password(request):
-    redirect = reverse('account-reset-password-done')
-    return auth_views.password_reset(request, post_reset_redirect=redirect)
-
-def reset_password_done(request):
-    return auth_views.password_reset_done(request)
-
-def reset_password_confirm(request):
-    return auth_views.password_reset_confirm(request)
 
 @login_required
 def deactivate(request):

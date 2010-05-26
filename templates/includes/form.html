@@ -1,10 +1,10 @@
+{% if form_errors %}
+  <tr><td colspan="2">{{ form_errors }}</td></tr>
+{% endif %}
+{% if form.hidden_fields %}
+  <tr><td colspan="2">{{ form.hidden_fields }}</td></tr>
+{% endif %}
 {% for field in form.visible_fields %}
-  {# Include the hidden fields in the form #}
-  {% if forloop.first %}
-      {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-      {% endfor %}
-  {% endif %}
   <tr class="{{ field.css_classes }}">
     <th>{{ field.label_tag }}</th>
     <td>{{ field }}<div class="hint">{{ field.help_text }}</div></td>
