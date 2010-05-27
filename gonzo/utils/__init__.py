@@ -64,4 +64,8 @@ def assign_image_to_model(instance, field_name, file, name=None, content_type=No
                               content_type=content_type)
     })
     frm.full_clean()
+    if not frm.is_valid():
+        return False
     setattr(instance, field_name, frm.cleaned_data['image'])
+    return True
+

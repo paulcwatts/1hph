@@ -113,6 +113,7 @@ INSTALLED_APPS = (
     'gonzo.webapp',
     'gonzo.utils',
     'gonzo.connectors.twitter',
+    'gonzo.connectors.email',
     'debug_toolbar'
 )
 
