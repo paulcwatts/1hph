@@ -83,6 +83,7 @@ def twitter_postauth(request):
 
         # Save our permanent token and secret for later.
         twitter_profile = TwitterProfile.objects.create(user=user,
+                                                screen_name=screen_name,
                                                 profile='http://twitter.com/'+screen_name,
                                                 oauth_token=auth_token,
                                                 oauth_secret=auth_secret)
