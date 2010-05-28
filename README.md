@@ -9,7 +9,7 @@
 
 ### Package requirements (Ubuntu)
 
-apache2, mysql-server python-setuptools python-mysqldb python-dev git-core subversion libapache2-mod-wsgi build-essential libjpeg-dev libpng12-dev rabbitmq-server
+apache2, mysql-server python-setuptools python-mysqldb python-dev git-core subversion libapache2-mod-wsgi build-essential libjpeg-dev libpng12-dev rabbitmq-server memcached
 
 ### Non-package requirements
 
