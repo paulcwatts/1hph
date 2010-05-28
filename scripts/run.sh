@@ -4,6 +4,5 @@ if [ -z "$VIRTUAL_ENV" ]; then
    exit 1
 fi
 rabbitmq-server &
-gonzo/manage.py celeryd &
-#gonzo/manage.py celerybeat &
+PYTHONPATH=. GONZO_LOCAL_SETTINGS_MODULE=gonzo.local_settings CELERY_CONFIG_MODULE=gonzo.settings celerybeat &
 gonzo/manage.py runserver

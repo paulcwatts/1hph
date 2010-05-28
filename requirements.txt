@@ -4,6 +4,7 @@ celery
 -e git+git://github.com/rackspace/python-cloudfiles.git@1.7.0#egg=python-cloudfiles
 django-cumulus
 django-debug-toolbar
+python-memcached
 tweepy
 simplejson
 pil
