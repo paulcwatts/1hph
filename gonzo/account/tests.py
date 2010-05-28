@@ -7,6 +7,7 @@ from django.core.files import File
 from gonzo.hunt.models import *
 from gonzo.hunt import testfiles
 from gonzo.account.models import user_activity
+from gonzo.account import tasks
 
 class UserActivityTest(TestCase):
     start_time = datetime(2010, 5, 5, 8, 0, 0)
@@ -81,6 +82,11 @@ class UserActivityTest(TestCase):
 
         activity = user_activity(self.user, self.start_time+timedelta(minutes=50))
         self.failUnlessEqual(activity,[])
+
+    def test_celery(self):
+        result = tasks.test_task.delay(4,4)
+        self.assertEquals(result.get(), 8)
+
 
 __test__ = {}
 
