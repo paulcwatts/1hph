@@ -1,6 +1,7 @@
 import os.path
 
 from django import template
+from django.contrib.sites.models import Site
 
 from gonzo.hunt.models import Hunt,Award
 from gonzo.account.models import Profile
@@ -43,6 +44,12 @@ def hunt_status(hunt):
         return "Voting ends in " + mytimeuntil(hunt.vote_end_time)
     elif state == Hunt.State.FINISHED:
         return "Hunt ended %s ago" % (mytimesince(hunt.vote_end_time),)
+
+@register.simple_tag
+def hunt_mail(hunt):
+    email = "%s+%s@%s" % (settings.HUNT_EMAIL_USER, hunt.tag, Site.objects.get_current().domain)
+    return '<a class="vote-button positive button" href="mailto:%s?subject=photo&body=Attach a photo and send!">Send an email to:<br/><br/><strong>%s</strong></a>' % (email,email)
+hunt_mail.is_safe = True
 
 AWARD_MAP = {
     Award.GOLD: (

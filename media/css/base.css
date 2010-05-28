@@ -456,5 +456,6 @@ li.two-line-item {
 /* Voting button */
 .vote-button {
   width: 100%;
+  text-align: center;
   height: 5em;
 }

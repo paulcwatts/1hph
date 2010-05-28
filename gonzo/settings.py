@@ -148,6 +148,9 @@ LOGIN_URL='/account/signin/'
 LOGIN_REDIRECT_URL='/account/profile/'
 SIGNUP_EMAIL_WHITELIST=()
 
+# Hunt email prefix
+HUNT_EMAIL_USER='hunt'
+
 #
 # Debug toolbar
 #

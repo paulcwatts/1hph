@@ -43,7 +43,7 @@
     <hr/>
   </div>
   <div class="submit-box hunt-state-obj hunt-state-CURRENT">
-    <h3>Submit a photo</h3>
+    <h3>Upload a photo</h3>
     {% if submit_form.is_multipart %}
     <form id="upload" method="POST" action="{% url api-photo-index hunt.slug %}" enctype="multipart/form-data">
     {% else %}
@@ -69,6 +69,13 @@
          </td>
     </table>
     </form>
+    <hr/>
+  </div>
+  <div class="submit-box hunt-state-obj hunt-state-CURRENT">
+    <h3>Email a photo</h3>
+    <div>
+    {% hunt_mail hunt %}
+    </div>
     <hr/>
   </div>
   <div>
