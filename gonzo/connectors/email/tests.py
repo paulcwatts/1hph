@@ -1,5 +1,5 @@
 from StringIO import StringIO
-import time
+import time, pytz
 from datetime import datetime, timedelta
 from email.utils import formatdate
 
@@ -252,17 +252,25 @@ class EmailTest(TestCase):
     # Hunt doesn't exist, or isn't current.
     #
     #
+    def get_local_now(self):
+        """Returns a tuple: the formatted time, and a datetime() that can be used to compare
+           what should come out of the DB"""
+        local_tz = pytz.timezone("US/Pacific")
+        local_now = datetime.now(local_tz).replace(microsecond=0)
+        utc_now = (local_now - local_now.utcoffset()).replace(tzinfo=None)
+        return (utc_now, local_now.strftime("%a, %d %b %Y %H:%M:%S %z"))
 
     def test_0_submit_anon(self):
-        now = time.mktime(time.gmtime())
+        (now, nowstr) = self.get_local_now()
         msg = TESTEMAIL % { 'from': 'paulwfoo@test.com',
             'to': 'hunt+emailtest@1hph.com',
             'subject': 'test 1',
-            'date': formatdate(now) }
+            'date': nowstr }
         environ = { 'RECIPIENT': 'hunt+emailtest@1hph.com', 'SENDER': 'paulw@test.com' }
         submission = email.submit_from_file(environ, StringIO(msg))
         self.assert_(submission)
         self.assertEquals(submission.user, None)
+        self.assertEquals(submission.time, now)
         self.assertEquals(submission.hunt, self.hunt)
         self.assert_(submission.photo)
         self.assertEquals(submission.photo_width, 240)
@@ -271,16 +279,17 @@ class EmailTest(TestCase):
         self.assertEquals(submission.via, 'email')
 
     def test_1_submit_anon(self):
-        now = time.mktime(time.gmtime())
+        (now, nowstr) = self.get_local_now()
         msg = TESTEMAIL % { 'from': 'Paul Watts <paulwfoo@test.com>',
             'to': 'hunt+emailtest@1hph.com',
             'subject': 'test 1',
-            'date': formatdate(now) }
+            'date': nowstr }
         environ = { 'RECIPIENT': 'hunt+emailtest@1hph.com', 'SENDER': 'paulw@test.com' }
         submission = email.submit_from_file(environ, StringIO(msg))
         self.assert_(submission)
         self.assertEquals(submission.user, None)
         self.assertEquals(submission.hunt, self.hunt)
+        self.assertEquals(submission.time, now)
         self.assert_(submission.photo)
         self.assertEquals(submission.photo_width, 240)
         self.assertEquals(submission.photo_height, 180)
@@ -288,7 +297,8 @@ class EmailTest(TestCase):
         self.assertEquals(submission.via, 'email')
 
     def test_2_submit_user(self):
-        now = time.mktime(time.gmtime())
+        gmnow = time.gmtime()
+        now = time.mktime(gmnow)
         msg = TESTEMAIL % { 'from': 'test@test.com',
             'to': 'hunt+emailtest@1hph.com',
             'subject': 'test 1',
@@ -298,6 +308,7 @@ class EmailTest(TestCase):
         self.assert_(submission)
         self.assertEquals(submission.user, self.user)
         self.assertEquals(submission.hunt, self.hunt)
+        self.assertEquals(submission.time, datetime(*gmnow[:6]))
         self.assert_(submission.photo)
         self.assertEquals(submission.photo_width, 240)
         self.assertEquals(submission.photo_height, 180)

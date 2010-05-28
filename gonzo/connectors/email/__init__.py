@@ -1,5 +1,5 @@
 import email, time, urllib
-from datetime import datetime
+from datetime import datetime, timedelta
 from cStringIO import StringIO
 
 from django.contrib.auth.models import User
@@ -47,11 +47,12 @@ def submit_message(environ, message):
     except Hunt.DoesNotExist:
         raise HuntDoesNotExist()
 
-    date = email.utils.parsedate(message.get('date'))
+    date = email.utils.parsedate_tz(message.get('date'))
     if not date:
         date = datetime.utcnow()
     else:
-        date = datetime(*date[:6])
+        offset = date[9]
+        date = datetime(*date[:6]) - timedelta(seconds=offset)
 
     if date < hunt.start_time:
         raise HuntNotCurrent("Hunt hasn't started yet")
