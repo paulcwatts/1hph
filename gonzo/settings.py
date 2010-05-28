@@ -115,7 +115,10 @@ INSTALLED_APPS = (
     'gonzo.connectors.email',
     'debug_toolbar'
 )
-CELERY_IMPORTS=('gonzo.account.tasks',)
+CELERY_IMPORTS=(
+    'gonzo.account.tasks',
+    'gonzo.hunt.tasks'
+)
 
 #
 # Authentication backends
