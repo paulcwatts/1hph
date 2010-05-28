@@ -21,7 +21,7 @@ def _redirect_to_profile(user,new_user=False):
 
 def _redirect_to_login(next):
     import urllib
-    login = HttpResponseRedirect(reverse('account-login'))
+    login = reverse('account-login')
     if next:
         login += "?"
         login += urllib.urlencode({ 'next': next })
