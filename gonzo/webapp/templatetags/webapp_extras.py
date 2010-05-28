@@ -1,4 +1,4 @@
-import os.path
+import os.path, urllib
 
 from django import template
 from django.contrib.sites.models import Site
@@ -47,8 +47,8 @@ def hunt_status(hunt):
 
 @register.simple_tag
 def hunt_mail(hunt):
-    email = "%s%%2B%s@%s" % (settings.HUNT_EMAIL_USER, hunt.tag, Site.objects.get_current().domain)
-    return '<a class="vote-button positive button" href="mailto:%s?subject=photo&body=Attach a photo and send!">Send an email to:<br/><br/><strong>%s</strong></a>' % (email,email)
+    email = "%s+%s@%s" % (settings.HUNT_EMAIL_USER, hunt.tag, Site.objects.get_current().domain)
+    return 'Send an email to: <a href="mailto:%s?subject=photo&body=Attach a photo and send!">%s</a>' % (urllib.quote(email),email)
 hunt_mail.is_safe = True
 
 AWARD_MAP = {
