@@ -10,6 +10,7 @@ from django.views.generic.simple import direct_to_template
 from django.views.decorators.http import require_GET,require_POST
 
 from gonzo.account.forms import *
+from gonzo.connectors.twitter.forms import get_form_for_user
 
 def _redirect_to_profile(user,new_user=False):
     if new_user:
@@ -65,7 +66,8 @@ def settings(request):
                                     'email': user.email,
                                     'user_location': user.get_profile().user_location
                                 }),
-                                'photo_update_form': PhotoUpdateForm()
+                                'photo_update_form': PhotoUpdateForm(),
+                                'twitter_update_form': get_form_for_user(user)
                             })
 
 @login_required

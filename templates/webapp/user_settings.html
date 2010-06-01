@@ -70,10 +70,24 @@
   <p><a href="{% url account-change-password %}">Click here to change or reset your password.</a></p>
   <hr/>
   <h3>Linked Accounts</h3>
-  <ul>
-  <li> Twitter: options when to send tweets (submit a photo, go up in rank, win an award, etc)</li>
-    <li>let people see my external profiles</li>
-  </ul>
+  {% with user.twitterprofile as twitter %}
+  <p>
+    <a href="{% url account-twitter-login %}?next={% url profile-settings %}">
+      <img src="{{ MEDIA_URL }}img/buttons/twitter-a.png" alt="Connect with Twitter"/>
+    </a>
+   Connected with @<a href="{{ twitter.profile }}">{{ twitter.screen_name }}</a></p>
+  <form id="update_twitter" method="POST" action="{% url account-twitter-settings %}">
+    <p>
+        {% for field in twitter_update_form %}
+        <div class="{{ field.css_classes }}">{{ field }} {{ field.label }} {{ field.errors }}</div>
+      {% endfor %}
+    </p>
+    {% csrf_token %}
+    <input type="submit" value="Save"/>
+    {% indicator "saving..." %}
+    <span class="form-success" style="display: none;">Saved!</span>
+  </form>
+  {% endwith %}
   <hr/>
   <p><a href="{% url account-deactivate %}">Deactivate my account.</a></p>
 </div>
@@ -83,7 +97,7 @@
 </div>
 <script type="text/javascript">
 $(function() {
-    $("#update_user").submit(function() {
+  function onsubmit() {
       var form = $(this);
       var indicator = $(".indicator", form);
       var sucs = $(".form-success", form);
@@ -99,14 +113,16 @@ $(function() {
           indicator.hide();
       }});
       return false;
-    });
-    $("#update_photo_link").click(function() {
-        $("#update_or_delete_photo").hide();
-        $("#update_photo").show();
-    });
-    $("#delete_photo_link").click(function() {
-        $("#delete_photo").submit();
-    });
+  }
+  $("#update_user").submit(onsubmit);
+  $("#update_twitter").submit(onsubmit);
+  $("#update_photo_link").click(function() {
+      $("#update_or_delete_photo").hide();
+      $("#update_photo").show();
+  });
+  $("#delete_photo_link").click(function() {
+      $("#delete_photo").submit();
+  });
 });
 </script>
 {% endwith %}

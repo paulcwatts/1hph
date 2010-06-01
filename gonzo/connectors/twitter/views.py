@@ -7,9 +7,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse,HttpResponseBadRequest,HttpResponseRedirect
+from django.views.decorators.http import require_POST
 
 from gonzo.connectors import twitter
 from gonzo.connectors.twitter import TwitterProfile
+from gonzo.connectors.twitter.forms import TwitterUpdateForm
 
 def _redirect_to_profile(user,new_user=False):
     if new_user:
@@ -62,7 +64,21 @@ def twitter_postauth(request):
     screen_name = auth.get_username()
     auth_token = auth.access_token.key
     auth_secret = auth.access_token.secret
+    if request.user:
+        return _twitter_signup(request, screen_name, auth_token, auth_secret)
+    else:
+        # Get or create the twitter profile.
+        profile = TwitterProfile.objects.get_or_create(user=request.user,
+                                    default={
+                                       'profile':'http://twitter.com/'+screen_name,
+                                       'screen_name':screen_name,
+                                       'oauth_token':auth_token,
+                                       'oauth_secret':auth_secret
+                                    })
+    next = request.REQUEST.get('next') or reverse('profile-settings')
+    return HttpResponseRedirect(next)
 
+def _twitter_signup(request, screen_name, auth_token, auth_secret):
     new_user = False
 
     # Step 3. Lookup the user or create them if they don't exist.
@@ -114,3 +130,23 @@ def twitter_postauth(request):
             return _redirect_to_login(next)
     else:
         return _redirect_to_login(next)
+
+@login_required
+@require_POST
+def twitter_settings(request):
+    f = TwitterUpdateForm(request.POST)
+    if not f.is_valid():
+        return HttpResponseBadRequest(str(f.errors))
+
+    try:
+        profile = TwitterProfile.objects.get(user=request.user)
+    except TwitterProfile.DoesNotExist:
+        return HttpResponseRedirect(reverse('account-twitter-login')+'?next='+reverse('profile-settings'))
+
+    profile.notify_on_submit  = f.cleaned_data['notify_on_submit']
+    profile.notify_on_award   = f.cleaned_data['notify_on_award']
+    profile.notify_on_comment = f.cleaned_data['notify_on_comment']
+    profile.notify_on_rank    = f.cleaned_data['notify_on_rank']
+    profile.notify_on_vote    = f.cleaned_data['notify_on_vote']
+    profile.save()
+    return HttpResponse()
