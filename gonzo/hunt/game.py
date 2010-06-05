@@ -78,3 +78,13 @@ def assign_awards():
                                  value=awards[current_award])
                 num_awards += 1
 
+def delete_unplayed():
+    """Removes any unplayed hunts."""
+    # What we want is:
+    # DELETE FROM hunt h where (h.vote_end_time <= now) AND
+    #        (SELECT COUNT(*) from vote v where v.hunt_id == h.id) == 0
+    hunts = Hunt.objects.filter(vote_end_time__lte=datetime.utcnow())
+    for h in hunts:
+        if h.vote_set.count() == 0:
+            h.delete()
+

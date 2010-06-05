@@ -330,5 +330,86 @@ class AssignAwardsTest(TestCase):
         game.assign_awards()
         self._checkAwards((3,), (1,), (0,2,4))
 
+class DeleteUnplayedTest(TestCase):
+    def setUp(self):
+        self.hunts = []
+        self.user = User.objects.create_user('testdude','test@test.com','password')
+
+    def tearDown(self):
+        for h in self.hunts:
+            h.delete()
+        self.user.delete()
+
+    def new_used_past(self):
+        start = datetime.utcnow() - timedelta(hours=3)
+        hunt = make_hunt(self.user, 'new used past', 'usedpast', start)
+        sub = make_submission(hunt, 'test1.jpg', user=self.user)
+        vote = Vote.objects.create(hunt=hunt,
+                                   user=self.user,
+                                   submission=sub,
+                                   value=1,
+                                   ip_address='127.0.0.1')
+        self.hunts.append(hunt)
+        return hunt
+
+    def new_unused_past(self):
+        start = datetime.utcnow() - timedelta(hours=3)
+        hunt = make_hunt(self.user, 'new unused past', 'unusedpast', start)
+        self.hunts.append(hunt)
+        return hunt
+
+    def new_used_current(self):
+        start = datetime.utcnow() - timedelta(minutes=5)
+        hunt = make_hunt(self.user, 'new used current', 'usedcurrent', start)
+        sub = make_submission(hunt, 'test1.jpg', user=self.user)
+        vote = Vote.objects.create(hunt=hunt,
+                                   user=self.user,
+                                   submission=sub,
+                                   value=1,
+                                   ip_address='127.0.0.1')
+        self.hunts.append(hunt)
+        return hunt
+
+    def new_unused_current(self):
+        start = datetime.utcnow() - timedelta(minutes=5)
+        hunt = make_hunt(self.user, 'new unused past', 'unusedpast', start)
+        self.hunts.append(hunt)
+        return hunt
+
+    def _doTest(self, before, after):
+        self.assertEquals(Hunt.objects.count(), before)
+        game.delete_unplayed()
+        self.assertEquals(Hunt.objects.count(), after)
+
+    def test_1(self):
+        self.new_unused_past()
+        self._doTest(1, 0)
+
+    def test_2(self):
+        # One used, one unused.
+        self.new_unused_past()
+        self.new_used_past()
+        self._doTest(2, 1)
+
+    def test_3(self):
+        self.new_unused_past()
+        self.new_unused_current()
+        self._doTest(2, 1)
+
+    def test_4(self):
+        self.new_used_current()
+        self._doTest(1, 1)
+
+    def test_5(self):
+        self.new_used_past()
+        self.new_unused_current()
+        self._doTest(2, 2)
+
+    def test_6(self):
+        self.new_unused_past()
+        self.new_unused_current()
+        self.new_unused_past()
+        self._doTest(3, 1)
+
 __test__ = {}
 
