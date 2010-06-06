@@ -85,7 +85,8 @@ class UserActivityTest(TestCase):
 
     def test_celery(self):
         result = tasks.test_task.delay(4,4)
-        self.assertEquals(result.get(), 8)
+        self.assertEquals(result.get(timeout=10), 8)
+        self.assertTrue(result.successful())
 
 
 __test__ = {}
