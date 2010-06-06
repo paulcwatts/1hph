@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import transaction, connection
 from django.db.models import Sum
@@ -6,6 +6,7 @@ from django.db.models import Sum
 from gonzo import settings
 from gonzo.utils.middleware.debug import reformat_sql
 from gonzo.hunt.models import *
+from gonzo import phrase
 
 @transaction.commit_on_success
 def assign_awards():
@@ -87,4 +88,27 @@ def delete_unplayed():
     for h in hunts:
         if h.vote_set.count() == 0:
             h.delete()
+
+def new_hunt(owner,duration,save=True):
+    hunt = Hunt()
+    hunt.owner = owner
+    (hunt.phrase,hunt.tag) = phrase.new_phrase()
+    hunt.start_time = datetime.utcnow()
+    hunt.end_time = hunt.start_time + duration
+    hunt.vote_end_time = hunt.end_time + timedelta(days=1)
+    if save:
+        hunt.save()
+    return hunt
+
+def keep_active(owner,duration):
+    # Are there any current hunts?
+    now = datetime.utcnow()
+    if Hunt.objects.filter(start_time__lte=now, end_time__gt=now).count() > 0:
+        return
+
+    username = owner
+    duration = duration
+    # Find the username
+    user = User.objects.get(username=username)
+    new_hunt(user, duration)
 

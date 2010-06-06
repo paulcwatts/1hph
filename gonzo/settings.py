@@ -146,6 +146,20 @@ SIGNUP_EMAIL_WHITELIST=()
 # Hunt email prefix
 HUNT_EMAIL_USER='hunt'
 
+from datetime import timedelta
+
+GAME_SETTINGS={
+    # If True, it will delete any finished and unplayed hunts
+    # (a hunt in which no one has voted is considered "unplayed")
+    'delete_unplayed': True,
+    # If True, we will create a new hunt if there are none current
+    'keep_active': True,
+    # Username of the default owner.
+    'default_owner': 'huntmaster',
+    # Default duration
+    'default_duration': timedelta(days=1)
+}
+
 #
 # Debug toolbar
 #

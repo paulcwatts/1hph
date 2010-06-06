@@ -411,5 +411,18 @@ class DeleteUnplayedTest(TestCase):
         self.new_unused_past()
         self._doTest(3, 1)
 
+class KeepActiveTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('testdude','test@test.com','password')
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_keep_active(self):
+        game.keep_active(self.user.username, timedelta(hours=1))
+        self.assertEquals(Hunt.objects.count(),1)
+        game.keep_active(self.user.username, timedelta(hours=1))
+        self.assertEquals(Hunt.objects.count(),1)
+
 __test__ = {}
 
