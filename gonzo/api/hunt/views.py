@@ -253,25 +253,3 @@ photo_comment_by_id = _comment_by_id
 
 def photo_comment_stream(request,slug,object_id):
     pass
-
-#
-# Awards!
-# This is called from a cron job.
-# TODO: Protect this. While it can't really do any harm to run multiple times,
-# we don't want it called by anyone else.
-# Determining submission winners is protected mostly because the API won't
-# allow submissions for old hunts.
-# This would be really easy with MapReduce, wouldn't it??
-#
-@require_POST
-@csrf_exempt
-def assign_awards(request):
-    # For the time being, we require the remote address to be localhost
-    if request.META.get('REMOTE_ADDR') != '127.0.0.1':
-        return HttpResponseBadRequest()
-
-    from gonzo.hunt import game
-    game.assign_awards()
-    # The HTML is so that we can get the debug footer
-    return HttpResponse('<html><body>Done</body></html>')
-
