@@ -1,6 +1,7 @@
 3:%adjective2% %noun1%
 2:%adjective1% %noun1%
 2:%noun1% with %noun1%
+2:%adjective2% and %adjective2%
 1:%adjective1% %adjective2% %noun1%
 1:%noun1% on %noun1%
 1:%noun1% over %noun1%

@@ -6429,6 +6429,7 @@
 {"model":"phrase.phrase","pk":"%adjective2% %noun1%","fields":{"weight":3}},
 {"model":"phrase.phrase","pk":"%adjective1% %noun1%","fields":{"weight":2}},
 {"model":"phrase.phrase","pk":"%noun1% with %noun1%","fields":{"weight":2}},
+{"model":"phrase.phrase","pk":"%adjective2% and %adjective2%","fields":{"weight":2}},
 {"model":"phrase.phrase","pk":"%adjective1% %adjective2% %noun1%","fields":{"weight":1}},
 {"model":"phrase.phrase","pk":"%noun1% on %noun1%","fields":{"weight":1}},
 {"model":"phrase.phrase","pk":"%noun1% over %noun1%","fields":{"weight":1}}
