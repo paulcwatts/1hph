@@ -109,6 +109,7 @@ INSTALLED_APPS = (
     'gonzo.api',
     'gonzo.account',
     'gonzo.oauth',
+    'gonzo.phrase',
     'gonzo.webapp',
     'gonzo.utils',
     'gonzo.connectors.twitter',
