@@ -148,6 +148,8 @@ HUNT_EMAIL_USER='hunt'
 
 from datetime import timedelta
 
+# TODO: Split these out into separate variables,
+# because this way makes it damn near impossible to override a single one.
 GAME_SETTINGS={
     # If True, it will delete any finished and unplayed hunts
     # (a hunt in which no one has voted is considered "unplayed")
@@ -157,8 +159,11 @@ GAME_SETTINGS={
     # Username of the default owner.
     'default_owner': 'huntmaster',
     # Default duration
-    'default_duration': timedelta(days=1)
+    'default_duration': timedelta(days=1),
 }
+# Allow the same user to submit as many photos to a hunt.
+# This really only should be used for debugging.
+GAME_ALLOW_MULTI_SUBMIT=False
 
 #
 # Debug toolbar

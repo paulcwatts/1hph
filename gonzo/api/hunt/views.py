@@ -191,9 +191,6 @@ def _submit_photo(request,hunt):
     if response:
         return response
 
-    # TODO: Check to see that this source hasn't already uploaded one
-    # TODO: We need much more logic around the source, but later.
-
     photo = f.save(commit=False)
     if request.user.is_authenticated():
         photo.user = request.user
@@ -201,7 +198,7 @@ def _submit_photo(request,hunt):
         photo.anon_source = get_anon_source(request)
     photo.ip_address = request.META.get('REMOTE_ADDR')
     photo.hunt = hunt
-    photo.save()
+    photo.submit()
     # response_content_type is an idiotic hack to work around some
     # weird interaction between JSONView and ajaxSubmit().
     response = HttpResponse(api_utils.to_json(request,photo),

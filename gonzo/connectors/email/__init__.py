@@ -92,5 +92,5 @@ def submit_message(environ, message):
         addr = environ.get('SENDER', addr)
         submission.anon_source = 'email:'+urllib.urlencode({'name':realname, 'addr':addr})
 
-    submission.save()
+    submission.submit()
     return submission

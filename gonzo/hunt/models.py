@@ -2,8 +2,9 @@ from datetime import datetime
 import random
 
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from gonzo.utils import slugify
 from gonzo.hunt import utils
@@ -194,6 +195,28 @@ class Submission(models.Model):
             json['longitude'] = self.longitude
         json['source'] = utils.get_source_json(request, self)
         return json
+
+    @transaction.commit_on_success
+    def submit(self):
+        """
+        Use this rather than save() when adding a new photo, since this will
+        remove any previous submission.
+        """
+        if not getattr(settings, 'GAME_ALLOW_MULTI_SUBMIT'):
+            hunt = self.hunt
+            if self.user:
+                Submission.objects.filter(hunt=hunt,user=self.user).delete()
+            elif self.anon_source:
+                Submission.objects.filter(hunt=hunt,anon_source=self.anon_source).delete()
+            else:
+                # Totally anonymous, but can we do anything about it??? Perhaps limit
+                # the number per IP?? What is reasonable here?
+                # For the time being, we place an arbitrary limit of 10 submissions/IP/hunt
+                if Submission.objects.filter(hunt=hunt,ip_address=self.ip_address).count() > 10:
+                    raise ValueError("Too many anonymous submissions for this IP: " + self.ip_address)
+        # Add the new one.
+        self.save()
+
 
 
 class Comment(models.Model):
