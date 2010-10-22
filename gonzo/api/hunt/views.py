@@ -2,14 +2,14 @@ import random
 from datetime import datetime
 from urlparse import urlparse
 
-from django.http import HttpResponse,HttpResponseBadRequest
+from django.http import HttpResponse,HttpResponseBadRequest,HttpResponseForbidden,HttpResponseGone
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET,require_POST,require_http_methods
-from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import resolve
 
 from gonzo.api import utils as api_utils
+from gonzo.api.decorators import api_function
 from gonzo.hunt.forms import *
 from gonzo.hunt.models import *
 from gonzo.hunt.utils import *
@@ -56,9 +56,7 @@ def _new_hunt(request):
     # TODO: new-hunt requires a logged-in user with the appropriate permissions
     pass
 
-# TODO: This is CSRF exempt ONLY if it's authorized via OAuth;
-# otherwise, CSRF must apply
-@csrf_exempt
+@api_function
 def index(request):
     if request.method == 'GET':
         return _get_hunts(request,Hunt.objects.all())
@@ -68,12 +66,14 @@ def index(request):
         return HttpResponseBadRequest()
 
 @require_GET
+@api_function
 def current_hunts(request):
     now = datetime.utcnow()
     return _get_hunts(request,
                       Hunt.objects.filter(start_time__lte=now, vote_end_time__gt=now))
 
 @require_GET
+@api_function
 def hunt_by_id(request,slug):
     return api_utils.get_json_or_404(Hunt,request,slug=slug)
 
@@ -113,9 +113,7 @@ def _submit_vote(request,hunt):
 
     return _get_ballot(request,hunt)
 
-# TODO: This is CSRF exempt ONLY if it's authorized via OAuth;
-# otherwise, CSRF must apply
-@csrf_exempt
+@api_function
 def hunt_ballot(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
     response = _ensure_vote_current(request, hunt)
@@ -149,6 +147,7 @@ def _submit_comment(request, hunt, submission):
     response['Content-Location'] = request.build_absolute_uri(comment.get_api_url())
     return response
 
+@api_function
 def _comment_by_id(request,slug,comment_id,object_id=None):
     comment = get_object_or_404(Comment,pk=comment_id)
     if request.method == 'GET':
@@ -160,9 +159,7 @@ def _comment_by_id(request,slug,comment_id,object_id=None):
     else:
         return HttpResponseBadRequest()
 
-# TODO: This is CSRF exempt ONLY if it's authorized via OAuth;
-# otherwise, CSRF must apply
-@csrf_exempt
+@api_function
 def hunt_comments(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
     if request.method == 'GET':
@@ -176,6 +173,7 @@ def hunt_comments(request,slug):
 hunt_comment_by_id = _comment_by_id
 
 @require_GET
+@api_function
 def hunt_comment_stream(request,slug):
     pass
 
@@ -208,9 +206,19 @@ def _submit_photo(request,hunt):
     response['Content-Location'] = request.build_absolute_uri(photo.get_api_url())
     return response;
 
-# TODO: This is CSRF exempt ONLY if it's authorized via OAuth;
-# otherwise, CSRF must apply
-@csrf_exempt
+def _can_delete_photo(user,submission):
+    return (user.is_authenticated() and
+            (request.user == submission.user or user.has_perm('hunt.delete_submission')))
+
+def _delete_photo(request, submission):
+    user = request.user
+    if _can_delete_photo(user,submission):
+        submission.remove("api")
+        return HttpResponseGone()
+    else:
+        return HttpResponseForbidden()
+
+@api_function
 def photo_index(request,slug):
     hunt = get_object_or_404(Hunt,slug=slug)
     if request.method == 'GET':
@@ -221,9 +229,22 @@ def photo_index(request,slug):
     else:
         return HttpResponseBadRequest()
 
-@require_GET
+@api_function
 def photo_by_id(request,slug,object_id):
-    return api_utils.get_json_or_404(Submission,request,pk=object_id)
+    submission = get_object_or_404(Submission,pk=object_id)
+    if request.method == 'GET':
+        return api_utils.to_json(request, submission)
+    elif request.method == 'DELETE':
+        return _delete_photo(request, submission)
+    else:
+        return HttpResponseBadRequest()
+
+@api_function
+@require_POST
+def photo_mark_inappropriate(request,slug,object_id):
+    submission = get_object_or_404(Submission,pk=object_id)
+    submission.remove("inappropriate")
+
 
 #    TWTR.Widget.jsonP = function(url, callback) {
 #      var script = document.createElement('script');
@@ -234,9 +255,11 @@ def photo_by_id(request,slug,object_id):
 #     return script;
 #   };
 
+@api_function
 def photo_stream(request,slug):
     pass
 
+@api_function
 def photo_comments(request,slug,object_id):
     photo = get_object_or_404(Submission,pk=object_id)
     if request.method == 'GET':
@@ -248,5 +271,6 @@ def photo_comments(request,slug,object_id):
 
 photo_comment_by_id = _comment_by_id
 
+@api_function
 def photo_comment_stream(request,slug,object_id):
     pass

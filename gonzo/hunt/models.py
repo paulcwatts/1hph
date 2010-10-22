@@ -121,6 +121,11 @@ def shorten_id():
     return ''.join([random.choice(shorten_chars) for i in range(5)])
 
 class Submission(models.Model):
+    REMOVE_CHOICES=(
+        ("inapp", "Inappropriate"),
+        ("admin", "Removed by admin")
+    )
+
     hunt            = models.ForeignKey(Hunt)
     time            = models.DateTimeField(default=datetime.utcnow)
     # The URL to the photo
@@ -151,6 +156,7 @@ class Submission(models.Model):
     # Where this was submitted, e.g., "Web" "Twitter", "1hph for Android"
     via             = models.CharField(max_length=32)
     is_removed      = models.BooleanField(default=False)
+    remove_reason   = models.CharField(max_length=16,null=True,blank=True,choices=REMOVE_CHOICES)
 
     class Meta:
         ordering = ["-time"]
@@ -217,6 +223,10 @@ class Submission(models.Model):
         # Add the new one.
         self.save()
 
+    def remove(self,reason):
+        self.is_removed = True
+        self.remove_reason = reason
+        self.save()
 
 
 class Comment(models.Model):

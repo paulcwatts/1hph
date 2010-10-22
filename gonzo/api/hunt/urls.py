@@ -40,6 +40,10 @@ urlpatterns = patterns('gonzo.api.hunt.views',
         'photo_by_id',
         name='api-photo'),
 
+    url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/mark_inappropriate/$',
+        'photo_mark_inappropriate',
+        name='api-photo-inappropriate'),
+
     url(r'^(?P<slug>[\w-]+)/p/(?P<object_id>\d+)/comments/$',
         'photo_comments',
         name='api-photo-comment-index'),
